@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Odoo — Setup &amp; Deployment Flow</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; padding: 40px; }
+h1 { text-align: center; color: #58a6ff; margin-bottom: 8px; font-size: 1.8rem; }
+.subtitle { text-align: center; color: #8b949e; margin-bottom: 40px; }
+.section { max-width: 900px; margin: 0 auto 40px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; }
+.section h2 { color: #58a6ff; margin-bottom: 16px; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.card { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+.card h3 { color: #d2a8ff; font-size: 0.9rem; margin-bottom: 8px; }
+.card code { display: block; background: #30363d; padding: 8px 12px; border-radius: 4px; font-size: 0.8rem; margin: 6px 0; color: #c9d1d9; }
+.card p { font-size: 0.85rem; color: #8b949e; line-height: 1.5; }
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #30363d; }
+.tl-step { position: relative; margin-bottom: 20px; padding-left: 24px; }
+.tl-step::before { content: ''; position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #238636; border: 2px solid #0d1117; }
+.tl-step h4 { color: #58a6ff; font-size: 0.9rem; margin-bottom: 4px; }
+.tl-step p { color: #8b949e; font-size: 0.85rem; }
+.tl-step code { background: #30363d; padding: 1px 5px; border-radius: 3px; font-size: 0.8rem; }
+.files { font-family: 'SF Mono', Monaco, monospace; }
+.files .dir { color: #58a6ff; }
+.files .file { color: #8b949e; padding-left: 16px; }
+.files .comment { color: #484f58; }
+</style>
+</head>
+<body>
+
+<h1>MCP Odoo — Setup &amp; Deployment</h1>
+<p class="subtitle">How to set up, configure, and deploy the MCP Odoo agent</p>
+
+<div class="section">
+    <h2>📦 1. Developer Setup</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Clone &amp; Install</h3>
+            <code>git clone https://github.com/kathro101/mcp_odoo.git</code>
+            <code>cd mcp_odoo</code>
+            <code>python3 -m venv .venv</code>
+            <code>source .venv/bin/activate</code>
+            <code>pip install -e ".[dev]"</code>
+            <p>Creates virtual environment with all dependencies (mcp, flask, anthropic, pytest, ruff)</p>
+        </div>
+        <div class="card">
+            <h3>Pre-commit Hooks</h3>
+            <code>pre-commit install</code>
+            <p>Runs ruff linting, ruff-format, vulture dead-code detection, trailing whitespace cleanup on every commit.</p>
+        </div>
+        <div class="card">
+            <h3>Configure</h3>
+            <code>cp config/config.template.json config/config.json</code>
+            <p>Edit <code>config.json</code> with Odoo URL, database, username, API key.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>🔧 2. Run the Application (3 Modes)</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>MCP Server (Claude Desktop)</h3>
+            <code>python -m src.mcp_server.server</code>
+            <p>Runs via stdio — Claude Desktop connects directly. Production mode.</p>
+        </div>
+        <div class="card">
+            <h3>Web UI (Standalone Chat)</h3>
+            <code>python webapp.py</code>
+            <p>Flask chat at <code>http://localhost:5000</code>. Routes messages through same service layer.</p>
+        </div>
+        <div class="card">
+            <h3>Setup Wizard (DMG Installer)</h3>
+            <code>python installer/wizard.py</code>
+            <p>Flask wizard at <code>http://localhost:8080</code>. 3-step setup: connect → Claude config → discover schemas.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>⚙️ 3. Claude Desktop Configuration</h2>
+    <p style="margin-bottom:12px;">Add to <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
+    <code>{
+  "mcpServers": {
+    "odoo": {
+      "command": "python",
+      "args": ["-m", "src.mcp_server.server"],
+      "cwd": "/path/to/mcp_odoo"
+    }
+  }
+}</code>
+    <p style="margin-top:8px;">After restarting Claude Desktop, 3 tools appear: <code>chat_odoo</code>, <code>list_models</code>, <code>list_agents</code>.</p>
+</div>
+
+<div class="section">
+    <h2>🏗️ 4. Build &amp; Deploy (macOS DMG)</h2>
+    <div class="timeline">
+        <div class="tl-step">
+            <h4>Step 1: Build the .app bundle</h4>
+            <p><code>bash scripts/build_dmg.sh</code></p>
+            <p>PyInstaller packages the Flask wizard + all Python deps into a standalone macOS .app</p>
+        </div>
+        <div class="tl-step">
+            <h4>Step 2: DMG created automatically</h4>
+            <p><code>dist/MCP-Odoo-Installer.dmg</code> (26 MB)</p>
+            <p>Ready to distribute. User double-clicks to open the wizard.</p>
+        </div>
+        <div class="tl-step">
+            <h4>Step 3: User runs the wizard</h4>
+            <p>Enters Odoo credentials → tests connection → Claude Desktop auto-configured → schemas discovered</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>📂 5. Project Structure</h2>
+    <div class="files">
+        <div class="dir">mcp_odoo/</div>
+        <div class="file dir">├── src/</div>
+        <div class="file dir">│   ├── mcp_server/        <span class="comment">MCP protocol layer (3 tools)</span></div>
+        <div class="file">│   │   ├── server.py         <span class="comment">MCP SDK wrapper</span></div>
+        <div class="file">│   │   ├── tools.py          <span class="comment">chat_odoo, list_models, list_agents + scoring</span></div>
+        <div class="file">│   │   └── transport.py      <span class="comment">stdio + HTTP/SSE modes</span></div>
+        <div class="file dir">│   ├── odoo_service/      <span class="comment">Business logic (no AI)</span></div>
+        <div class="file">│   │   ├── router.py         <span class="comment">Keyword-based agent dispatch</span></div>
+        <div class="file">│   │   ├── odoo_client.py    <span class="comment">XML-RPC wrapper</span></div>
+        <div class="file">│   │   ├── schema_store.py   <span class="comment">Schema cache from JSON</span></div>
+        <div class="file">│   │   ├── schema_discovery.py <span class="comment">Deterministic introspection</span></div>
+        <div class="file">│   │   ├── schema_enrichment.py <span class="comment">AI aliases/keywords/hints</span></div>
+        <div class="file">│   │   ├── session_store.py  <span class="comment">Session state</span></div>
+        <div class="file">│   │   └── service_locator.py <span class="comment">Singleton access</span></div>
+        <div class="file dir">│   ├── operations/        <span class="comment">Stateless CRUD</span></div>
+        <div class="file">│   │   ├── search.py         <span class="comment">Record search</span></div>
+        <div class="file">│   │   ├── create.py         <span class="comment">Create + preview</span></div>
+        <div class="file">│   │   ├── update.py         <span class="comment">Update + preview</span></div>
+        <div class="file">│   │   ├── delete.py         <span class="comment">Delete + confirm</span></div>
+        <div class="file">│   │   └── analytics.py      <span class="comment">Aggregation</span></div>
+        <div class="file dir">│   └── shared/            <span class="comment">Types, config, utils</span></div>
+        <div class="file">│       ├── types.py         <span class="comment">7 dataclasses</span></div>
+        <div class="file">│       ├── config.py        <span class="comment">Config loader</span></div>
+        <div class="file">│       └── date_utils.py    <span class="comment">Date parsing</span></div>
+        <div class="file dir">├── installer/             <span class="comment">DMG wizard</span></div>
+        <div class="file dir">├── scripts/               <span class="comment">Build scripts</span></div>
+        <div class="file">├── webapp.py               <span class="comment">Flask chat UI</span></div>
+        <div class="file dir">├── config/                <span class="comment">JSON config + schemas</span></div>
+        <div class="file dir">├── tests/                 <span class="comment">199 tests, 16 test files</span></div>
+        <div class="file dir">└── docs/                  <span class="comment">Knowledgebase + visual reports</span></div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>📊 6. Key Stats</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Code</h3>
+            <p>~2,500 lines of production Python across 16 modules</p>
+            <p>Zero internal LLM runtime calls</p>
+        </div>
+        <div class="card">
+            <h3>Tests</h3>
+            <p>199 tests passing, 2 intentionally skipped</p>
+            <p>16 test files, pytest + pytest-asyncio</p>
+        </div>
+        <div class="card">
+            <h3>MCP Tools</h3>
+            <p>3 tools: chat_odoo, list_models, list_agents</p>
+            <p>chat_odoo supports: preview, search, update, delete</p>
+        </div>
+        <div class="card">
+            <h3>DMG</h3>
+            <p>.app: 47 MB | .dmg: 26 MB</p>
+            <p>macOS 13+ (Ventura+)</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

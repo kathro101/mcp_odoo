@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Odoo — System Architecture</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; padding: 40px; }
+h1 { text-align: center; color: #58a6ff; margin-bottom: 8px; font-size: 1.8rem; }
+.subtitle { text-align: center; color: #8b949e; margin-bottom: 40px; }
+.flow { max-width: 900px; margin: 0 auto; }
+.step { display: flex; align-items: flex-start; margin-bottom: 32px; position: relative; }
+.step-num { width: 40px; height: 40px; border-radius: 50%; background: #238636; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; flex-shrink: 0; margin-right: 16px; margin-top: 8px; }
+.step.ai .step-num { background: #1f6feb; }
+.step.odoo .step-num { background: #8957e5; }
+.step.mcp .step-num { background: #238636; }
+.step-content { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px 20px; }
+.step-content h3 { color: #58a6ff; margin-bottom: 6px; font-size: 1rem; }
+.step-content .actor { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
+.actor.claude { background: #1f6feb22; color: #58a6ff; border: 1px solid #1f6feb44; }
+.actor.server { background: #23863622; color: #3fb950; border: 1px solid #23863644; }
+.actor.odoo-label { background: #8957e522; color: #bc8cff; border: 1px solid #8957e544; }
+.step-content p { line-height: 1.5; font-size: 0.9rem; color: #8b949e; }
+.step-content code { background: #30363d; padding: 2px 6px; border-radius: 3px; font-size: 0.85rem; color: #d2a8ff; }
+.arrow { text-align: center; color: #30363d; font-size: 1.5rem; margin: 8px 0 8px 56px; }
+.layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto; }
+.layer { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; text-align: center; }
+.layer h4 { color: #58a6ff; margin-bottom: 8px; font-size: 0.9rem; }
+.layer ul { list-style: none; font-size: 0.8rem; color: #8b949e; }
+.layer li { margin: 4px 0; }
+.layer.ai { border-color: #1f6feb44; }
+.layer.mcp { border-color: #23863644; }
+.layer.svc { border-color: #d2992244; }
+.layer.odoo { border-color: #8957e544; }
+.data-flow { max-width: 900px; margin: 40px auto 0; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
+.data-flow h3 { color: #58a6ff; margin-bottom: 12px; }
+.data-flow pre { background: #0d1117; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>MCP Odoo — System Architecture</h1>
+<p class="subtitle">How Claude Desktop talks to Odoo ERP — the complete data flow</p>
+
+<div class="flow">
+
+<div class="step ai">
+    <div class="step-num">1</div>
+    <div class="step-content">
+        <span class="actor claude">Claude Desktop — THE AI BRAIN</span>
+        <h3>User sends a message</h3>
+        <p>User: <em>"Create a shipment for ACME Corp, road direct, booking ref BOOKREF123"</em></p>
+        <p>Claude understands the intent and calls the <code>chat_odoo</code> MCP tool.</p>
+    </div>
+</div>
+
+<div class="arrow">↓ JSON-RPC over stdio</div>
+
+<div class="step mcp">
+    <div class="step-num">2</div>
+    <div class="step-content">
+        <span class="actor server">MCP Server (src/mcp_server/)</span>
+        <h3>Route &amp; Enrich</h3>
+        <p><b>Keyword routing</b>: "shipment" → matches Logistics agent → <code>stock.picking</code> model</p>
+        <p><b>Schema lookup</b>: loads <code>config/schemas/stock_picking.json</code> — 25 fields, aliases, workflow hints</p>
+        <p><b>Returns</b>: enriched schema with FIELD ALIASES, WORKFLOW HINTS, REQUIRED FIELDS, selection options, help text</p>
+    </div>
+</div>
+
+<div class="arrow">↑ Structured schema response</div>
+
+<div class="step ai">
+    <div class="step-num">3</div>
+    <div class="step-content">
+        <span class="actor claude">Claude Desktop — THE AI BRAIN</span>
+        <h3>Map user words → field names using aliases</h3>
+        <p><code>"ACME Corp" → partner_id</code> (via "customer" alias)</p>
+        <p><code>"road direct" → picking_type_id</code> (via "type" alias)</p>
+        <p><code>"BOOKREF123" → origin</code> (via "booking"/"ref" aliases, guided by help text)</p>
+        <p><b>Workflow hint</b>: dates apply to milestone lines, not header</p>
+    </div>
+</div>
+
+<div class="arrow">↓ chat_odoo(action="preview", model="stock_picking", params={...})</div>
+
+<div class="step mcp">
+    <div class="step-num">4</div>
+    <div class="step-content">
+        <span class="actor server">MCP Server (src/mcp_server/)</span>
+        <h3>Preview &amp; Validate</h3>
+        <p>Calls <code>src/operations/create.py::preview_record()</code></p>
+        <p>Checks required fields: ✅ partner_id, ❌ name, ❌ picking_type_id</p>
+        <p><b>Returns</b>: <code>{status: "needs_input", missing: ["name", "picking_type_id"], field_aliases: {...}}</code></p>
+    </div>
+</div>
+
+<div class="arrow">↑ Preview result</div>
+
+<div class="step ai">
+    <div class="step-num">5</div>
+    <div class="step-content">
+        <span class="actor claude">Claude Desktop — THE AI BRAIN</span>
+        <h3>Fill missing fields, confirm with user</h3>
+        <p>Claude asks: "Should I name this SHIP/001 and use Delivery Orders?"</p>
+        <p>User confirms → Claude sends <code>action="update"</code> with full params</p>
+    </div>
+</div>
+
+<div class="arrow">↓ chat_odoo(action="update", model="stock_picking", params={...}, record_id=42)</div>
+
+<div class="step mcp">
+    <div class="step-num">6</div>
+    <div class="step-content">
+        <span class="actor server">MCP Server → Operations Layer</span>
+        <h3>Execute Against Odoo</h3>
+        <p>Calls <code>src/operations/update.py::update_record()</code></p>
+        <p>Delegates to <code>src/odoo_service/odoo_client.py::execute_kw()</code></p>
+        <p>XML-RPC: <code>stock.picking.write([42], {name: "SHIP/001", ...})</code></p>
+    </div>
+</div>
+
+<div class="arrow">↓ XML-RPC</div>
+
+<div class="step odoo">
+    <div class="step-num">7</div>
+    <div class="step-content">
+        <span class="actor odoo-label">Odoo ERP</span>
+        <h3>Process &amp; Respond</h3>
+        <p>Odoo validates, writes the record, returns <code>True</code></p>
+    </div>
+</div>
+
+<div class="arrow">↑ XML-RPC response</div>
+
+<div class="step ai">
+    <div class="step-num">8</div>
+    <div class="step-content">
+        <span class="actor claude">Claude Desktop</span>
+        <h3>Confirm to user</h3>
+        <p><b>Claude</b>: "✅ Shipment SHIP/001 created for ACME Corp. Booking ref: BOOKREF123."</p>
+    </div>
+</div>
+
+</div>
+
+<div class="layers">
+    <div class="layer ai">
+        <h4>🧠 AI Brain</h4>
+        <ul>
+            <li>Claude Desktop</li>
+            <li>NLP + Intent</li>
+            <li>Field mapping</li>
+            <li>Response gen</li>
+            <li>Multi-turn flow</li>
+        </ul>
+    </div>
+    <div class="layer mcp">
+        <h4>🔌 MCP Server</h4>
+        <ul>
+            <li>3 MCP tools</li>
+            <li>Keyword routing</li>
+            <li>Schema lookup</li>
+            <li>Action dispatch</li>
+            <li>Session state</li>
+        </ul>
+    </div>
+    <div class="layer svc">
+        <h4>⚙️ Odoo Service</h4>
+        <ul>
+            <li>Schema discovery</li>
+            <li>AI enrichment</li>
+            <li>Operations CRUD</li>
+            <li>Date parsing</li>
+            <li>XML-RPC client</li>
+        </ul>
+    </div>
+    <div class="layer odoo">
+        <h4>🗄️ Odoo ERP</h4>
+        <ul>
+            <li>XML-RPC API</li>
+            <li>ORM models</li>
+            <li>ir.model.fields</li>
+            <li>ir.ui.view</li>
+            <li>Business logic</li>
+        </ul>
+    </div>
+</div>
+
+<div class="data-flow">
+    <h3>📊 Actual Data Exchange (shipment creation)</h3>
+    <pre>
+<span style="color:#58a6ff">Claude → MCP Server:</span>
+  chat_odoo(message="Create a shipment for ACME Corp, road direct, BOOKREF123")
+
+<span style="color:#3fb950">MCP Server → Claude:</span>
+  ## Routed to: Logistics Agent
+  ## Model: Transfers (stock.picking)
+
+  ### FIELD ALIASES
+    "customer" → partner_id
+    "type" → picking_type_id
+    "booking" → origin
+
+  ### REQUIRED FIELDS
+    - partner_id (many2one → res.partner): Contact *REQUIRED*
+    - picking_type_id (many2one → stock.picking.type): Operation Type *REQUIRED*
+
+<span style="color:#58a6ff">Claude → MCP Server:</span>
+  chat_odoo(action="search", model="res.partner", params={name: "ACME Corp"})
+
+<span style="color:#3fb950">MCP Server → Claude:</span>
+  {status: "success", records: [{id: 42, name: "ACME Corp"}]}
+
+<span style="color:#58a6ff">Claude → MCP Server:</span>
+  chat_odoo(action="preview", model="stock_picking",
+    params={partner_id: 42, origin: "BOOKREF123"})
+
+<span style="color:#3fb950">MCP Server → Claude:</span>
+  {status: "needs_input", filled: [partner_id, origin],
+   missing: [name, picking_type_id], field_aliases: {...}}
+
+<span style="color:#8b949e">... Claude asks user for missing fields ...</span>
+
+<span style="color:#58a6ff">Claude → MCP Server:</span>
+  chat_odoo(action="update", model="stock_picking", record_id=42,
+    params={name: "SHIP/001", partner_id: 42, picking_type_id: 3, origin: "BOOKREF123"})
+
+<span style="color:#3fb950">MCP Server → Odoo:</span>
+  XML-RPC: stock.picking.write([42], {name: "SHIP/001", ...})
+
+<span style="color:#bc8cff">Odoo → MCP Server → Claude:</span>
+  {status: "success", record_id: 42}
+
+<span style="color:#58a6ff">Claude → User:</span>
+  ✅ Shipment SHIP/001 created for ACME Corp. Booking ref: BOOKREF123.
+    </pre>
+</div>
+
+</body>
+</html>
