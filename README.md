@@ -51,6 +51,9 @@ pytest tests/ -v
 
 # Run MCP server (for Claude Desktop)
 python -m src.mcp_server.server
+
+# Build the dmg
+bash build/build_dmg.sh
 ```
 
 ## Configuration
