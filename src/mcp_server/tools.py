@@ -297,6 +297,12 @@ def _format_schema_for_claude(schema) -> list[str]:
                 seen.add(field)
         lines.append("")
 
+    # Workflow hints (AI-generated domain knowledge for custom models)
+    if schema.workflow_hints:
+        lines.append("### WORKFLOW HINTS")
+        lines.append(schema.workflow_hints)
+        lines.append("")
+
     # Required fields with details
     if schema.required_fields:
         lines.append("### REQUIRED FIELDS")
@@ -445,6 +451,11 @@ def _format_model_entry(schema, score: int | None = None) -> list[str]:
     ]
     if schema.summary:
         lines.append(f"  {schema.summary}")
+    if schema.workflow_hints:
+        lines.append("  Hints:")
+        for hint_line in schema.workflow_hints.split("\n"):
+            if hint_line.strip():
+                lines.append(f"    {hint_line.strip()}")
     if schema.match_keywords:
         kws = schema.match_keywords[:8]
         lines.append(f"  Keywords: {', '.join(kws)}")

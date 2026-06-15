@@ -160,3 +160,58 @@ def enrich_aliases(
             schema.match_keywords = result.get("match_keywords", [])
         except Exception as exc:
             logger.warning("Failed to enrich aliases for %s: %s", schema.odoo_model, exc)
+
+
+# ── Workflow hints enrichment ───────────────────────────────────────
+
+
+def enrich_workflow_hints(schemas: dict[str, ModelSchema], llm) -> None:
+    """Generate domain-specific workflow hints via AI for custom models.
+
+    Standard Odoo models are skipped (LLMs already know them).
+    Results cached to schema.workflow_hints — never regenerated.
+    """
+    for _key, schema in schemas.items():
+        if _is_standard_model(schema.odoo_model):
+            continue
+        if schema.workflow_hints:
+            continue
+
+        field_lines = []
+        for fname, fi in schema.all_fields.items():
+            if fi.usage_frequency > 0 or fi.required:
+                line = f"  - {fname} ({fi.field_type}): {fi.string}"
+                if fi.required:
+                    line += " [REQUIRED]"
+                if fi.relation:
+                    line += f" \u2192 {fi.relation}"
+                field_lines.append(line)
+
+        sub_lines = []
+        for sub in schema.sub_models:
+            sub_lines.append(
+                f"  - {sub.field_name} (one2many \u2192 {sub.related_model})"
+            )
+
+        prompt = (
+            f"Model: {schema.odoo_model} ({schema.label})\n"
+            f"Summary: {schema.summary}\n\n"
+            "Fields:\n" + "\n".join(field_lines[:40]) + "\n\n"
+            "Sub-models:\n" + ("\n".join(sub_lines) if sub_lines else "  (none)") + "\n\n"
+            "Based on this model, write 2-4 workflow hints for an AI assistant. "
+            "Include: which fields work together, common phrases beyond aliases, "
+            "cross-model workflows, template/wizard-driven field population.\n"
+            'Return JSON: {"workflow_hints": ["hint 1.", "hint 2.", ...]}\n'
+        )
+
+        try:
+            result = llm.ask_json(prompt)
+            hints = result.get("workflow_hints", [])
+            if hints:
+                schema.workflow_hints = "\n".join(f"- {h}" for h in hints)
+        except Exception as exc:
+            logger.warning(
+                "Failed to enrich workflow hints for %s: %s",
+                schema.odoo_model,
+                exc,
+            )

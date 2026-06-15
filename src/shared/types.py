@@ -62,6 +62,7 @@ class ModelSchema:
     match_keywords: list[str] = field(default_factory=list)
     sub_models: list[SubModelSchema] = field(default_factory=list)
     usage_frequency_total: int = 0
+    workflow_hints: str = ""
 
 
 @dataclass

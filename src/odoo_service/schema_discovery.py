@@ -406,4 +406,5 @@ class SchemaDiscovery:
                 for s in schema.sub_models
             ],
             "usage_frequency_total": schema.usage_frequency_total,
+            "workflow_hints": schema.workflow_hints,
         }

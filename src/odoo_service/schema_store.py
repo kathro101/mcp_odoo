@@ -132,4 +132,5 @@ class SchemaStore:
             match_keywords=raw.get("match_keywords", []),
             sub_models=sub_models,
             usage_frequency_total=raw.get("usage_frequency_total", 0),
+            workflow_hints=raw.get("workflow_hints", ""),
         )
