@@ -30,7 +30,8 @@ Full rewrite of `agentic_tool_odoo` (~15,000 lines) into a clean MCP-first archi
 | `src/odoo_service/schema_enrichment.py` | 147   | 13    | One-time AI alias/keyword generation                                                           |
 | `src/odoo_service/session_store.py`     | 77    | 10    | Per-session state                                                                              |
 | `src/mcp_server/server.py`              | 50    | —     | MCP SDK server                                                                                 |
-| `src/mcp_server/tools.py`               | 180   | 8     | 3 tool definitions + handlers                                                                  |
+| `src/mcp_server/tools.py`               | 300   | 15    | Smart chat_odoo: routing + rich schema + action dispatch (preview/search/update/delete)        |
+| `src/mcp_server/transport.py`           | 44    | 4     | stdio + HTTP/SSE transport modes                                                               |
 | `src/operations/search.py`              | 55    | 5     | Search records                                                                                 |
 | `src/operations/create.py`              | 73    | 4     | Create + preview records                                                                       |
 | `src/operations/update.py`              | 72    | 8     | Update records + preview changes                                                               |
@@ -40,7 +41,7 @@ Full rewrite of `agentic_tool_odoo` (~15,000 lines) into a clean MCP-first archi
 
 ### Test Suite
 
-- **140 tests** across 14 test files
+- **151 tests** across 15 test files
 - All unit tests mocked — never hit live Odoo
 - Framework: pytest with pytest-asyncio
 

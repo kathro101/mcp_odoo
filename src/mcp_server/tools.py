@@ -1,12 +1,12 @@
 """MCP tool definitions and handlers.
 
-Only 3 tools needed:
-- chat_odoo: The main entry point for all user messages
-- list_models: Enumerate available Odoo models
-- list_agents: Enumerate available agent personas
+Tools:
+- chat_odoo: Smart router — routes messages, returns rich schema data,
+  and executes actions (preview, create, search, update, delete).
+- list_models: Enumerate available Odoo models.
+- list_agents: Enumerate available agent personas.
 
-Handlers are thin — they delegate to the service layer.
-No LLM calls in any handler.
+Handlers delegate to the service layer. No LLM calls.
 """
 
 from __future__ import annotations
@@ -18,6 +18,10 @@ from mcp.types import Tool
 from src.odoo_service.router import route_message
 from src.odoo_service.schema_store import SchemaStore
 from src.odoo_service.session_store import SessionStore
+from src.operations.create import create_record, preview_record
+from src.operations.delete import confirm_delete, delete_record
+from src.operations.search import search_records
+from src.operations.update import preview_update, update_record
 from src.shared.config import load_agents, load_config
 
 # ── Tool Definitions ────────────────────────────────────────────────────
@@ -26,24 +30,46 @@ TOOLS: list[Tool] = [
     Tool(
         name="chat_odoo",
         description=(
-            "Send a message to the Odoo AI agent. ALWAYS use this tool for "
-            "user messages about Odoo operations (shipments, sales, invoices, "
-            "purchases, etc.). The agent will route the message to the "
-            "appropriate specialist."
+            "THE main tool for all Odoo interactions. Two modes:\n\n"
+            "1. ROUTING MODE (message= set): Send user message → returns "
+            "routing info + detailed schema with field_aliases, selection "
+            "options, and required fields. Use field_aliases to map user "
+            "words to field names (e.g., 'customer' → partner_id).\n\n"
+            "2. ACTION MODE (action= set): Execute operations directly.\n"
+            "   - action='preview': Validate params against schema, return "
+            "what's missing. ALWAYS preview before creating.\n"
+            "   - action='search': Search records by field values.\n"
+            "   - action='update': Update an existing record.\n"
+            "   - action='delete': Delete a record (returns confirmation)."
         ),
         inputSchema={
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string",
-                    "description": "The user's message verbatim",
+                    "description": "User's message — triggers routing mode",
+                },
+                "action": {
+                    "type": "string",
+                    "description": "Action to execute: preview, search, update, delete",
+                },
+                "model": {
+                    "type": "string",
+                    "description": "Odoo model key (e.g., stock_picking). Required for action mode.",
+                },
+                "params": {
+                    "type": "object",
+                    "description": "Field values as {field_name: value}. Use aliases from routing mode.",
+                },
+                "record_id": {
+                    "type": "integer",
+                    "description": "Record ID for update/delete actions.",
                 },
                 "session_id": {
                     "type": "string",
                     "description": "Conversation session ID for multi-turn continuity",
                 },
             },
-            "required": ["message"],
         },
     ),
     Tool(
@@ -93,15 +119,7 @@ def _get_agents(agents_path: str = "config/agents.json") -> dict:
 
 
 async def handle_tool_call(name: str, arguments: dict) -> list[dict]:
-    """Dispatch a tool call to the appropriate handler.
-
-    Args:
-        name: Tool name (chat_odoo, list_models, list_agents).
-        arguments: Tool arguments from the MCP client.
-
-    Returns:
-        List of content blocks (text or other MCP content types).
-    """
+    """Dispatch a tool call to the appropriate handler."""
     if name == "chat_odoo":
         return await chat_odoo_handler(**arguments)
     elif name == "list_models":
@@ -112,52 +130,213 @@ async def handle_tool_call(name: str, arguments: dict) -> list[dict]:
         return [{"type": "text", "text": f"Unknown tool: {name}"}]
 
 
-# ── Individual Handlers ─────────────────────────────────────────────────
+# ── chat_odoo Handler ──────────────────────────────────────────────────
 
 
-async def chat_odoo_handler(message: str, session_id: str = "") -> list[dict]:
-    """Handle chat_odoo: route message, return routing info + available data.
+async def chat_odoo_handler(
+    message: str = "",
+    action: str = "",
+    model: str = "",
+    params: dict | None = None,
+    record_id: int = 0,
+    session_id: str = "",
+) -> list[dict]:
+    """Two-mode handler: routing (message) or action execution.
 
-    This handler does NOT call an internal LLM. It routes the message to
-    the appropriate agent/schema and returns structured information for
-    the MCP client (Claude) to use in formulating a response.
+    ROUTING MODE (message is set):
+        Routes the message to an agent, returns enriched schema data
+        including field_aliases, types, selection options, and sub-models.
+
+    ACTION MODE (action is set):
+        Executes the specified operation directly.
+        - preview: Validates params, returns what's provided vs missing.
+        - search: Searches records by field values.
+        - update: Updates an existing record.
+        - delete: Confirms then deletes a record.
     """
+    # ── ACTION MODE ──────────────────────────────────────────────────
+    if action:
+        return await _handle_action(action, model, params or {}, record_id)
+
+    # ── ROUTING MODE ─────────────────────────────────────────────────
+    if not message.strip():
+        return [{"type": "text", "text": "Please provide a message or an action."}]
+
     agents = _get_agents()
     route = route_message(message, agents)
-
-    result_parts: list[str] = []
+    parts: list[str] = []
 
     if route.agent_key and route.score > 0:
         agent = agents.get(route.agent_key)
         if agent:
-            result_parts.append(f"Routed to: {agent.name}")
+            parts.append(f"## Routed to: {agent.name}")
 
         if route.model_key:
             try:
                 schema = _get_schema_store().get(route.model_key)
-                required = schema.required_fields
-                create = schema.create_fields
-                result_parts.append(f"Model: {schema.label} ({schema.odoo_model})")
-                if required:
-                    result_parts.append(f"Required fields: {', '.join(required)}")
-                if create:
-                    result_parts.append(f"Available fields: {', '.join(create[:20])}")
-                if schema.summary:
-                    result_parts.append(f"Summary: {schema.summary}")
+                parts.extend(_format_schema_for_claude(schema))
             except KeyError:
-                result_parts.append(f"Model: {route.model_key}")
+                parts.append(f"Model: {route.model_key}")
 
-        # Update session state
         if session_id:
             _session_store.set_last_agent(session_id, route.agent_key)
-
     else:
-        result_parts.append(
-            "No specific agent matched. Available agents:\n" +
-            "\n".join(f"  - {a.name}: {a.description}" for a in agents.values())
-        )
+        parts.append("No specific agent matched. Available agents:\n")
+        for a in agents.values():
+            parts.append(f"- **{a.name}** ({a.key}): {a.description}")
 
-    return [{"type": "text", "text": "\n".join(result_parts)}]
+    return [{"type": "text", "text": "\n".join(parts)}]
+
+
+# ── Action Dispatcher ──────────────────────────────────────────────────
+
+
+async def _handle_action(
+    action: str, model: str, params: dict, record_id: int
+) -> list[dict]:
+    """Execute an action against an Odoo model."""
+    if not model:
+        return [{"type": "text", "text": "Error: model is required for actions."}]
+
+    try:
+        schema = _get_schema_store().get(model)
+    except KeyError:
+        return [{"type": "text", "text": f"Unknown model: {model}"}]
+
+    result: dict
+
+    match action:
+        case "preview":
+            result = preview_record(schema, params)
+            result["field_aliases"] = schema.field_aliases
+        case "search":
+            odoo = _get_odoo_client()
+            result = search_records(odoo, schema, params)
+        case "update":
+            odoo = _get_odoo_client()
+            result = update_record(odoo, schema, record_id, params)
+        case "delete":
+            if record_id:
+                odoo = _get_odoo_client()
+                result = delete_record(odoo, schema, record_id)
+            else:
+                result = confirm_delete(schema, params)
+        case _:
+            return [{"type": "text", "text": f"Unknown action: {action}. "
+                      "Valid: preview, search, update, delete."}]
+
+    return [{"type": "text", "text": json.dumps(result, default=str)}]
+
+
+_odoo_client = None
+
+
+def _get_odoo_client():
+    """Lazy-initialize the OdooClient singleton."""
+    global _odoo_client
+    if _odoo_client is None:
+        from src.odoo_service.odoo_client import OdooClient
+
+        cfg = load_config("config/config.json")
+        odoo_cfg = cfg.get("odoo", {})
+        _odoo_client = OdooClient(
+            url=odoo_cfg.get("url", ""),
+            database=odoo_cfg.get("database", ""),
+            username=odoo_cfg.get("username", ""),
+            api_key=odoo_cfg.get("api_key", ""),
+        )
+    return _odoo_client
+
+
+# ── Schema Formatting Helpers ──────────────────────────────────────────
+
+
+def _format_schema_for_claude(schema) -> list[str]:
+    """Format a ModelSchema into Claude-friendly text with aliases + details."""
+    lines: list[str] = []
+
+    # Header
+    lines.append(f"## Model: {schema.label} (`{schema.odoo_model}`)")
+    if schema.summary:
+        lines.append(f"{schema.summary}")
+    lines.append("")
+
+    # Field aliases (CRITICAL for Claude to map user words → field names)
+    if schema.field_aliases:
+        lines.append("### FIELD ALIASES")
+        lines.append("Map user words to field names using these:")
+        seen = set()
+        for alias, field in sorted(schema.field_aliases.items()):
+            if field not in seen:
+                lines.append(f'  "{alias}" → `{field}`')
+                seen.add(field)
+        lines.append("")
+
+    # Required fields with details
+    if schema.required_fields:
+        lines.append("### REQUIRED FIELDS")
+        for fname in schema.required_fields:
+            fi = schema.all_fields.get(fname)
+            if fi:
+                detail = _format_field_detail(fi)
+                lines.append(f"  - {detail}")
+        lines.append("")
+
+    # Top optional fields (by usage frequency)
+    optional_fields = [
+        fn for fn in schema.create_fields
+        if fn not in schema.required_fields and fn in schema.all_fields
+    ]
+    top_fields = sorted(
+        optional_fields,
+        key=lambda fn: schema.all_fields[fn].usage_frequency,
+        reverse=True,
+    )[:15]
+
+    if top_fields:
+        lines.append(f"### OPTIONAL FIELDS (top {len(top_fields)} by usage)")
+        for fname in top_fields:
+            fi = schema.all_fields.get(fname)
+            if fi:
+                detail = _format_field_detail(fi)
+                lines.append(f"  - {detail}")
+        lines.append("")
+
+    # Sub-models (one-to-many)
+    if schema.sub_models:
+        lines.append("### SUB-MODELS (one-to-many)")
+        for sub in schema.sub_models:
+            lines.append(
+                f"  - `{sub.field_name}` → {sub.related_model}"
+            )
+        lines.append("")
+
+    # Match keywords
+    if schema.match_keywords:
+        lines.append(f"Keywords: {', '.join(schema.match_keywords[:10])}")
+
+    return lines
+
+
+def _format_field_detail(fi) -> str:
+    """Format a single FieldInfo as a human-readable description."""
+    parts = [f"`{fi.name}` ({fi.field_type}"]
+    if fi.relation:
+        parts.append(f" → {fi.relation}")
+    parts.append(f"): {fi.string}")
+
+    if fi.selection:
+        options = [s[0] for s in fi.selection]
+        parts.append(f" [options: {', '.join(options)}]")
+
+    if fi.required:
+        parts.append(" *REQUIRED*")
+    if fi.computed:
+        parts.append(" (computed)")
+    if fi.related:
+        parts.append(f" (related to {fi.related})")
+
+    return "".join(parts)
 
 
 async def list_models_handler() -> list[dict]:

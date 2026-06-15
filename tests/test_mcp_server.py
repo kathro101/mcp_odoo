@@ -16,11 +16,12 @@ class TestToolDefinitions:
 
         chat_tool = next(t for t in TOOLS if t.name == "chat_odoo")
         assert chat_tool.name == "chat_odoo"
-        assert "message" in chat_tool.inputSchema.get("required", [])
         props = chat_tool.inputSchema.get("properties", {})
         assert "message" in props
         assert props["message"]["type"] == "string"
+        assert "action" in props
         assert "session_id" in props
+        assert "params" in props
 
     def test_list_models_tool_defined(self):
         """TOOLS should include list_models."""
