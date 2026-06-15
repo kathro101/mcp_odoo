@@ -11,12 +11,15 @@
 ## Finding #1 🔴 CRITICAL — `_get_schema_store()` crashes without config
 
 ### Problem
+
 `src/mcp_server/tools.py::_get_schema_store()` calls `load_config("config/config.json")` unconditionally. If the config file doesn't exist, it crashes with `FileNotFoundError`, breaking `chat_odoo` routing mode entirely.
 
 ### Root Cause
+
 No try/except around `load_config()`. The function assumes the config always exists.
 
 ### Fix
+
 Wrap `load_config` in try/except. Fall back to hardcoded `"config/schemas"` default directory when config is missing.
 
 ```python
@@ -45,10 +48,12 @@ def _get_schema_store() -> SchemaStore:
 ```
 
 ### Tests to Add (2 new)
+
 - `test_get_schema_store_falls_back_when_config_missing` — Verify SchemaStore is created with default dir
 - `test_get_schema_store_loads_from_config_when_present` — Verify config path is used when available
 
 ### Files Changed
+
 - `src/mcp_server/tools.py` — `_get_schema_store()`
 
 ---
@@ -56,12 +61,15 @@ def _get_schema_store() -> SchemaStore:
 ## Finding #2 🟡 HIGH — `_handle_action` creates OdooClient with empty config
 
 ### Problem
+
 `_get_odoo_client()` creates `OdooClient(url="", database="", ...)` if config is missing or has empty values. The resulting Odoo call fails with an unhelpful connection error instead of a clear "config not set up" message.
 
 ### Root Cause
+
 No validation that `odoo.url` is non-empty before creating the client.
 
 ### Fix
+
 Validate config before creating OdooClient. Catch `RuntimeError` in `_handle_action` and return a clear error message through the MCP response (never raise — MCP tools must return content blocks).
 
 ```python
@@ -92,6 +100,7 @@ def _get_odoo_client():
 ```
 
 Then in `_handle_action`, wrap OdooClient access:
+
 ```python
 case "search":
     try:
@@ -102,10 +111,12 @@ case "search":
 ```
 
 ### Tests to Add (2 new)
+
 - `test_action_search_returns_error_when_config_missing` — Mock config missing, verify clear error
 - `test_action_search_returns_error_when_url_empty` — Mock empty url, verify clear error
 
 ### Files Changed
+
 - `src/mcp_server/tools.py` — `_get_odoo_client()`, `_handle_action()`
 
 ---
@@ -113,12 +124,15 @@ case "search":
 ## Finding #3 🟡 HIGH — `search_records` uses `ilike` for all fields
 
 ### Problem
+
 `src/operations/search.py::search_records()` applies `("field", "ilike", value)` to EVERY filter. Odoo rejects `ilike` on integer, float, and many2one fields. Searching for `partner_id=5` becomes `("partner_id", "ilike", 5)` → Odoo error.
 
 ### Root Cause
+
 No field-type-aware operator selection. The `schema.all_fields` metadata is available but not used.
 
 ### Fix
+
 Look up each filter field's type in `schema.all_fields`. Use `=` for numeric/relational types, `ilike` for text types.
 
 ```python
@@ -140,11 +154,13 @@ else:
 ```
 
 ### Tests to Add (3 new)
+
 - `test_search_uses_ilike_for_char_fields` — Verify text field gets ilike
 - `test_search_uses_equals_for_integer_fields` — Verify integer field gets =
 - `test_search_uses_equals_for_many2one_fields` — Verify many2one field gets =
 
 ### Files Changed
+
 - `src/operations/search.py` — `search_records()`
 
 ---
@@ -152,13 +168,17 @@ else:
 ## Finding #4 🟡 HIGH — Duplicated lazy-singletons
 
 ### Problem
+
 `src/mcp_server/tools.py` and `webapp.py` both implement identical `_get_schema_store()`, `_get_agents()`, and session store patterns. ~60 lines duplicated across two files. Any fix to one must be mirrored in the other.
 
 ### Root Cause
+
 No shared service locator module. Each entry point creates its own singletons.
 
 ### Fix
+
 Create `src/odoo_service/service_locator.py` with three functions:
+
 - `get_schema_store() → SchemaStore`
 - `get_agents() → dict[str, AgentConfig]`
 - `get_session_store() → SessionStore`
@@ -203,16 +223,19 @@ def get_session_store() -> SessionStore:
 ```
 
 ### Migration
+
 - `tools.py`: Replace `_get_schema_store()`, `_get_agents()`, `_session_store` with imports from `service_locator`
 - `webapp.py`: Same replacement
 - `tools.py`: Move `_get_odoo_client()` to `service_locator` and add validation
 
 ### Tests to Add (3 new)
+
 - `test_get_schema_store_singleton` — Verify same instance returned on multiple calls
 - `test_get_agents_singleton` — Verify same dict returned
 - `test_get_session_store_singleton` — Verify same instance
 
 ### Files Changed
+
 - **New:** `src/odoo_service/service_locator.py`
 - `src/mcp_server/tools.py` — Remove `_get_schema_store`, `_get_agents`, `_get_odoo_client`, `_session_store`
 - `webapp.py` — Remove `_get_schema_store`, `_get_agents`, `_session_store`
@@ -222,9 +245,11 @@ def get_session_store() -> SessionStore:
 ## Finding #5 🟢 LOW — `date_utils.py` unused `now` variable
 
 ### Problem
+
 `src/shared/date_utils.py:54`: `now = datetime.now(tz=tz)` is computed but never referenced. The function only uses `today = date.today()`.
 
 ### Fix
+
 Delete line 54. No functional change.
 
 ```python
@@ -237,9 +262,11 @@ today = date.today()
 ```
 
 ### Tests
+
 Existing tests cover this — no new tests needed. Run `tests/test_date_utils.py` to verify no regressions.
 
 ### Files Changed
+
 - `src/shared/date_utils.py` — `parse_date_flexible()`
 
 ---
@@ -247,9 +274,11 @@ Existing tests cover this — no new tests needed. Run `tests/test_date_utils.py
 ## Finding #6 🟢 LOW — `router.py` non-deterministic tie-breaking
 
 ### Problem
+
 When two agents have the same keyword score, the winner depends on Python dict iteration order. While Python 3.7+ preserves insertion order (dicts are ordered), the outcome depends on the order of keys in `agents.json` — which is not a documented contract.
 
 ### Fix
+
 When scores are equal, prefer the agent whose key sorts first alphabetically. This makes routing fully deterministic regardless of dict order.
 
 ```python
@@ -269,23 +298,25 @@ if score > best.score or (
 ```
 
 ### Tests to Add (1 new)
+
 - `test_tie_break_uses_alphabetical_order` — Two agents with same score, verify alphabetical key wins
 
 ### Files Changed
+
 - `src/odoo_service/router.py` — `route_message()`
 
 ---
 
 ## Implementation Order
 
-| Step | Finding | Tests | Risk |
-|------|---------|-------|------|
-| 1 | #5 (unused var) | 0 | None — pure cleanup |
-| 2 | #3 (ilike fix) | +3 | Low — search behavior changes |
-| 3 | #6 (tie-break) | +1 | Low — router becomes deterministic |
-| 4 | #4 (service locator) | +3 | Medium — restructures imports in 3 files |
-| 5 | #1 (config fallback) | +2 | Low — handled in service locator |
-| 6 | #2 (odoo client validation) | +2 | Low — handled in service locator |
+| Step | Finding                     | Tests | Risk                                     |
+| ---- | --------------------------- | ----- | ---------------------------------------- |
+| 1    | #5 (unused var)             | 0     | None — pure cleanup                      |
+| 2    | #3 (ilike fix)              | +3    | Low — search behavior changes            |
+| 3    | #6 (tie-break)              | +1    | Low — router becomes deterministic       |
+| 4    | #4 (service locator)        | +3    | Medium — restructures imports in 3 files |
+| 5    | #1 (config fallback)        | +2    | Low — handled in service locator         |
+| 6    | #2 (odoo client validation) | +2    | Low — handled in service locator         |
 
 ## Acceptance Criteria
 
