@@ -20,8 +20,13 @@ _RELATIVE_RE = re.compile(
 )
 
 _WEEKDAY_MAP: dict[str, int] = {
-    "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
-    "friday": 4, "saturday": 5, "sunday": 6,
+    "monday": 0,
+    "tuesday": 1,
+    "wednesday": 2,
+    "thursday": 3,
+    "friday": 4,
+    "saturday": 5,
+    "sunday": 6,
 }
 
 
@@ -78,13 +83,10 @@ def parse_date_flexible(text: str, tz: timezone | None = None) -> datetime | Non
         num = int(rel_match.group(1))
         unit = rel_match.group(2).lower()
 
-        if "ago" not in text and "last" not in text and "past" not in text:
-            if "next" in text or "in" in text:
-                sign = 1
-            else:
-                sign = 1  # "in 2 weeks" is positive
-        else:
+        if "ago" in text or "last" in text or "past" in text:
             sign = -1
+        else:
+            sign = 1
 
         if unit == "day":
             target = today + timedelta(days=sign * num)

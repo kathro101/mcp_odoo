@@ -6,10 +6,7 @@ No business logic here — all delegation to tools.py.
 
 from __future__ import annotations
 
-import sys
-
-from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationCapabilities
+from mcp.server import NotificationOptions, Server
 
 from .tools import TOOLS, handle_tool_call
 

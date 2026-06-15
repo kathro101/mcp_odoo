@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.shared.types import AgentConfig, RouteResult
+from src.shared.types import AgentConfig
 
 
 class TestRouteMessage:
@@ -202,12 +202,20 @@ class TestRouteMessage:
 
         agents = {
             "z_agent": AgentConfig(
-                key="z_agent", name="Z Agent", description="",
-                keywords=["shipment"], models=[], default_model="z_model",
+                key="z_agent",
+                name="Z Agent",
+                description="",
+                keywords=["shipment"],
+                models=[],
+                default_model="z_model",
             ),
             "a_agent": AgentConfig(
-                key="a_agent", name="A Agent", description="",
-                keywords=["shipment"], models=[], default_model="a_model",
+                key="a_agent",
+                name="A Agent",
+                description="",
+                keywords=["shipment"],
+                models=[],
+                default_model="a_model",
             ),
         }
 

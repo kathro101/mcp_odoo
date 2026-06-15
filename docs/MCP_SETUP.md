@@ -19,7 +19,7 @@ cp config/config.template.json config/config.json
 
 Add to your `claude_desktop_config.json`:
 
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows:** `%APPDATA%/Claude/claude_desktop_config.json`
 
 ```json

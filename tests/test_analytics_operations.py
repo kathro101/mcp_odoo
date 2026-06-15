@@ -84,10 +84,7 @@ class TestAggregate:
         mock_odoo.execute_kw.return_value = [{"state": "done", "state_count": 3}]
         schema = _make_schema()
 
-        result = aggregate(
-            mock_odoo, schema, group_by="state",
-            domain=[("partner_id", "=", 42)]
-        )
+        result = aggregate(mock_odoo, schema, group_by="state", domain=[("partner_id", "=", 42)])
 
         assert result["status"] == "success"
         # Domain should be passed to execute_kw
@@ -97,7 +94,7 @@ class TestAggregate:
         read_group_args = args_list[2]
         # read_group_args[0] is the domain
         domain_arg = read_group_args[0]
-        assert [("partner_id", "=", 42)] == domain_arg
+        assert domain_arg == [("partner_id", "=", 42)]
 
     def test_aggregate_empty_results(self):
         """Should return empty groups when no records match."""
@@ -152,7 +149,9 @@ class TestCountByState:
         mock_odoo = MagicMock()
         fields = {"name": FieldInfo(name="name", field_type="char", string="Name")}
         schema = ModelSchema(
-            key="test", label="Test", odoo_model="test.model",
+            key="test",
+            label="Test",
+            odoo_model="test.model",
             all_fields=fields,
         )
 

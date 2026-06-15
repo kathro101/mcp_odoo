@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -22,13 +22,12 @@ class TestGetSchemaStore:
     @patch("src.odoo_service.service_locator.load_config")
     def test_falls_back_when_config_missing(self, mock_load):
         """Should use default path when config.json doesn't exist."""
+        # Reset singleton
+        import src.odoo_service.service_locator as sl
         from src.odoo_service.service_locator import (
-            _schema_store,
             get_schema_store,
         )
 
-        # Reset singleton
-        import src.odoo_service.service_locator as sl
         sl._schema_store = None
 
         mock_load.side_effect = FileNotFoundError()
@@ -45,9 +44,9 @@ class TestGetOdooClient:
     @patch("src.odoo_service.service_locator.load_config")
     def test_raises_when_config_missing(self, mock_load):
         """Should raise RuntimeError when config.json doesn't exist."""
+        import src.odoo_service.service_locator as sl
         from src.odoo_service.service_locator import get_odoo_client
 
-        import src.odoo_service.service_locator as sl
         sl._odoo_client = None
 
         mock_load.side_effect = FileNotFoundError()
@@ -60,9 +59,9 @@ class TestGetOdooClient:
     @patch("src.odoo_service.service_locator.load_config")
     def test_raises_when_url_empty(self, mock_load):
         """Should raise RuntimeError when odoo.url is empty."""
+        import src.odoo_service.service_locator as sl
         from src.odoo_service.service_locator import get_odoo_client
 
-        import src.odoo_service.service_locator as sl
         sl._odoo_client = None
 
         mock_load.return_value = {"odoo": {"url": ""}}
@@ -78,9 +77,9 @@ class TestGetAgents:
 
     def test_returns_singleton(self):
         """Multiple calls should return the same dict."""
+        import src.odoo_service.service_locator as sl
         from src.odoo_service.service_locator import get_agents
 
-        import src.odoo_service.service_locator as sl
         sl._agents = None
 
         a1 = get_agents()

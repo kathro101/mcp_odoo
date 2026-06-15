@@ -94,7 +94,7 @@ class TestModelSchema:
 
     def test_model_schema_creation_minimal(self):
         """ModelSchema should create with minimal fields."""
-        from src.shared.types import FieldInfo, ModelSchema
+        from src.shared.types import ModelSchema
 
         schema = ModelSchema(
             key="stock_picking",
@@ -124,9 +124,7 @@ class TestModelSchema:
             "name": FieldInfo(
                 name="name", field_type="char", string="Name", required=True, usage_frequency=5
             ),
-            "date": FieldInfo(
-                name="date", field_type="date", string="Date", usage_frequency=3
-            ),
+            "date": FieldInfo(name="date", field_type="date", string="Date", usage_frequency=3),
             "internal_note": FieldInfo(
                 name="internal_note", field_type="text", string="Internal Note", usage_frequency=0
             ),
@@ -162,8 +160,11 @@ class TestModelSchema:
             "email": FieldInfo(name="email", field_type="char", string="Email", required=False),
         }
         schema = ModelSchema(
-            key="test", label="Test", odoo_model="test.model",
-            all_fields=fields, required_fields=["name"],
+            key="test",
+            label="Test",
+            odoo_model="test.model",
+            all_fields=fields,
+            required_fields=["name"],
         )
 
         assert schema.required_fields == ["name"]

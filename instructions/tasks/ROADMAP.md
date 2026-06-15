@@ -1,7 +1,7 @@
 # mcp_odoo — Task Roadmap
 
-> **Date:** 2026-06-15  
-> **Source:** `rewrite_of_agentic_tool_odoo.md` §8 Implementation Roadmap  
+> **Date:** 2026-06-15
+> **Source:** `rewrite_of_agentic_tool_odoo.md` §8 Implementation Roadmap
 > **Current:** 104 tests passing, Phases 1-4 largely complete
 
 ---
@@ -32,7 +32,7 @@
 
 ### 3A. Update Operations
 
-**File:** `src/operations/update.py`  
+**File:** `src/operations/update.py`
 **Tests:** `tests/test_update_operations.py`
 
 - [ ] `update_record(odoo, schema, record_id, params) → dict`
@@ -46,7 +46,7 @@
 
 ### 3B. Delete Operations
 
-**File:** `src/operations/delete.py`  
+**File:** `src/operations/delete.py`
 **Tests:** `tests/test_delete_operations.py`
 
 - [ ] `delete_record(odoo, schema, record_id) → dict`
@@ -58,7 +58,7 @@
 
 ### 3C. Analytics Operations
 
-**File:** `src/operations/analytics.py`  
+**File:** `src/operations/analytics.py`
 **Tests:** `tests/test_analytics_operations.py`
 
 - [ ] `aggregate(odoo, schema, group_by, metric) → dict`
@@ -74,7 +74,7 @@
 
 ### 4A. Transport Layer
 
-**File:** `src/mcp_server/transport.py`  
+**File:** `src/mcp_server/transport.py`
 **Tests:** `tests/test_transport.py`
 
 - [ ] `run_stdio(server)` — stdio transport helper
@@ -123,8 +123,8 @@
 
 ### 6A. Web Interface
 
-**File:** `webapp.py` (new)  
-**Templates:** `templates/index.html`  
+**File:** `webapp.py` (new)
+**Templates:** `templates/index.html`
 **Static:** `static/app.js`, `static/styles.css`
 
 - [ ] Flask chat UI (single-page, minimal)
@@ -134,7 +134,7 @@
 
 ### 6B. Setup Wizard
 
-**File:** `installer/wizard.py`  
+**File:** `installer/wizard.py`
 **Templates:** `installer/templates/`
 
 - [ ] Web-based Odoo connection setup (url, db, credentials)

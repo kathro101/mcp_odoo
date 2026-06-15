@@ -1,7 +1,7 @@
 # Feature: Keyword-Based Agent Routing
 
-**Implemented:** 2026-06-15  
-**Files:** `src/odoo_service/router.py` (49 lines)  
+**Implemented:** 2026-06-15
+**Files:** `src/odoo_service/router.py` (49 lines)
 **Tests:** `tests/test_router.py` (9 tests)
 
 ## What It Does

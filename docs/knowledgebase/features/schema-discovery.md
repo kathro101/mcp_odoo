@@ -1,7 +1,7 @@
 # Feature: Schema Discovery & Enrichment
 
-**Implemented:** 2026-06-15  
-**Files:** `src/odoo_service/schema_discovery.py` (341 lines), `src/odoo_service/schema_enrichment.py` (147 lines)  
+**Implemented:** 2026-06-15
+**Files:** `src/odoo_service/schema_discovery.py` (341 lines), `src/odoo_service/schema_enrichment.py` (147 lines)
 **Tests:** `tests/test_schema_discovery.py` (20 tests), `tests/test_schema_enrichment.py` (13 tests)
 
 ## What It Does

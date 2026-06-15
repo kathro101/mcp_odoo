@@ -1,7 +1,7 @@
 # Architecture: MCP Server Layer
 
-**Files:** `src/mcp_server/server.py` (50 lines), `src/mcp_server/tools.py` (180 lines)  
-**Tests:** `tests/test_mcp_server.py` (8 tests)  
+**Files:** `src/mcp_server/server.py` (50 lines), `src/mcp_server/tools.py` (180 lines)
+**Tests:** `tests/test_mcp_server.py` (8 tests)
 **Dependencies:** `mcp` SDK, `src/odoo_service/`, `src/shared/`
 
 ## Purpose

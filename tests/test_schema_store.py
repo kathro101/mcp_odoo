@@ -24,28 +24,30 @@ class TestSchemaStore:
         """SchemaStore should load all JSON files from the schema directory."""
         from src.odoo_service.schema_store import SchemaStore
 
-        schema_dir = self._make_schema_dir({
-            "stock_picking": {
-                "key": "stock_picking",
-                "label": "Transfers",
-                "odoo_model": "stock.picking",
-                "all_fields": {},
-                "create_fields": ["partner_id"],
-                "search_fields": ["name"],
-                "required_fields": ["partner_id"],
-                "match_keywords": ["shipment", "delivery"],
-            },
-            "sale_order": {
-                "key": "sale_order",
-                "label": "Sales Orders",
-                "odoo_model": "sale.order",
-                "all_fields": {},
-                "create_fields": ["partner_id"],
-                "search_fields": ["name"],
-                "required_fields": ["partner_id"],
-                "match_keywords": ["sale", "order", "quotation"],
-            },
-        })
+        schema_dir = self._make_schema_dir(
+            {
+                "stock_picking": {
+                    "key": "stock_picking",
+                    "label": "Transfers",
+                    "odoo_model": "stock.picking",
+                    "all_fields": {},
+                    "create_fields": ["partner_id"],
+                    "search_fields": ["name"],
+                    "required_fields": ["partner_id"],
+                    "match_keywords": ["shipment", "delivery"],
+                },
+                "sale_order": {
+                    "key": "sale_order",
+                    "label": "Sales Orders",
+                    "odoo_model": "sale.order",
+                    "all_fields": {},
+                    "create_fields": ["partner_id"],
+                    "search_fields": ["name"],
+                    "required_fields": ["partner_id"],
+                    "match_keywords": ["sale", "order", "quotation"],
+                },
+            }
+        )
 
         try:
             store = SchemaStore(schema_dir)
@@ -54,6 +56,7 @@ class TestSchemaStore:
             assert store.get("sale_order").key == "sale_order"
         finally:
             import shutil
+
             shutil.rmtree(schema_dir)
 
     def test_get_missing_schema_raises_key_error(self):
@@ -67,28 +70,31 @@ class TestSchemaStore:
                 store.get("nonexistent")
         finally:
             import shutil
+
             shutil.rmtree(schema_dir)
 
     def test_search_by_keyword_finds_match(self):
         """SchemaStore.search should find models by keyword."""
         from src.odoo_service.schema_store import SchemaStore
 
-        schema_dir = self._make_schema_dir({
-            "stock_picking": {
-                "key": "stock_picking",
-                "label": "Transfers",
-                "odoo_model": "stock.picking",
-                "all_fields": {},
-                "match_keywords": ["shipment", "delivery", "stock"],
-            },
-            "sale_order": {
-                "key": "sale_order",
-                "label": "Sales Orders",
-                "odoo_model": "sale.order",
-                "all_fields": {},
-                "match_keywords": ["sale", "order"],
-            },
-        })
+        schema_dir = self._make_schema_dir(
+            {
+                "stock_picking": {
+                    "key": "stock_picking",
+                    "label": "Transfers",
+                    "odoo_model": "stock.picking",
+                    "all_fields": {},
+                    "match_keywords": ["shipment", "delivery", "stock"],
+                },
+                "sale_order": {
+                    "key": "sale_order",
+                    "label": "Sales Orders",
+                    "odoo_model": "sale.order",
+                    "all_fields": {},
+                    "match_keywords": ["sale", "order"],
+                },
+            }
+        )
 
         try:
             store = SchemaStore(schema_dir)
@@ -97,21 +103,24 @@ class TestSchemaStore:
             assert results[0].key == "stock_picking"
         finally:
             import shutil
+
             shutil.rmtree(schema_dir)
 
     def test_search_no_match_returns_empty(self):
         """SchemaStore.search should return empty list when no keyword matches."""
         from src.odoo_service.schema_store import SchemaStore
 
-        schema_dir = self._make_schema_dir({
-            "stock_picking": {
-                "key": "stock_picking",
-                "label": "Transfers",
-                "odoo_model": "stock.picking",
-                "all_fields": {},
-                "match_keywords": ["shipment"],
-            },
-        })
+        schema_dir = self._make_schema_dir(
+            {
+                "stock_picking": {
+                    "key": "stock_picking",
+                    "label": "Transfers",
+                    "odoo_model": "stock.picking",
+                    "all_fields": {},
+                    "match_keywords": ["shipment"],
+                },
+            }
+        )
 
         try:
             store = SchemaStore(schema_dir)
@@ -119,16 +128,19 @@ class TestSchemaStore:
             assert results == []
         finally:
             import shutil
+
             shutil.rmtree(schema_dir)
 
     def test_list_all_returns_all_schemas(self):
         """SchemaStore.list_all should return a list of all ModelSchema."""
         from src.odoo_service.schema_store import SchemaStore
 
-        schema_dir = self._make_schema_dir({
-            "a": {"key": "a", "label": "A", "odoo_model": "a.model", "all_fields": {}},
-            "b": {"key": "b", "label": "B", "odoo_model": "b.model", "all_fields": {}},
-        })
+        schema_dir = self._make_schema_dir(
+            {
+                "a": {"key": "a", "label": "A", "odoo_model": "a.model", "all_fields": {}},
+                "b": {"key": "b", "label": "B", "odoo_model": "b.model", "all_fields": {}},
+            }
+        )
 
         try:
             store = SchemaStore(schema_dir)
@@ -138,6 +150,7 @@ class TestSchemaStore:
             assert keys == {"a", "b"}
         finally:
             import shutil
+
             shutil.rmtree(schema_dir)
 
     def test_empty_schema_dir(self):
@@ -150,6 +163,7 @@ class TestSchemaStore:
             assert store.list_all() == []
         finally:
             import shutil
+
             shutil.rmtree(schema_dir)
 
     def test_invalid_json_skipped(self):
@@ -165,4 +179,5 @@ class TestSchemaStore:
             assert store.list_all() == []
         finally:
             import shutil
+
             shutil.rmtree(tmpdir)

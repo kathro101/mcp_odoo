@@ -1,8 +1,8 @@
 # Task: MCP Transport Layer
 
-**Created:** 2026-06-15  
-**Status:** 🔴 Not started  
-**Priority:** MEDIUM — needed for HTTP dev mode and web UI  
+**Created:** 2026-06-15
+**Status:** 🔴 Not started
+**Priority:** MEDIUM — needed for HTTP dev mode and web UI
 **Depends on:** Phase 4 (mcp_server/server.py, mcp_server/tools.py)
 
 ---

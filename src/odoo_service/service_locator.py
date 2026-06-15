@@ -76,9 +76,7 @@ def get_odoo_client() -> OdooClient:
             )
         odoo_cfg = cfg.get("odoo", {})
         if not odoo_cfg.get("url"):
-            raise RuntimeError(
-                "Odoo URL not set. Edit config/config.json and add your Odoo URL."
-            )
+            raise RuntimeError("Odoo URL not set. Edit config/config.json and add your Odoo URL.")
         _odoo_client = OdooClient(
             url=odoo_cfg["url"],
             database=odoo_cfg.get("database", ""),

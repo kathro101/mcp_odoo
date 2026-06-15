@@ -70,7 +70,9 @@ def load_agents(path: str) -> dict[str, AgentConfig]:
             description=data.get("description", ""),
             keywords=data.get("keywords", []),
             models=data.get("models", []),
-            default_model=data.get("default_model", data.get("models", [None])[0] if data.get("models") else None),
+            default_model=data.get(
+                "default_model", data.get("models", [None])[0] if data.get("models") else None
+            ),
         )
 
     return result

@@ -38,9 +38,7 @@ class TestDeleteRecord:
 
         assert result["status"] == "success"
         assert result["record_id"] == 42
-        mock_odoo.execute_kw.assert_called_once_with(
-            "stock.picking", "unlink", [[42]]
-        )
+        mock_odoo.execute_kw.assert_called_once_with("stock.picking", "unlink", [[42]])
 
     def test_delete_record_odoo_fault_returns_error(self):
         """Should return error dict on Odoo permission error."""
@@ -48,7 +46,8 @@ class TestDeleteRecord:
 
         mock_odoo = MagicMock()
         mock_odoo.execute_kw.return_value = {
-            "status": "error", "message": "Access Denied: Cannot delete"
+            "status": "error",
+            "message": "Access Denied: Cannot delete",
         }
         schema = _make_schema()
 
@@ -62,9 +61,7 @@ class TestDeleteRecord:
         from src.operations.delete import delete_record
 
         mock_odoo = MagicMock()
-        mock_odoo.execute_kw.return_value = {
-            "status": "error", "message": "Connection refused"
-        }
+        mock_odoo.execute_kw.return_value = {"status": "error", "message": "Connection refused"}
         schema = _make_schema()
 
         result = delete_record(mock_odoo, schema, 42)

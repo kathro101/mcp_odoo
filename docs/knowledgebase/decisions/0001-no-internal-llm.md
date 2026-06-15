@@ -1,6 +1,6 @@
 # ADR-0001: No Internal LLM
 
-**Date:** 2026-06-15  
+**Date:** 2026-06-15
 **Status:** Accepted
 
 ## Context

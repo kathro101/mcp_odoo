@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import pytest
-
 from src.shared.types import SessionState
 
 
@@ -41,13 +39,16 @@ class TestSessionStore:
         from src.odoo_service.session_store import SessionStore
 
         store = SessionStore()
-        store.set_state("xyz", SessionState(
-            session_id="xyz",
-            current_agent="salesman",
-            current_model="sale_order",
-            pending_operation="create_quotation",
-            context={"partner_id": 42},
-        ))
+        store.set_state(
+            "xyz",
+            SessionState(
+                session_id="xyz",
+                current_agent="salesman",
+                current_model="sale_order",
+                pending_operation="create_quotation",
+                context={"partner_id": 42},
+            ),
+        )
 
         state = store.get_state("xyz")
         assert state.current_agent == "salesman"

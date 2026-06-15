@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from src.shared.types import FieldInfo, ModelSchema
 
 
@@ -103,10 +101,10 @@ class TestSearchOperations:
 
         fields = {
             "name": FieldInfo(name="name", field_type="char", string="Name"),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
-                                    string="Customer", relation="res.partner"),
-            "amount_total": FieldInfo(name="amount_total", field_type="monetary",
-                                      string="Total"),
+            "partner_id": FieldInfo(
+                name="partner_id", field_type="many2one", string="Customer", relation="res.partner"
+            ),
+            "amount_total": FieldInfo(name="amount_total", field_type="monetary", string="Total"),
             "id": FieldInfo(name="id", field_type="integer", string="ID"),
         }
         schema = ModelSchema(
@@ -117,7 +115,7 @@ class TestSearchOperations:
             search_fields=["name", "partner_id", "amount_total", "id"],
         )
 
-        result = search_records(
+        search_records(
             odoo=mock_odoo,
             schema=schema,
             filters={"name": "ACME", "partner_id": 42},
@@ -137,8 +135,11 @@ class TestSearchOperations:
         mock_odoo.search_read.return_value = []
         fields = {"name": FieldInfo(name="name", field_type="char", string="Name")}
         schema = ModelSchema(
-            key="test", label="Test", odoo_model="test.model",
-            all_fields=fields, search_fields=["name"],
+            key="test",
+            label="Test",
+            odoo_model="test.model",
+            all_fields=fields,
+            search_fields=["name"],
         )
 
         search_records(odoo=mock_odoo, schema=schema, filters={"name": "ACME"})
@@ -153,16 +154,19 @@ class TestSearchOperations:
         mock_odoo.search_read.return_value = []
         fields = {
             "id": FieldInfo(name="id", field_type="integer", string="ID"),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
-                                    string="Customer", relation="res.partner"),
+            "partner_id": FieldInfo(
+                name="partner_id", field_type="many2one", string="Customer", relation="res.partner"
+            ),
         }
         schema = ModelSchema(
-            key="test", label="Test", odoo_model="test.model",
-            all_fields=fields, search_fields=["id", "partner_id"],
+            key="test",
+            label="Test",
+            odoo_model="test.model",
+            all_fields=fields,
+            search_fields=["id", "partner_id"],
         )
 
-        search_records(odoo=mock_odoo, schema=schema,
-                       filters={"id": 42, "partner_id": 5})
+        search_records(odoo=mock_odoo, schema=schema, filters={"id": 42, "partner_id": 5})
         domain = mock_odoo.search_read.call_args[0][1]
         assert ("id", "=", 42) in domain
         assert ("partner_id", "=", 5) in domain
@@ -177,7 +181,9 @@ class TestCreateOperations:
 
         fields = {
             "name": FieldInfo(name="name", field_type="char", string="Name", required=True),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one", string="Customer", required=True),
+            "partner_id": FieldInfo(
+                name="partner_id", field_type="many2one", string="Customer", required=True
+            ),
             "date": FieldInfo(name="date", field_type="date", string="Date"),
         }
 
@@ -205,7 +211,9 @@ class TestCreateOperations:
 
         fields = {
             "name": FieldInfo(name="name", field_type="char", string="Name", required=True),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one", string="Customer", required=True),
+            "partner_id": FieldInfo(
+                name="partner_id", field_type="many2one", string="Customer", required=True
+            ),
         }
 
         schema = ModelSchema(
@@ -257,8 +265,11 @@ class TestCreateOperations:
 
         fields = {"name": FieldInfo(name="name", field_type="char", string="Name")}
         schema = ModelSchema(
-            key="test", label="Test", odoo_model="test.model",
-            all_fields=fields, create_fields=["name"],
+            key="test",
+            label="Test",
+            odoo_model="test.model",
+            all_fields=fields,
+            create_fields=["name"],
         )
 
         result = create_record(mock_odoo, schema, {"name": "Test"})

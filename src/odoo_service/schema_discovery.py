@@ -43,9 +43,19 @@ _VIEW_WEIGHTS: dict[str, int] = {
 # ── Technical model prefixes to exclude ─────────────────────────────────
 
 _TECHNICAL_PREFIXES: tuple[str, ...] = (
-    "ir.", "base.", "web.", "bus.", "iap.", "mail.tracking",
-    "base_import.", "base_module_", "base.language.",
-    "change_", "fetchmail.", "ir_", "test_",
+    "ir.",
+    "base.",
+    "web.",
+    "bus.",
+    "iap.",
+    "mail.tracking",
+    "base_import.",
+    "base_module_",
+    "base.language.",
+    "change_",
+    "fetchmail.",
+    "ir_",
+    "test_",
 )
 
 
@@ -158,7 +168,7 @@ class SchemaDiscovery:
             List of (model_name, label) tuples for user-facing models.
         """
         result: list[tuple[str, str]] = []
-        for mod in (modules or []):
+        for mod in modules or []:
             name = mod.get("model", "")
             if isinstance(name, dict) and name.get("status") == "error":
                 continue
@@ -217,7 +227,7 @@ class SchemaDiscovery:
             return {}
 
         result: dict[str, dict] = {}
-        for r in (raw or []):
+        for r in raw or []:
             if isinstance(r, dict) and "name" in r:
                 result[r["name"]] = {
                     "compute": r.get("compute", "") or "",
@@ -255,7 +265,7 @@ class SchemaDiscovery:
             return {}
 
         freq: dict[str, int] = {}
-        for view in (views or []):
+        for view in views or []:
             arch = view.get("arch_db", "") or ""
             if not arch:
                 continue
@@ -271,9 +281,7 @@ class SchemaDiscovery:
     # ── Field classification ────────────────────────────────────────────
 
     @staticmethod
-    def _classify_fields(
-        fields: dict[str, FieldInfo]
-    ) -> tuple[list[str], list[str], list[str]]:
+    def _classify_fields(fields: dict[str, FieldInfo]) -> tuple[list[str], list[str], list[str]]:
         """Classify fields into create, search, and required lists.
 
         - create_fields: settable during creation (not computed, not related,
@@ -302,7 +310,10 @@ class SchemaDiscovery:
 
             # Searchable: higher usage, common search types
             if fi.usage_frequency >= 2 and fi.field_type in (
-                "char", "many2one", "selection", "many2many",
+                "char",
+                "many2one",
+                "selection",
+                "many2many",
             ):
                 search.append(fname)
 
@@ -311,9 +322,7 @@ class SchemaDiscovery:
     # ── Sub-model discovery ─────────────────────────────────────────────
 
     @staticmethod
-    def _discover_sub_models(
-        model_name: str, fields: dict[str, FieldInfo]
-    ) -> list[SubModelSchema]:
+    def _discover_sub_models(model_name: str, fields: dict[str, FieldInfo]) -> list[SubModelSchema]:
         """Find one2many fields and create SubModelSchema entries.
 
         Args:
@@ -326,12 +335,14 @@ class SchemaDiscovery:
         sub_models: list[SubModelSchema] = []
         for fname, fi in fields.items():
             if fi.field_type == "one2many" and fi.relation:
-                sub_models.append(SubModelSchema(
-                    field_name=fname,
-                    related_model=fi.relation,
-                    relation_field=model_name.replace(".", "_") + "_id",
-                    is_one_to_many=True,
-                ))
+                sub_models.append(
+                    SubModelSchema(
+                        field_name=fname,
+                        related_model=fi.relation,
+                        relation_field=model_name.replace(".", "_") + "_id",
+                        is_one_to_many=True,
+                    )
+                )
         return sub_models
 
     # ── Persistence ─────────────────────────────────────────────────────
@@ -347,7 +358,7 @@ class SchemaDiscovery:
         """
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-        for model_name, schema in schemas.items():
+        for _model_name, schema in schemas.items():
             file_path = self.cache_dir / f"{schema.key}.json"
             serialized = self._serialize_schema(schema)
             file_path.write_text(json.dumps(serialized, indent=2, default=str))

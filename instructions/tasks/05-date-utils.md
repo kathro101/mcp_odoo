@@ -1,8 +1,8 @@
 # Task: Shared Utilities — Date Parsing
 
-**Created:** 2026-06-15  
-**Status:** ✅ Complete  
-**Priority:** LOW — needed for natural language date handling in chat  
+**Created:** 2026-06-15
+**Status:** ✅ Complete
+**Priority:** LOW — needed for natural language date handling in chat
 **Depends on:** None
 
 ---

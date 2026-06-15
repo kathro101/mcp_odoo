@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
-
-import pytest
+from datetime import date, timedelta
 
 
 class TestParseDateFlexible:

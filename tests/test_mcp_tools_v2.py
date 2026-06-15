@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.shared.types import (
     AgentConfig,
     FieldInfo,
@@ -24,22 +22,45 @@ def _make_schema() -> ModelSchema:
         odoo_model="stock.picking",
         summary="Stock transfer for moving inventory between locations.",
         all_fields={
-            "name": FieldInfo(name="name", field_type="char", string="Reference",
-                              required=True, usage_frequency=15),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
-                                    string="Contact", required=True,
-                                    relation="res.partner", usage_frequency=10),
-            "picking_type_id": FieldInfo(name="picking_type_id", field_type="many2one",
-                                         string="Operation Type", required=True,
-                                         relation="stock.picking.type", usage_frequency=10),
-            "scheduled_date": FieldInfo(name="scheduled_date", field_type="datetime",
-                                        string="Scheduled Date", usage_frequency=5),
-            "state": FieldInfo(name="state", field_type="selection", string="Status",
-                               selection=[("draft", "Draft"), ("done", "Done"),
-                                          ("cancel", "Cancelled")],
-                               usage_frequency=8),
-            "origin": FieldInfo(name="origin", field_type="char", string="Source Document",
-                                usage_frequency=3),
+            "name": FieldInfo(
+                name="name",
+                field_type="char",
+                string="Reference",
+                required=True,
+                usage_frequency=15,
+            ),
+            "partner_id": FieldInfo(
+                name="partner_id",
+                field_type="many2one",
+                string="Contact",
+                required=True,
+                relation="res.partner",
+                usage_frequency=10,
+            ),
+            "picking_type_id": FieldInfo(
+                name="picking_type_id",
+                field_type="many2one",
+                string="Operation Type",
+                required=True,
+                relation="stock.picking.type",
+                usage_frequency=10,
+            ),
+            "scheduled_date": FieldInfo(
+                name="scheduled_date",
+                field_type="datetime",
+                string="Scheduled Date",
+                usage_frequency=5,
+            ),
+            "state": FieldInfo(
+                name="state",
+                field_type="selection",
+                string="Status",
+                selection=[("draft", "Draft"), ("done", "Done"), ("cancel", "Cancelled")],
+                usage_frequency=8,
+            ),
+            "origin": FieldInfo(
+                name="origin", field_type="char", string="Source Document", usage_frequency=3
+            ),
         },
         create_fields=["name", "partner_id", "picking_type_id", "scheduled_date", "origin"],
         search_fields=["name", "partner_id", "state", "origin"],
@@ -55,15 +76,16 @@ def _make_schema() -> ModelSchema:
         },
         match_keywords=["shipment", "delivery", "transfer"],
         sub_models=[
-            SubModelSchema(field_name="move_line_ids",
-                           related_model="stock.move.line",
-                           is_one_to_many=True),
+            SubModelSchema(
+                field_name="move_line_ids", related_model="stock.move.line", is_one_to_many=True
+            ),
         ],
         usage_frequency_total=51,
     )
 
 
 # ── Tests: Enriched Schema Response ─────────────────────────────────────
+
 
 class TestChatOdooEnrichedResponse:
     """Tests that chat_odoo returns rich schema data for Claude to use."""
@@ -76,12 +98,19 @@ class TestChatOdooEnrichedResponse:
         from src.mcp_server.tools import chat_odoo_handler
 
         mock_agents.return_value = {
-            "logistics": AgentConfig(key="logistics", name="Logistics Agent",
-                                     description="", keywords=["shipment"], models=[],
-                                     default_model="stock_picking"),
+            "logistics": AgentConfig(
+                key="logistics",
+                name="Logistics Agent",
+                description="",
+                keywords=["shipment"],
+                models=[],
+                default_model="stock_picking",
+            ),
         }
         mock_route.return_value = RouteResult(
-            agent_key="logistics", model_key="stock_picking", score=8,
+            agent_key="logistics",
+            model_key="stock_picking",
+            score=8,
         )
         mock_schema = _make_schema()
         mock_store.return_value.get.return_value = mock_schema
@@ -104,12 +133,19 @@ class TestChatOdooEnrichedResponse:
         from src.mcp_server.tools import chat_odoo_handler
 
         mock_agents.return_value = {
-            "logistics": AgentConfig(key="logistics", name="Logistics Agent",
-                                     description="", keywords=["shipment"], models=[],
-                                     default_model="stock_picking"),
+            "logistics": AgentConfig(
+                key="logistics",
+                name="Logistics Agent",
+                description="",
+                keywords=["shipment"],
+                models=[],
+                default_model="stock_picking",
+            ),
         }
         mock_route.return_value = RouteResult(
-            agent_key="logistics", model_key="stock_picking", score=8,
+            agent_key="logistics",
+            model_key="stock_picking",
+            score=8,
         )
         mock_schema = _make_schema()
         mock_store.return_value.get.return_value = mock_schema
@@ -135,12 +171,19 @@ class TestChatOdooEnrichedResponse:
         from src.mcp_server.tools import chat_odoo_handler
 
         mock_agents.return_value = {
-            "logistics": AgentConfig(key="logistics", name="Logistics Agent",
-                                     description="", keywords=["shipment"], models=[],
-                                     default_model="stock_picking"),
+            "logistics": AgentConfig(
+                key="logistics",
+                name="Logistics Agent",
+                description="",
+                keywords=["shipment"],
+                models=[],
+                default_model="stock_picking",
+            ),
         }
         mock_route.return_value = RouteResult(
-            agent_key="logistics", model_key="stock_picking", score=8,
+            agent_key="logistics",
+            model_key="stock_picking",
+            score=8,
         )
         mock_schema = _make_schema()
         mock_store.return_value.get.return_value = mock_schema
@@ -153,6 +196,7 @@ class TestChatOdooEnrichedResponse:
 
 
 # ── Tests: Action Dispatch ──────────────────────────────────────────────
+
 
 class TestChatOdooActionDispatch:
     """Tests that chat_odoo action= parameter dispatches to operations."""

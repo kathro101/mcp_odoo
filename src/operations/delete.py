@@ -58,10 +58,7 @@ def confirm_delete(
     if isinstance(name, (list, tuple)):
         name = name[0] if name else ""
 
-    if name:
-        identifier = f"{name} (ID: {record_id})"
-    else:
-        identifier = f"Record ID: {record_id}"
+    identifier = f"{name} (ID: {record_id})" if name else f"Record ID: {record_id}"
 
     summary = (
         f"Delete {schema.label}: {identifier}\n"

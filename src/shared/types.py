@@ -93,9 +93,7 @@ class SessionState:
     current_model: str = ""
     pending_operation: str = ""
     context: dict = field(default_factory=dict)
-    created_at: datetime = field(
-        default_factory=lambda: datetime.now(tz=timezone.utc)
-    )
+    created_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
 
 
 @dataclass

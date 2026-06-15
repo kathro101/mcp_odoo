@@ -12,15 +12,16 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 # ── Helpers ────────────────────────────────────────────────────────────────
 
-def _make_odoo_mock(fields_get: dict | None = None,
-                    ir_fields: list[dict] | None = None,
-                    views: list[dict] | None = None,
-                    installed_modules: list[str] | None = None,
-                    ir_model_data: list[dict] | None = None,
-                    ) -> MagicMock:
+
+def _make_odoo_mock(
+    fields_get: dict | None = None,
+    ir_fields: list[dict] | None = None,
+    views: list[dict] | None = None,
+    installed_modules: list[str] | None = None,
+    ir_model_data: list[dict] | None = None,
+) -> MagicMock:
     """Build a mock OdooClient with configurable responses."""
     mock = MagicMock()
 
@@ -40,21 +41,23 @@ def _make_odoo_mock(fields_get: dict | None = None,
                 return views
             return _default_views()
         elif model == "ir.model":
-            fields = kwargs.get("fields", [])
             result = []
-            for mod_name in (installed_modules or _default_modules()):
-                result.append({
-                    "id": hash(mod_name) % 10000,
-                    "model": mod_name,
-                    "name": mod_name.replace(".", " ").title(),
-                    "state": "base",
-                })
+            for mod_name in installed_modules or _default_modules():
+                result.append(
+                    {
+                        "id": hash(mod_name) % 10000,
+                        "model": mod_name,
+                        "name": mod_name.replace(".", " ").title(),
+                        "state": "base",
+                    }
+                )
             return result
         elif model == "ir.model.data":
             if ir_model_data is not None:
                 return ir_model_data
             return _default_ir_model_data()
         return []
+
     mock.search_read.side_effect = search_read_side_effect
 
     # search for ir.model (to get model_id)
@@ -65,6 +68,7 @@ def _make_odoo_mock(fields_get: dict | None = None,
                 if isinstance(item, (list, tuple)) and len(item) == 3 and item[0] == "model":
                     results.append(hash(item[2]) % 10000)
         return results[:1] if results else []
+
     mock.search.side_effect = search_side_effect
 
     return mock
@@ -72,24 +76,52 @@ def _make_odoo_mock(fields_get: dict | None = None,
 
 def _default_modules() -> list[str]:
     return [
-        "res.partner", "res.company", "res.users",
-        "sale.order", "stock.picking", "account.move",
-        "purchase.order", "product.product",
+        "res.partner",
+        "res.company",
+        "res.users",
+        "sale.order",
+        "stock.picking",
+        "account.move",
+        "purchase.order",
+        "product.product",
     ]
 
 
 def _default_ir_fields() -> list[dict]:
     """Default ir.model.fields data for stock.picking."""
     return [
-        {"name": "name", "compute": "", "related": "", "depends": [],
-         "store": True, "required": True},
-        {"name": "partner_id", "compute": "", "related": "",
-         "depends": [], "store": True, "required": False},
-        {"name": "display_name", "compute": "_compute_display_name",
-         "related": "", "depends": ["name"], "store": False,
-         "required": False},
-        {"name": "state", "compute": "", "related": "",
-         "depends": [], "store": True, "required": False},
+        {
+            "name": "name",
+            "compute": "",
+            "related": "",
+            "depends": [],
+            "store": True,
+            "required": True,
+        },
+        {
+            "name": "partner_id",
+            "compute": "",
+            "related": "",
+            "depends": [],
+            "store": True,
+            "required": False,
+        },
+        {
+            "name": "display_name",
+            "compute": "_compute_display_name",
+            "related": "",
+            "depends": ["name"],
+            "store": False,
+            "required": False,
+        },
+        {
+            "name": "state",
+            "compute": "",
+            "related": "",
+            "depends": [],
+            "store": True,
+            "required": False,
+        },
     ]
 
 
@@ -98,18 +130,16 @@ def _default_views() -> list[dict]:
     return [
         {
             "arch_db": (
-                '<form><sheet><group>'
+                "<form><sheet><group>"
                 '<field name="name"/>'
                 '<field name="partner_id"/>'
                 '<field name="state"/>'
-                '</group></sheet></form>'
+                "</group></sheet></form>"
             ),
             "type": "form",
         },
         {
-            "arch_db": (
-                '<tree><field name="name"/><field name="state"/></tree>'
-            ),
+            "arch_db": ('<tree><field name="name"/><field name="state"/></tree>'),
             "type": "tree",
         },
     ]
@@ -155,8 +185,7 @@ class TestDiscover:
         mock = _make_odoo_mock(
             fields_get={
                 "name": {"type": "char", "string": "Name", "required": True},
-                "partner_id": {"type": "many2one", "string": "Contact",
-                               "relation": "res.partner"},
+                "partner_id": {"type": "many2one", "string": "Contact", "relation": "res.partner"},
             },
         )
 
@@ -179,10 +208,13 @@ class TestDiscover:
 
         mock = _make_odoo_mock(
             fields_get={
-                "name": {"type": "char", "string": "Reference",
-                         "required": True, "readonly": False},
-                "date_done": {"type": "datetime", "string": "Date Done",
-                              "readonly": True},
+                "name": {
+                    "type": "char",
+                    "string": "Reference",
+                    "required": True,
+                    "readonly": False,
+                },
+                "date_done": {"type": "datetime", "string": "Date Done", "readonly": True},
             },
             installed_modules=["stock.picking"],
         )
@@ -231,17 +263,29 @@ class TestQueryIrModelFields:
     @pytest.fixture
     def discovery(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery
+
         return SchemaDiscovery(_make_odoo_mock())
 
     def test_extracts_computed_field(self, discovery):
         """Should detect computed fields from ir.model.fields."""
         mock = _make_odoo_mock(
             ir_fields=[
-                {"name": "display_name", "compute": "_compute_display_name",
-                 "related": "", "depends": ["name"], "store": False,
-                 "required": False},
-                {"name": "name", "compute": "", "related": "",
-                 "depends": [], "store": True, "required": True},
+                {
+                    "name": "display_name",
+                    "compute": "_compute_display_name",
+                    "related": "",
+                    "depends": ["name"],
+                    "store": False,
+                    "required": False,
+                },
+                {
+                    "name": "name",
+                    "compute": "",
+                    "related": "",
+                    "depends": [],
+                    "store": True,
+                    "required": True,
+                },
             ],
         )
         discovery.odoo = mock
@@ -283,17 +327,19 @@ class TestAnalyzeViews:
     @pytest.fixture
     def discovery(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery
+
         return SchemaDiscovery(_make_odoo_mock())
 
     def test_counts_field_usage_from_views(self, discovery):
         """Should count field occurrences weighted by view type."""
         mock = _make_odoo_mock(
             views=[
-                {"arch_db": '<form><field name="name"/><field name="name"/>'
-                            '<field name="partner_id"/></form>',
-                 "type": "form"},
-                {"arch_db": '<tree><field name="name"/></tree>',
-                 "type": "tree"},
+                {
+                    "arch_db": '<form><field name="name"/><field name="name"/>'
+                    '<field name="partner_id"/></form>',
+                    "type": "form",
+                },
+                {"arch_db": '<tree><field name="name"/></tree>', "type": "tree"},
             ],
         )
         discovery.odoo = mock
@@ -332,11 +378,13 @@ class TestAnalyzeViews:
     def test_parse_field_with_attrs(self, discovery):
         """Should extract field name even with extra attributes."""
         mock = _make_odoo_mock(
-            views=[{
-                "arch_db": '<field name="state" widget="statusbar" '
-                           'invisible="1" readonly="1"/>',
-                "type": "form",
-            }],
+            views=[
+                {
+                    "arch_db": '<field name="state" widget="statusbar" '
+                    'invisible="1" readonly="1"/>',
+                    "type": "form",
+                }
+            ],
         )
         discovery.odoo = mock
 
@@ -364,6 +412,7 @@ class TestClassifyFields:
     @pytest.fixture
     def discovery(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery
+
         return SchemaDiscovery(_make_odoo_mock())
 
     def test_classify_separates_create_search_required(self, discovery):
@@ -371,18 +420,30 @@ class TestClassifyFields:
         from src.shared.types import FieldInfo
 
         fields = {
-            "name": FieldInfo(name="name", field_type="char", string="Name",
-                              required=True, usage_frequency=10),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
-                                    string="Contact", required=True,
-                                    usage_frequency=5),
-            "internal_note": FieldInfo(name="internal_note", field_type="text",
-                                       string="Notes", usage_frequency=1),
-            "id": FieldInfo(name="id", field_type="integer", string="ID",
-                            readonly=True, usage_frequency=0),
-            "display_name": FieldInfo(name="display_name", field_type="char",
-                                      string="Display Name", computed=True,
-                                      store=False, usage_frequency=3),
+            "name": FieldInfo(
+                name="name", field_type="char", string="Name", required=True, usage_frequency=10
+            ),
+            "partner_id": FieldInfo(
+                name="partner_id",
+                field_type="many2one",
+                string="Contact",
+                required=True,
+                usage_frequency=5,
+            ),
+            "internal_note": FieldInfo(
+                name="internal_note", field_type="text", string="Notes", usage_frequency=1
+            ),
+            "id": FieldInfo(
+                name="id", field_type="integer", string="ID", readonly=True, usage_frequency=0
+            ),
+            "display_name": FieldInfo(
+                name="display_name",
+                field_type="char",
+                string="Display Name",
+                computed=True,
+                store=False,
+                usage_frequency=3,
+            ),
         }
 
         create_f, search_f, required_f = discovery._classify_fields(fields)
@@ -405,8 +466,9 @@ class TestClassifyFields:
         from src.shared.types import FieldInfo
 
         fields = {
-            "computed_x": FieldInfo(name="computed_x", field_type="char",
-                                    string="X", computed=True, usage_frequency=5),
+            "computed_x": FieldInfo(
+                name="computed_x", field_type="char", string="X", computed=True, usage_frequency=5
+            ),
         }
 
         create_f, _, _ = discovery._classify_fields(fields)
@@ -417,9 +479,13 @@ class TestClassifyFields:
         from src.shared.types import FieldInfo
 
         fields = {
-            "related_x": FieldInfo(name="related_x", field_type="char",
-                                   string="X", related="partner_id.name",
-                                   usage_frequency=3),
+            "related_x": FieldInfo(
+                name="related_x",
+                field_type="char",
+                string="X",
+                related="partner_id.name",
+                usage_frequency=3,
+            ),
         }
 
         create_f, _, _ = discovery._classify_fields(fields)
@@ -432,6 +498,7 @@ class TestFilterUserFacingModels:
     @pytest.fixture
     def discovery(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery
+
         return SchemaDiscovery(_make_odoo_mock())
 
     def test_filters_technical_models(self, discovery):
@@ -460,6 +527,7 @@ class TestDiscoverSubModels:
     @pytest.fixture
     def discovery(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery
+
         return SchemaDiscovery(_make_odoo_mock())
 
     def test_discovers_one2many_fields(self, discovery):
@@ -468,15 +536,21 @@ class TestDiscoverSubModels:
 
         fields = {
             "order_line": FieldInfo(
-                name="order_line", field_type="one2many",
-                string="Order Lines", relation="sale.order.line",
+                name="order_line",
+                field_type="one2many",
+                string="Order Lines",
+                relation="sale.order.line",
             ),
             "partner_id": FieldInfo(
-                name="partner_id", field_type="many2one",
-                string="Customer", relation="res.partner",
+                name="partner_id",
+                field_type="many2one",
+                string="Customer",
+                relation="res.partner",
             ),
             "name": FieldInfo(
-                name="name", field_type="char", string="Name",
+                name="name",
+                field_type="char",
+                string="Name",
             ),
         }
 
@@ -494,8 +568,9 @@ class TestDiscoverSubModels:
 
         fields = {
             "name": FieldInfo(name="name", field_type="char", string="Name"),
-            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
-                                    string="Partner", relation="res.partner"),
+            "partner_id": FieldInfo(
+                name="partner_id", field_type="many2one", string="Partner", relation="res.partner"
+            ),
         }
 
         sub_models = discovery._discover_sub_models("res.partner", fields)
@@ -518,8 +593,7 @@ class TestSaveSchemas:
                 label="Test Model",
                 odoo_model="test.model",
                 all_fields={
-                    "name": FieldInfo(name="name", field_type="char",
-                                     string="Name"),
+                    "name": FieldInfo(name="name", field_type="char", string="Name"),
                 },
                 create_fields=["name"],
                 required_fields=["name"],

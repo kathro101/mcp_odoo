@@ -40,9 +40,7 @@ def route_message(message: str, agents: dict[str, AgentConfig]) -> RouteResult:
                 score += len(keyword)
 
         if score > best.score or (
-            score == best.score
-            and best.agent_key is not None
-            and agent.key < best.agent_key
+            score == best.score and best.agent_key is not None and agent.key < best.agent_key
         ):
             best = RouteResult(
                 agent_key=agent.key,

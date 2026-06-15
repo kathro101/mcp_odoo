@@ -15,14 +15,14 @@ import json
 
 from mcp.types import Tool
 
-from src.odoo_service.router import route_message
 from src.odoo_service.odoo_client import OdooClient
+from src.odoo_service.router import route_message
 from src.odoo_service.schema_store import SchemaStore
 from src.odoo_service.session_store import SessionStore
-from src.operations.create import create_record, preview_record
+from src.operations.create import preview_record
 from src.operations.delete import confirm_delete, delete_record
 from src.operations.search import search_records
-from src.operations.update import preview_update, update_record
+from src.operations.update import update_record
 from src.shared.config import load_agents, load_config
 
 # ── Tool Definitions ────────────────────────────────────────────────────
@@ -195,9 +195,7 @@ async def chat_odoo_handler(
 # ── Action Dispatcher ──────────────────────────────────────────────────
 
 
-async def _handle_action(
-    action: str, model: str, params: dict, record_id: int
-) -> list[dict]:
+async def _handle_action(action: str, model: str, params: dict, record_id: int) -> list[dict]:
     """Execute an action against an Odoo model."""
     if not model:
         return [{"type": "text", "text": "Error: model is required for actions."}]
@@ -226,8 +224,12 @@ async def _handle_action(
             else:
                 result = confirm_delete(schema, params)
         case _:
-            return [{"type": "text", "text": f"Unknown action: {action}. "
-                      "Valid: preview, search, update, delete."}]
+            return [
+                {
+                    "type": "text",
+                    "text": f"Unknown action: {action}. Valid: preview, search, update, delete.",
+                }
+            ]
 
     return [{"type": "text", "text": json.dumps(result, default=str)}]
 
@@ -237,7 +239,7 @@ _odoo_client = None
 
 def _get_odoo_client():
     """Lazy-initialize the OdooClient singleton.
-    
+
     Validates configuration before creating the client.
     Raises RuntimeError with clear message if config is missing or incomplete.
     """
@@ -252,9 +254,7 @@ def _get_odoo_client():
             )
         odoo_cfg = cfg.get("odoo", {})
         if not odoo_cfg.get("url"):
-            raise RuntimeError(
-                "Odoo URL not set. Edit config/config.json and add odoo.url."
-            )
+            raise RuntimeError("Odoo URL not set. Edit config/config.json and add odoo.url.")
         _odoo_client = OdooClient(
             url=odoo_cfg["url"],
             database=odoo_cfg.get("database", ""),
@@ -300,7 +300,8 @@ def _format_schema_for_claude(schema) -> list[str]:
 
     # Top optional fields (by usage frequency)
     optional_fields = [
-        fn for fn in schema.create_fields
+        fn
+        for fn in schema.create_fields
         if fn not in schema.required_fields and fn in schema.all_fields
     ]
     top_fields = sorted(
@@ -322,9 +323,7 @@ def _format_schema_for_claude(schema) -> list[str]:
     if schema.sub_models:
         lines.append("### SUB-MODELS (one-to-many)")
         for sub in schema.sub_models:
-            lines.append(
-                f"  - `{sub.field_name}` → {sub.related_model}"
-            )
+            lines.append(f"  - `{sub.field_name}` → {sub.related_model}")
         lines.append("")
 
     # Match keywords

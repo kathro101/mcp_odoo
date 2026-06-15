@@ -1,7 +1,7 @@
 # Feature: MCP Tools (chat_odoo, list_models, list_agents)
 
-**Implemented:** 2026-06-15  
-**Files:** `src/mcp_server/tools.py`, `src/mcp_server/server.py`  
+**Implemented:** 2026-06-15
+**Files:** `src/mcp_server/tools.py`, `src/mcp_server/server.py`
 **Tests:** `tests/test_mcp_server.py` (8 tests)
 
 ## What It Does

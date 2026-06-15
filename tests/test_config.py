@@ -17,16 +17,19 @@ class TestLoadConfig:
         from src.shared.config import load_config
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            json.dump({
-                "odoo": {
-                    "url": "https://example.odoo.com",
-                    "database": "testdb",
-                    "username": "admin",
-                    "api_key": "secret",
+            json.dump(
+                {
+                    "odoo": {
+                        "url": "https://example.odoo.com",
+                        "database": "testdb",
+                        "username": "admin",
+                        "api_key": "secret",
+                    },
+                    "mcp": {"transport": "stdio", "http_port": 8080},
+                    "schema": {"cache_dir": "config/schemas", "enrichment": {"enabled": True}},
                 },
-                "mcp": {"transport": "stdio", "http_port": 8080},
-                "schema": {"cache_dir": "config/schemas", "enrichment": {"enabled": True}},
-            }, f)
+                f,
+            )
             temp_path = f.name
 
         try:
@@ -95,15 +98,18 @@ class TestLoadAgents:
         from src.shared.config import load_agents
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            json.dump({
-                "logistics": {
-                    "key": "logistics",
-                    "name": "Logistics Agent",
-                    "description": "Handles shipments",
-                    "keywords": ["shipment", "delivery"],
-                    "models": ["stock.picking"],
+            json.dump(
+                {
+                    "logistics": {
+                        "key": "logistics",
+                        "name": "Logistics Agent",
+                        "description": "Handles shipments",
+                        "keywords": ["shipment", "delivery"],
+                        "models": ["stock.picking"],
+                    },
                 },
-            }, f)
+                f,
+            )
             temp_path = f.name
 
         try:

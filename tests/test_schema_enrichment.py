@@ -8,9 +8,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from src.shared.types import FieldInfo, ModelSchema
 
@@ -28,12 +26,15 @@ def _make_schema(key: str, odoo_model: str, fields: dict | None = None) -> Model
 def _make_schema_with_fields(odoo_model: str) -> ModelSchema:
     """Helper: create a schema with realistic fields."""
     fields = {
-        "name": FieldInfo(name="name", field_type="char", string="Name",
-                          required=True, usage_frequency=10),
-        "partner_id": FieldInfo(name="partner_id", field_type="many2one",
-                                string="Customer", usage_frequency=5),
-        "state": FieldInfo(name="state", field_type="selection",
-                           string="Status", usage_frequency=3),
+        "name": FieldInfo(
+            name="name", field_type="char", string="Name", required=True, usage_frequency=10
+        ),
+        "partner_id": FieldInfo(
+            name="partner_id", field_type="many2one", string="Customer", usage_frequency=5
+        ),
+        "state": FieldInfo(
+            name="state", field_type="selection", string="Status", usage_frequency=3
+        ),
     }
     return ModelSchema(
         key=odoo_model.replace(".", "_"),

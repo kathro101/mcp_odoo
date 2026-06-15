@@ -12,6 +12,7 @@ class TestRunStdio:
     @pytest.mark.asyncio
     async def test_run_stdio_calls_server(self):
         from src.mcp_server.transport import run_stdio
+
         mock_server = MagicMock()
         mock_ctx = MagicMock()
         mock_ctx.__aenter__.return_value = (MagicMock(), MagicMock())
@@ -26,6 +27,7 @@ class TestRunStdio:
 class TestRunHttp:
     def test_run_http_importable(self):
         from src.mcp_server.transport import run_http
+
         assert callable(run_http)
 
     def test_run_http_calls_sse_app(self):

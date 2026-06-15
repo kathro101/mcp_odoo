@@ -1,6 +1,6 @@
 # ADR-0003: Dataclasses Over Dicts
 
-**Date:** 2026-06-15  
+**Date:** 2026-06-15
 **Status:** Accepted
 
 ## Context

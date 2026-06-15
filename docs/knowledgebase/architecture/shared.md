@@ -1,7 +1,7 @@
 # Architecture: Shared Layer
 
-**Files:** `src/shared/types.py` (95 lines), `src/shared/config.py` (74 lines)  
-**Tests:** `tests/test_types.py` (14 tests), `tests/test_config.py` (8 tests)  
+**Files:** `src/shared/types.py` (95 lines), `src/shared/config.py` (74 lines)
+**Tests:** `tests/test_types.py` (14 tests), `tests/test_config.py` (8 tests)
 **Dependencies:** stdlib only
 
 ## Purpose

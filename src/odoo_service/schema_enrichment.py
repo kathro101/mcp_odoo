@@ -21,10 +21,26 @@ logger = logging.getLogger(__name__)
 # ── Standard model prefixes that LLMs already know ──────────────────────
 
 _STANDARD_PREFIXES: tuple[str, ...] = (
-    "res.", "sale.", "purchase.", "account.", "stock.", "crm.",
-    "hr.", "project.", "mrp.", "product.", "mail.", "calendar.",
-    "fleet.", "event.", "website.", "survey.", "base.",
-    "uom.", "decimal.precision", "ir.",
+    "res.",
+    "sale.",
+    "purchase.",
+    "account.",
+    "stock.",
+    "crm.",
+    "hr.",
+    "project.",
+    "mrp.",
+    "product.",
+    "mail.",
+    "calendar.",
+    "fleet.",
+    "event.",
+    "website.",
+    "survey.",
+    "base.",
+    "uom.",
+    "decimal.precision",
+    "ir.",
 )
 
 
@@ -62,7 +78,7 @@ def enrich_custom_models(
     """
     cache_path = Path(cache_dir)
 
-    for key, schema in schemas.items():
+    for _key, schema in schemas.items():
         if _is_standard_model(schema.odoo_model):
             continue
 
@@ -94,9 +110,7 @@ def enrich_custom_models(
             cache_file.parent.mkdir(parents=True, exist_ok=True)
             cache_file.write_text(schema.summary)
         except Exception as exc:
-            logger.warning(
-                "Failed to enrich summary for %s: %s", schema.odoo_model, exc
-            )
+            logger.warning("Failed to enrich summary for %s: %s", schema.odoo_model, exc)
 
 
 # ── Field alias and keyword enrichment ──────────────────────────────────
@@ -115,7 +129,7 @@ def enrich_aliases(
         schemas: Dict of model_name → ModelSchema (mutated in place).
         llm: LLM client with an `ask_json(prompt)` method.
     """
-    for key, schema in schemas.items():
+    for _key, schema in schemas.items():
         # Skip if already enriched
         if schema.field_aliases and schema.match_keywords:
             continue
@@ -145,6 +159,4 @@ def enrich_aliases(
             schema.field_aliases = result.get("field_aliases", {})
             schema.match_keywords = result.get("match_keywords", [])
         except Exception as exc:
-            logger.warning(
-                "Failed to enrich aliases for %s: %s", schema.odoo_model, exc
-            )
+            logger.warning("Failed to enrich aliases for %s: %s", schema.odoo_model, exc)

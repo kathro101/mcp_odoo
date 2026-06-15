@@ -1,6 +1,6 @@
 # Architecture Overview
 
-> **Last updated:** 2026-06-15  
+> **Last updated:** 2026-06-15
 > **See also:** `CLAUDE.md`, `README.md`, `rewrite_of_agentic_tool_odoo.md`
 
 ## System Design

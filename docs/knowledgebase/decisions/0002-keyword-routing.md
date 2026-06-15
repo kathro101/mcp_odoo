@@ -1,6 +1,6 @@
 # ADR-0002: Keyword-Based Routing (Not LLM)
 
-**Date:** 2026-06-15  
+**Date:** 2026-06-15
 **Status:** Accepted
 
 ## Context

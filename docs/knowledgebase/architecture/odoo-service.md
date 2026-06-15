@@ -1,7 +1,7 @@
 # Architecture: Odoo Service Layer
 
-**Files:** `src/odoo_service/` — 6 modules, ~874 lines total  
-**Tests:** 6 test files, 65 tests  
+**Files:** `src/odoo_service/` — 6 modules, ~874 lines total
+**Tests:** 6 test files, 65 tests
 **Dependencies:** `xmlrpc.client` (stdlib), `src/shared/`
 
 ## Purpose

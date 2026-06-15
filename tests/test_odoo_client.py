@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 
 class TestOdooClient:
     """Tests for OdooClient class."""
@@ -75,8 +73,13 @@ class TestOdooClient:
 
         assert result == [{"id": 1, "name": "Test"}]
         mock_object.execute_kw.assert_called_once_with(
-            "db", 1, "key", "res.partner", "search_read",
-            [[("name", "=", "Test")]], {"fields": ["name"]}
+            "db",
+            1,
+            "key",
+            "res.partner",
+            "search_read",
+            [[("name", "=", "Test")]],
+            {"fields": ["name"]},
         )
 
     @patch("xmlrpc.client.ServerProxy")

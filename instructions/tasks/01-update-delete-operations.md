@@ -1,8 +1,8 @@
 # Task: Update + Delete Operations
 
-**Created:** 2026-06-15  
-**Status:** ✅ Complete  
-**Priority:** HIGH — completes the CRUD layer  
+**Created:** 2026-06-15
+**Status:** ✅ Complete
+**Priority:** HIGH — completes the CRUD layer
 **Depends on:** Phase 1 (odoo_client.py), Phase 2 (schema_store.py)
 
 ---

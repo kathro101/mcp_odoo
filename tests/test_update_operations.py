@@ -73,13 +73,10 @@ class TestUpdateRecord:
 
     def test_update_record_odoo_fault_returns_error(self):
         """Should return error dict on xmlrpc.client.Fault."""
-        import xmlrpc.client
         from src.operations.update import update_record
 
         mock_odoo = MagicMock()
-        mock_odoo.execute_kw.return_value = {
-            "status": "error", "message": "Access Denied"
-        }
+        mock_odoo.execute_kw.return_value = {"status": "error", "message": "Access Denied"}
         schema = _make_schema()
 
         result = update_record(mock_odoo, schema, 42, {"name": "X"})
@@ -92,9 +89,7 @@ class TestUpdateRecord:
         from src.operations.update import update_record
 
         mock_odoo = MagicMock()
-        mock_odoo.execute_kw.return_value = {
-            "status": "error", "message": "Connection refused"
-        }
+        mock_odoo.execute_kw.return_value = {"status": "error", "message": "Connection refused"}
         schema = _make_schema()
 
         result = update_record(mock_odoo, schema, 42, {"name": "X"})

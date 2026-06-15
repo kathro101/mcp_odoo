@@ -38,13 +38,9 @@ class OdooClient:
         try:
             self._common = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/common")
             self._object = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/object")
-            self._uid = self._common.authenticate(
-                self.database, self.username, self.api_key
-            )
+            self._uid = self._common.authenticate(self.database, self.username, self.api_key)
         except (ConnectionRefusedError, OSError) as exc:
-            raise ConnectionRefusedError(
-                f"Cannot connect to Odoo at {self.url}: {exc}"
-            ) from exc
+            raise ConnectionRefusedError(f"Cannot connect to Odoo at {self.url}: {exc}") from exc
 
     def execute_kw(
         self,
@@ -132,9 +128,7 @@ class OdooClient:
             kwargs["limit"] = limit
         return self.execute_kw(model, "search", [domain], kwargs)
 
-    def fields_get(
-        self, model: str, attributes: list[str] | None = None
-    ) -> dict[str, dict]:
+    def fields_get(self, model: str, attributes: list[str] | None = None) -> dict[str, dict]:
         """Get field metadata for a model.
 
         Args:

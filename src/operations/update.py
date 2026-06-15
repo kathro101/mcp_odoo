@@ -70,9 +70,7 @@ def preview_update(
         old_value = current_values.get(field)
 
         if field not in schema.create_fields:
-            warnings.append(
-                f"'{field}' is not a writable field for {schema.odoo_model}"
-            )
+            warnings.append(f"'{field}' is not a writable field for {schema.odoo_model}")
             continue
 
         if old_value != new_value:

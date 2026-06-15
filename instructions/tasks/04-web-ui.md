@@ -1,8 +1,8 @@
 # Task: Web UI — Flask Chat Interface
 
-**Created:** 2026-06-15  
-**Status:** 🔴 Not started  
-**Priority:** MEDIUM — makes the agent usable outside Claude Desktop  
+**Created:** 2026-06-15
+**Status:** 🔴 Not started
+**Priority:** MEDIUM — makes the agent usable outside Claude Desktop
 **Depends on:** Phase 3 (operations), Phase 4 (MCP transport)
 
 ---

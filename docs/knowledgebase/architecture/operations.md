@@ -1,7 +1,7 @@
 # Architecture: Operations Layer
 
-**Files:** `src/operations/search.py` (55 lines), `src/operations/create.py` (73 lines)  
-**Tests:** `tests/test_operations.py` (9 tests)  
+**Files:** `src/operations/search.py` (55 lines), `src/operations/create.py` (73 lines)
+**Tests:** `tests/test_operations.py` (9 tests)
 **Dependencies:** `src/odoo_service/odoo_client.py`, `src/shared/types.py`
 
 ## Purpose

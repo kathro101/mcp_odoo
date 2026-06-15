@@ -100,8 +100,7 @@ def chat():
     else:
         result["status"] = "needs_input"
         result["available_agents"] = [
-            {"key": a.key, "name": a.name, "description": a.description}
-            for a in agents.values()
+            {"key": a.key, "name": a.name, "description": a.description} for a in agents.values()
         ]
 
     return jsonify(result)
@@ -112,33 +111,37 @@ def list_models_api():
     """List available models."""
     store = _get_schema_store()
     schemas = store.list_all()
-    return jsonify([
-        {
-            "key": s.key,
-            "label": s.label,
-            "model": s.odoo_model,
-            "summary": s.summary,
-            "required_fields": s.required_fields,
-            "create_fields": s.create_fields,
-        }
-        for s in sorted(schemas, key=lambda s2: s2.label)
-    ])
+    return jsonify(
+        [
+            {
+                "key": s.key,
+                "label": s.label,
+                "model": s.odoo_model,
+                "summary": s.summary,
+                "required_fields": s.required_fields,
+                "create_fields": s.create_fields,
+            }
+            for s in sorted(schemas, key=lambda s2: s2.label)
+        ]
+    )
 
 
 @app.route("/api/agents")
 def list_agents_api():
     """List available agents."""
     agents = _get_agents()
-    return jsonify({
-        key: {
-            "key": a.key,
-            "name": a.name,
-            "description": a.description,
-            "keywords": a.keywords,
-            "models": a.models,
+    return jsonify(
+        {
+            key: {
+                "key": a.key,
+                "name": a.name,
+                "description": a.description,
+                "keywords": a.keywords,
+                "models": a.models,
+            }
+            for key, a in agents.items()
         }
-        for key, a in agents.items()
-    })
+    )
 
 
 # ── Entry point ────────────────────────────────────────────────────────

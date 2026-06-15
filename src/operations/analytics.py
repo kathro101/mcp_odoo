@@ -58,16 +58,14 @@ def aggregate(
         return result
 
     groups: list[dict] = []
-    for row in (result or []):
+    for row in result or []:
         key = row.get(group_by, "")
         if isinstance(key, (list, tuple)):
             key = key[1] if len(key) > 1 else str(key)
 
         if metric == "count":
             suffix = f"{group_by}_count"
-        elif metric.startswith("sum:"):
-            suffix = field
-        elif metric.startswith("avg:"):
+        elif metric.startswith("sum:") or metric.startswith("avg:"):
             suffix = field
         else:
             suffix = f"{group_by}_count"
