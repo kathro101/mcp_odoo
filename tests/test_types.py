@@ -59,6 +59,25 @@ class TestFieldInfo:
         assert fi.selection == [("draft", "Draft"), ("done", "Done")]
         assert fi.required is True
 
+    def test_field_info_help_text_defaults_to_empty(self):
+        """FieldInfo help_text should default to empty string."""
+        from src.shared.types import FieldInfo
+
+        fi = FieldInfo(name="test", field_type="char", string="Test")
+        assert fi.help_text == ""
+
+    def test_field_info_help_text_can_be_set(self):
+        """FieldInfo should accept help_text."""
+        from src.shared.types import FieldInfo
+
+        fi = FieldInfo(
+            name="origin",
+            field_type="char",
+            string="Source Document",
+            help_text="Reference of the document that generated this picking request",
+        )
+        assert fi.help_text == "Reference of the document that generated this picking request"
+
 
 class TestSubModelSchema:
     """Tests for SubModelSchema dataclass."""

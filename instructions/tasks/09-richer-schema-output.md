@@ -18,6 +18,7 @@ When Claude receives a schema from `chat_odoo` or `list_models`, it sees:
 ```
 
 Claude doesn't know:
+
 - **What `origin` is really for** — Odoo's `help` text says "Reference of the document that generated this picking request" which would tell Claude this is where booking references go
 - **What selection labels mean** — `draft` vs `Draft` vs `done` vs `Done` — Claude has to guess
 - **Default values** — Claude doesn't know `state` defaults to `draft`, so it asks unnecessarily
@@ -79,6 +80,7 @@ if fi.help_text:
 ## What Claude Would Then See
 
 ### Before (current)
+
 ```
 ### REQUIRED FIELDS
   - `partner_id` (many2one → res.partner): Contact *REQUIRED*
@@ -91,6 +93,7 @@ if fi.help_text:
 ```
 
 ### After (proposed)
+
 ```
 ### REQUIRED FIELDS
   - `partner_id` (many2one → res.partner): Contact *REQUIRED*
@@ -111,39 +114,43 @@ if fi.help_text:
 
 ## Impact on Claude's Decision Quality
 
-| Scenario | Before | After |
-|----------|--------|-------|
-| User says "mark as done" | Claude sees `[options: draft, done, cancel]`, guesses `done` | Claude sees `done (Done)`, confirms: "Set to Done?" |
-| User says "booking ref BOOKREF123" | Claude maps to `origin` via alias but doesn't know `origin` is where booking refs go — might still ask | Claude reads help text: "Reference of the document..." — immediately maps correctly |
-| User doesn't mention state | Claude asks "What status?" unnecessarily | Claude sees `[draft (Draft)]` is the first option, infers it's default — doesn't ask |
+| Scenario                           | Before                                                                                                 | After                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| User says "mark as done"           | Claude sees `[options: draft, done, cancel]`, guesses `done`                                           | Claude sees `done (Done)`, confirms: "Set to Done?"                                  |
+| User says "booking ref BOOKREF123" | Claude maps to `origin` via alias but doesn't know `origin` is where booking refs go — might still ask | Claude reads help text: "Reference of the document..." — immediately maps correctly  |
+| User doesn't mention state         | Claude asks "What status?" unnecessarily                                                               | Claude sees `[draft (Draft)]` is the first option, infers it's default — doesn't ask |
 
 ## Files to Modify
 
-| File | Change | Lines |
-|------|--------|-------|
-| `src/shared/types.py` | Add `help_text: str = ""` to `FieldInfo` | +1 |
-| `src/odoo_service/schema_discovery.py` | Capture `help` from `fields_get()` in `discover_model()` | +1 |
-| `src/odoo_service/schema_store.py` | Serialize/deserialize `help_text` in `_load_one()` and `_serialize_schema()` | +2 |
-| `src/mcp_server/tools.py` | Format selection labels in `_format_field_detail()` | ~5 |
-| `src/mcp_server/tools.py` | Render help text in `_format_field_detail()` | +2 |
-| `tests/test_mcp_tools_v2.py` | Add test for help text in formatted output | +10 |
-| `tests/test_types.py` | Add test for `help_text` default | +3 |
-| `tests/test_schema_discovery.py` | Verify `help` is captured from mocked `fields_get` | +5 |
+| File                                   | Change                                                                       | Lines |
+| -------------------------------------- | ---------------------------------------------------------------------------- | ----- |
+| `src/shared/types.py`                  | Add `help_text: str = ""` to `FieldInfo`                                     | +1    |
+| `src/odoo_service/schema_discovery.py` | Capture `help` from `fields_get()` in `discover_model()`                     | +1    |
+| `src/odoo_service/schema_store.py`     | Serialize/deserialize `help_text` in `_load_one()` and `_serialize_schema()` | +2    |
+| `src/mcp_server/tools.py`              | Format selection labels in `_format_field_detail()`                          | ~5    |
+| `src/mcp_server/tools.py`              | Render help text in `_format_field_detail()`                                 | +2    |
+| `tests/test_mcp_tools_v2.py`           | Add test for help text in formatted output                                   | +10   |
+| `tests/test_types.py`                  | Add test for `help_text` default                                             | +3    |
+| `tests/test_schema_discovery.py`       | Verify `help` is captured from mocked `fields_get`                           | +5    |
 
 ## Tests (TDD Required)
 
 ### `FieldInfo.help_text`
+
 1. **`test_field_info_help_text_defaults_to_empty`** — `help_text` defaults to `""`
 
 ### Schema Discovery
+
 2. **`test_discover_captures_help_text`** — Mocked `fields_get` with `help` key → `FieldInfo.help_text` populated
 
 ### Schema Formatting
+
 3. **`test_format_field_detail_includes_help_text`** — Field with `help_text="Foo"` → output contains "— Foo"
 4. **`test_format_field_detail_no_help_text`** — Field without help → no "—" in output
 5. **`test_format_field_detail_selection_shows_labels`** — Selection with `[("draft", "Draft")]` → output contains "draft (Draft)"
 
 ### Schema Store
+
 6. **`test_schema_store_roundtrips_help_text`** — Schema saved to JSON → reloaded → `help_text` preserved
 
 ## Implementation Steps

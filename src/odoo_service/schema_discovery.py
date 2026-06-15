@@ -126,6 +126,7 @@ class SchemaDiscovery:
                 selection=meta.get("selection", []),
                 depends=ir_data.get("depends", []),
                 usage_frequency=view_freqs.get(fname, 0),
+                help_text=meta.get("help", ""),
             )
 
         # Classify fields
@@ -381,6 +382,7 @@ class SchemaDiscovery:
                 "selection": fi.selection,
                 "depends": fi.depends,
                 "usage_frequency": fi.usage_frequency,
+                "help_text": fi.help_text,
             }
 
         return {

@@ -106,6 +106,7 @@ class SchemaStore:
                 selection=[tuple(s) for s in fdata.get("selection", [])],
                 depends=fdata.get("depends", []),
                 usage_frequency=fdata.get("usage_frequency", 0),
+                help_text=fdata.get("help_text", ""),
             )
 
         sub_models = [

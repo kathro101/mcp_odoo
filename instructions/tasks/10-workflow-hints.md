@@ -74,13 +74,13 @@ prompt = (
 
 ```json
 {
-    "workflow_hints": [
-        "When user says 'from [date] to [date]', set these dates on the milestone lines (milestone_ids), not the shipment header date_from/date_to fields.",
-        "When user provides a location sequence like 'Shanghai → Rotterdam → Berlin', match each location to a milestone line by position. The first location is the first milestone's origin, the last location is the last milestone's destination.",
-        "'road direct' means select a template where transport_type='road' AND service_type='direct'. The template populates milestones, carriers, and routing automatically.",
-        "When user says 'from SO0042' or 'based on sale order', link via sale_order_id and populate stock moves from the sale order's picking operations.",
-        "Container numbers, vessel names, BL/AWB numbers, and ETD/ETA dates belong on individual milestone lines, not the shipment header. Each milestone can have its own transport details."
-    ]
+  "workflow_hints": [
+    "When user says 'from [date] to [date]', set these dates on the milestone lines (milestone_ids), not the shipment header date_from/date_to fields.",
+    "When user provides a location sequence like 'Shanghai → Rotterdam → Berlin', match each location to a milestone line by position. The first location is the first milestone's origin, the last location is the last milestone's destination.",
+    "'road direct' means select a template where transport_type='road' AND service_type='direct'. The template populates milestones, carriers, and routing automatically.",
+    "When user says 'from SO0042' or 'based on sale order', link via sale_order_id and populate stock moves from the sale order's picking operations.",
+    "Container numbers, vessel names, BL/AWB numbers, and ETD/ETA dates belong on individual milestone lines, not the shipment header. Each milestone can have its own transport details."
+  ]
 }
 ```
 
@@ -110,34 +110,39 @@ Freight shipment with milestone-based routing and template population.
 
 ## Files to Modify
 
-| File | Change | Lines |
-|------|--------|-------|
-| `src/shared/types.py` | Add `workflow_hints: str = ""` to `ModelSchema` | +1 |
-| `src/odoo_service/schema_enrichment.py` | Add `enrich_workflow_hints()` function | +40 |
-| `src/odoo_service/schema_enrichment.py` | Call `enrich_workflow_hints()` in enrichment pipeline | +1 |
-| `src/odoo_service/schema_store.py` | Serialize/deserialize `workflow_hints` in `_load_one()` and `_serialize_schema()` | +2 |
-| `src/mcp_server/tools.py` | Render `workflow_hints` in `_format_schema_for_claude()` | +6 |
-| `src/mcp_server/tools.py` | Render `workflow_hints` in `_format_model_entry()` (list_models) | +4 |
+| File                                    | Change                                                                            | Lines |
+| --------------------------------------- | --------------------------------------------------------------------------------- | ----- |
+| `src/shared/types.py`                   | Add `workflow_hints: str = ""` to `ModelSchema`                                   | +1    |
+| `src/odoo_service/schema_enrichment.py` | Add `enrich_workflow_hints()` function                                            | +40   |
+| `src/odoo_service/schema_enrichment.py` | Call `enrich_workflow_hints()` in enrichment pipeline                             | +1    |
+| `src/odoo_service/schema_store.py`      | Serialize/deserialize `workflow_hints` in `_load_one()` and `_serialize_schema()` | +2    |
+| `src/mcp_server/tools.py`               | Render `workflow_hints` in `_format_schema_for_claude()`                          | +6    |
+| `src/mcp_server/tools.py`               | Render `workflow_hints` in `_format_model_entry()` (list_models)                  | +4    |
 
 ## Tests (TDD Required)
 
 ### `ModelSchema.workflow_hints`
+
 1. **`test_model_schema_workflow_hints_defaults_to_empty`** — Defaults to `""`
 
 ### Schema Store round-trip
+
 2. **`test_schema_store_roundtrips_workflow_hints`** — Save → reload → hints preserved
 
 ### Enrichment
+
 3. **`test_enrich_workflow_hints_generates_hints`** — Mock LLM returns hints → schema has them
 4. **`test_enrich_workflow_hints_skips_standard_models`** — Standard models skipped (same as other enrichment)
 5. **`test_enrich_workflow_hints_cached_not_regenerated`** — Cache hit → no LLM call
 6. **`test_enrich_workflow_hints_handles_llm_error`** — LLM fails → graceful, hints stay empty
 
 ### Formatting
+
 7. **`test_format_schema_includes_workflow_hints`** — Schema with hints → output contains "WORKFLOW HINTS"
 8. **`test_format_schema_no_workflow_hints`** — Schema without hints → output does NOT contain "WORKFLOW HINTS"
 
 ### Integration
+
 9. **`test_chat_odoo_returns_workflow_hints`** — Full routing + schema response includes hints section
 
 ## Implementation Steps

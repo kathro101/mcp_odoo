@@ -350,7 +350,7 @@ def _format_field_detail(fi) -> str:
     parts.append(f"): {fi.string}")
 
     if fi.selection:
-        options = [s[0] for s in fi.selection]
+        options = [f"{s[0]} ({s[1]})" for s in fi.selection]
         parts.append(f" [options: {', '.join(options)}]")
 
     if fi.required:
@@ -359,6 +359,8 @@ def _format_field_detail(fi) -> str:
         parts.append(" (computed)")
     if fi.related:
         parts.append(f" (related to {fi.related})")
+    if fi.help_text:
+        parts.append(f" — {fi.help_text}")
 
     return "".join(parts)
 

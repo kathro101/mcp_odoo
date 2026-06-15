@@ -417,3 +417,46 @@ class TestEnhancedListModels:
         assert "shipment" in text
         assert "delivery" in text
         assert "required" in text.lower()
+
+
+# ── Tests: Richer Schema Output (Task 09) ─────────────────────────────
+
+
+class TestFormatFieldDetail:
+    """Tests for _format_field_detail() with help_text and selection labels."""
+
+    def test_selection_shows_labels(self):
+        """Selection should show both key and display label."""
+        from src.mcp_server.tools import _format_field_detail
+
+        fi = FieldInfo(
+            name="state",
+            field_type="selection",
+            string="Status",
+            selection=[("draft", "Draft"), ("done", "Done")],
+        )
+        result = _format_field_detail(fi)
+        assert "draft (Draft)" in result
+        assert "done (Done)" in result
+
+    def test_help_text_rendered(self):
+        """Field with help_text should include it."""
+        from src.mcp_server.tools import _format_field_detail
+
+        fi = FieldInfo(
+            name="origin",
+            field_type="char",
+            string="Source Document",
+            help_text="Reference of the document",
+        )
+        result = _format_field_detail(fi)
+        assert "Reference of the document" in result
+
+    def test_no_help_text_no_dash(self):
+        """Field without help_text should not have stray formatting."""
+        from src.mcp_server.tools import _format_field_detail
+
+        fi = FieldInfo(name="name", field_type="char", string="Name")
+        result = _format_field_detail(fi)
+        # Should not end with stray spacing or dash
+        assert not result.rstrip().endswith("—")

@@ -30,6 +30,7 @@ class FieldInfo:
     selection: list[tuple[str, str]] = field(default_factory=list)
     depends: list[str] = field(default_factory=list)
     usage_frequency: int = 0
+    help_text: str = ""
 
 
 @dataclass
