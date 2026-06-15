@@ -13,6 +13,7 @@ Generated once during AI enrichment, cached to `config/schemas/<key>.json`, and 
 ### Where It Appears
 
 In `chat_odoo` response (between FIELD ALIASES and REQUIRED FIELDS):
+
 ```
 ### WORKFLOW HINTS
 - When user says 'from [date] to [date]', set dates on milestone lines
@@ -22,13 +23,14 @@ In `chat_odoo` response (between FIELD ALIASES and REQUIRED FIELDS):
 
 ### What It Helps Claude Understand
 
-| Without workflow_hints | With workflow_hints |
-|------------------------|---------------------|
-| "Shipment from Nov 10 to Dec 10" → sets dates on shipment header (wrong) | Sets dates on milestone lines (correct) |
-| "Road direct" → asks user to pick a template | Looks up template by transport_type + service_type |
-| "From SO123" → asks user to explain | Links via sale_order_id, populates from sale order lines |
+| Without workflow_hints                                                   | With workflow_hints                                      |
+| ------------------------------------------------------------------------ | -------------------------------------------------------- |
+| "Shipment from Nov 10 to Dec 10" → sets dates on shipment header (wrong) | Sets dates on milestone lines (correct)                  |
+| "Road direct" → asks user to pick a template                             | Looks up template by transport_type + service_type       |
+| "From SO123" → asks user to explain                                      | Links via sale_order_id, populates from sale order lines |
 
 ### Design Decisions
+
 - **AI-generated, not user-configured** — user just runs the wizard
 - **Cached forever** — never regenerated once in `config/schemas/`
 - **Standard models skipped** — Claude already knows `sale.order`, `res.partner`, etc.

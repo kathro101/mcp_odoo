@@ -1,7 +1,7 @@
 # Feature: Enhanced `list_models` — Semantic Model Discovery
 
 **Implemented:** 2026-06-15
-**Files:** `src/mcp_server/tools.py` (score_model_relevance, _format_model_entry, list_models_handler)
+**Files:** `src/mcp_server/tools.py` (score_model_relevance, \_format_model_entry, list_models_handler)
 **Tests:** 8 tests in `tests/test_mcp_tools_v2.py`
 
 ## What It Does
@@ -36,6 +36,7 @@ User: "Track containers on vessels"
 ```
 
 ### Design Decisions
+
 - **Backward compatible** — no message = all models alphabetically
 - **Zero tokens** — pure Python code, no API calls
 - **Caps at top_n=10** — Claude has limited context window

@@ -68,27 +68,27 @@ mcp_server → odoo_service → operations → odoo_client → Odoo XML-RPC
 
 ## Module Map
 
-| Module            | File                                    | Lines | Tests | Purpose                 |
-| ----------------- | --------------------------------------- | ----- | ----- | ----------------------- |
-| Types             | `src/shared/types.py`                   | 95    | 14    | 7 dataclasses           |
-| Config            | `src/shared/config.py`                  | 74    | 8     | Config + agents loader  |
-| Odoo Client       | `src/odoo_service/odoo_client.py`       | 130   | 6     | XML-RPC wrapper         |
-| Router            | `src/odoo_service/router.py`            | 49    | 9     | Keyword dispatch        |
-| Schema Store      | `src/odoo_service/schema_store.py`      | 130   | 7     | Schema cache            |
-| Schema Discovery  | `src/odoo_service/schema_discovery.py`  | 341   | 20    | Model introspection     |
-| Schema Enrichment | `src/odoo_service/schema_enrichment.py` | 147   | 13    | AI aliases/keywords     |
-| Session Store     | `src/odoo_service/session_store.py`     | 77    | 10    | Session state           |
-| MCP Server        | `src/mcp_server/server.py`              | 50    | —     | MCP SDK wrapper         |
+| Module            | File                                    | Lines | Tests | Purpose                                                  |
+| ----------------- | --------------------------------------- | ----- | ----- | -------------------------------------------------------- |
+| Types             | `src/shared/types.py`                   | 95    | 14    | 7 dataclasses                                            |
+| Config            | `src/shared/config.py`                  | 74    | 8     | Config + agents loader                                   |
+| Odoo Client       | `src/odoo_service/odoo_client.py`       | 130   | 6     | XML-RPC wrapper                                          |
+| Router            | `src/odoo_service/router.py`            | 49    | 9     | Keyword dispatch                                         |
+| Schema Store      | `src/odoo_service/schema_store.py`      | 130   | 7     | Schema cache                                             |
+| Schema Discovery  | `src/odoo_service/schema_discovery.py`  | 341   | 20    | Model introspection                                      |
+| Schema Enrichment | `src/odoo_service/schema_enrichment.py` | 147   | 13    | AI aliases/keywords                                      |
+| Session Store     | `src/odoo_service/session_store.py`     | 77    | 10    | Session state                                            |
+| MCP Server        | `src/mcp_server/server.py`              | 50    | —     | MCP SDK wrapper                                          |
 | MCP Tools         | `src/mcp_server/tools.py`               | 485   | 23    | Smart chat_odoo + list_models + list_agents with scoring |
-| Search Operations | `src/operations/search.py`              | 65    | 8     | Record search (field-type-aware operators) |
-| Create Operations | `src/operations/create.py`              | 73    | 4     | Record create + preview |
-| Update Operations | `src/operations/update.py`              | 91    | 8     | Record update + preview changes |
-| Delete Operations | `src/operations/delete.py`              | 73    | 5     | Record delete + confirmation |
-| Analytics Ops     | `src/operations/analytics.py`           | 110   | 8     | read_group aggregation + count_by_state |
-| Date Utils        | `src/shared/date_utils.py`              | 205   | 15    | Natural language date parsing |
-| Service Locator   | `src/odoo_service/service_locator.py`   | 86    | 6     | Lazy singleton access |
-| Transport         | `src/mcp_server/transport.py`           | 44    | 4     | stdio + HTTP modes |
-| Web UI            | `webapp.py`                             | ~120  | —     | Flask chat interface |
-| Wizard            | `installer/wizard.py`                   | ~200  | 7     | DMG setup wizard |
+| Search Operations | `src/operations/search.py`              | 65    | 8     | Record search (field-type-aware operators)               |
+| Create Operations | `src/operations/create.py`              | 73    | 4     | Record create + preview                                  |
+| Update Operations | `src/operations/update.py`              | 91    | 8     | Record update + preview changes                          |
+| Delete Operations | `src/operations/delete.py`              | 73    | 5     | Record delete + confirmation                             |
+| Analytics Ops     | `src/operations/analytics.py`           | 110   | 8     | read_group aggregation + count_by_state                  |
+| Date Utils        | `src/shared/date_utils.py`              | 205   | 15    | Natural language date parsing                            |
+| Service Locator   | `src/odoo_service/service_locator.py`   | 86    | 6     | Lazy singleton access                                    |
+| Transport         | `src/mcp_server/transport.py`           | 44    | 4     | stdio + HTTP modes                                       |
+| Web UI            | `webapp.py`                             | ~120  | —     | Flask chat interface                                     |
+| Wizard            | `installer/wizard.py`                   | ~200  | 7     | DMG setup wizard                                         |
 
 **Total: ~2,500 lines of production code, 199 tests across 16 test files**

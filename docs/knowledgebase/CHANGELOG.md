@@ -13,6 +13,7 @@ All notable changes to the mcp_odoo project.
 - **Integration tests** — 5 end-to-end tests simulating full pipeline: message → route → schema → field alias mapping → preview → create.
 
 ### Stats
+
 - **199 tests** (+22 from baseline)
 - **~2,500 lines** of production code across 16 modules
 - Zero internal LLM calls in runtime code
