@@ -1,0 +1,73 @@
+{
+    "key": "sale_order",
+    "label": "Sales Orders",
+    "odoo_model": "sale.order",
+    "summary": "Sales order document for managing customer orders, quotations, and revenue tracking.",
+    "all_fields": {
+        "name": {
+            "name": "name",
+            "field_type": "char",
+            "string": "Order Reference",
+            "required": true,
+            "usage_frequency": 15
+        },
+        "partner_id": {
+            "name": "partner_id",
+            "field_type": "many2one",
+            "string": "Customer",
+            "required": true,
+            "relation": "res.partner",
+            "usage_frequency": 12
+        },
+        "date_order": {
+            "name": "date_order",
+            "field_type": "datetime",
+            "string": "Order Date",
+            "required": true,
+            "usage_frequency": 8
+        },
+        "state": {
+            "name": "state",
+            "field_type": "selection",
+            "string": "Status",
+            "selection": [["draft", "Quotation"], ["sent", "Quotation Sent"], ["sale", "Sales Order"], ["done", "Locked"], ["cancel", "Cancelled"]],
+            "usage_frequency": 10
+        },
+        "amount_total": {
+            "name": "amount_total",
+            "field_type": "monetary",
+            "string": "Total",
+            "usage_frequency": 8,
+            "store": true
+        },
+        "order_line": {
+            "name": "order_line",
+            "field_type": "one2many",
+            "string": "Order Lines",
+            "relation": "sale.order.line",
+            "usage_frequency": 5
+        }
+    },
+    "create_fields": ["name", "partner_id", "date_order", "order_line"],
+    "search_fields": ["name", "partner_id", "state", "date_order"],
+    "required_fields": ["partner_id"],
+    "field_aliases": {
+        "customer": "partner_id",
+        "client": "partner_id",
+        "date": "date_order",
+        "status": "state",
+        "total": "amount_total",
+        "reference": "name",
+        "lines": "order_line"
+    },
+    "match_keywords": ["sale", "order", "quotation", "quote", "SO", "revenue", "sales", "customer order"],
+    "sub_models": [
+        {
+            "field_name": "order_line",
+            "related_model": "sale.order.line",
+            "relation_field": "order_id",
+            "is_one_to_many": true
+        }
+    ],
+    "usage_frequency_total": 58
+}

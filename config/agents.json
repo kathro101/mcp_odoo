@@ -1,0 +1,42 @@
+{
+    "logistics": {
+        "key": "logistics",
+        "name": "Logistics Agent",
+        "description": "Handles shipments, stock moves, deliveries, and warehouse operations",
+        "default_model": "stock_picking",
+        "keywords": ["shipment", "delivery", "stock", "warehouse", "picking", "freight", "carrier", "tracking", "transfer", "move", "inventory", "receipt"],
+        "models": ["stock.picking", "stock.move", "stock.quant", "shipment.tracking"]
+    },
+    "salesman": {
+        "key": "salesman",
+        "name": "Sales Agent",
+        "description": "Handles sales orders, quotations, customers, and pricing",
+        "default_model": "sale_order",
+        "keywords": ["sale", "order", "quotation", "customer", "pricing", "quote", "SO", "revenue", "opportunity", "pipeline", "lead"],
+        "models": ["sale.order", "sale.order.line", "res.partner", "crm.lead"]
+    },
+    "accountant": {
+        "key": "accountant",
+        "name": "Accounting Agent",
+        "description": "Handles invoices, payments, journal entries, and financial reports",
+        "default_model": "account_move",
+        "keywords": ["invoice", "payment", "bill", "journal", "account", "ledger", "tax", "fiscal", "balance", "credit", "debit", "reconcile", "financial"],
+        "models": ["account.move", "account.move.line", "account.payment", "account.journal"]
+    },
+    "purchaser": {
+        "key": "purchaser",
+        "name": "Purchasing Agent",
+        "description": "Handles purchase orders, RFQs, vendors, and procurement",
+        "default_model": "purchase_order",
+        "keywords": ["purchase", "PO", "vendor", "supplier", "procurement", "RFQ", "buy", "acquire", "purchasing", "requisition"],
+        "models": ["purchase.order", "purchase.order.line", "res.partner", "product.supplierinfo"]
+    },
+    "cs": {
+        "key": "cs",
+        "name": "Customer Service Orchestrator",
+        "description": "Routes user requests to the appropriate specialist agent",
+        "default_model": null,
+        "keywords": ["help", "hello", "hi", "what can you do", "menu", "options", "list"],
+        "models": []
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "odoo": {
+        "url": "https://your-odoo-instance.odoo.com",
+        "database": "your-database",
+        "username": "your-username",
+        "api_key": "your-api-key"
+    },
+    "mcp": {
+        "transport": "stdio",
+        "http_port": 8080
+    },
+    "schema": {
+        "cache_dir": "config/schemas",
+        "enrichment": {
+            "enabled": true,
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-20250514"
+        }
+    }
+}

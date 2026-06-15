@@ -1,0 +1,53 @@
+"""Stateless Odoo search operations.
+
+Pure functions that take OdooClient + ModelSchema + parameters →
+return structured result dicts.  No classes, no state, no AI.
+"""
+
+from __future__ import annotations
+
+from src.odoo_service.odoo_client import OdooClient
+from src.shared.types import ModelSchema
+
+
+def search_records(
+    odoo: OdooClient,
+    schema: ModelSchema,
+    filters: dict[str, str],
+    limit: int = 20,
+    offset: int = 0,
+) -> dict:
+    """Search for records in an Odoo model.
+
+    Args:
+        odoo: OdooClient instance.
+        schema: ModelSchema for the target model.
+        filters: Dict of field_name -> search_value. Uses ilike matching.
+        limit: Max records to return.
+        offset: Number of records to skip.
+
+    Returns:
+        {"status": "success", "records": [...], "count": N}
+        or {"status": "error", "message": "..."}
+    """
+    domain = []
+    for field, value in filters.items():
+        if value:
+            domain.append((field, "ilike", value))
+
+    result = odoo.search_read(
+        schema.odoo_model,
+        domain,
+        fields=schema.search_fields or None,
+        limit=limit,
+        offset=offset,
+    )
+
+    if isinstance(result, dict) and result.get("status") == "error":
+        return result
+
+    return {
+        "status": "success",
+        "records": result,
+        "count": len(result),
+    }

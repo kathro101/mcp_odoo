@@ -1,0 +1,23 @@
+# MCP Odoo
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.spec
+.env
+.venv/
+venv/
+config/config.json
+logs/
+mlruns/
+*.log
+.DS_Store
+.vscode/
+.claude/
+.coverage
+htmlcov/
+.pytest_cache/
