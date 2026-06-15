@@ -274,3 +274,146 @@ class TestChatOdooActionDispatch:
 
         text = result[0]["text"]
         assert "model is required" in text.lower()
+
+
+# ── Tests: Enhanced list_models ────────────────────────────────────────
+
+
+def _make_schema_list() -> list:
+    """Create multiple schemas for testing list_models."""
+    from src.shared.types import FieldInfo, ModelSchema
+
+    return [
+        ModelSchema(
+            key="stock_picking",
+            label="Transfers",
+            odoo_model="stock.picking",
+            summary="Stock transfer document for moving inventory between locations.",
+            all_fields={
+                "name": FieldInfo(
+                    name="name", field_type="char", string="Reference", required=True
+                ),
+                "partner_id": FieldInfo(
+                    name="partner_id", field_type="many2one", string="Contact", required=True
+                ),
+            },
+            required_fields=["name", "partner_id"],
+            match_keywords=["shipment", "delivery", "transfer", "picking", "stock move"],
+        ),
+        ModelSchema(
+            key="sale_order",
+            label="Sales Orders",
+            odoo_model="sale.order",
+            summary="Sales order for managing customer orders and quotations.",
+            all_fields={
+                "name": FieldInfo(name="name", field_type="char", string="Order Reference"),
+            },
+            required_fields=["partner_id"],
+            match_keywords=["sale", "order", "quotation", "SO"],
+        ),
+        ModelSchema(
+            key="account_move",
+            label="Journal Entries",
+            odoo_model="account.move",
+            summary="Journal entries for invoices, bills, and payments.",
+            all_fields={
+                "name": FieldInfo(name="name", field_type="char", string="Reference"),
+            },
+            required_fields=["date"],
+            match_keywords=["invoice", "bill", "payment", "journal"],
+        ),
+    ]
+
+
+class TestScoreModelRelevance:
+    """Tests for score_model_relevance()."""
+
+    def test_keyword_match_adds_length(self):
+        """Keyword 'shipment' (len=8) in message should add 8 to score."""
+        from src.mcp_server.tools import score_model_relevance
+
+        schema = _make_schema_list()[0]  # stock_picking with keyword "shipment"
+        score = score_model_relevance(schema, "Create a shipment for ACME Corp")
+        assert score >= 8  # "shipment" match = 8
+
+    def test_no_match_returns_zero(self):
+        """Irrelevant message should return 0."""
+        from src.mcp_server.tools import score_model_relevance
+
+        schema = _make_schema_list()[0]  # stock_picking
+        score = score_model_relevance(schema, "What is the weather today?")
+        assert score == 0
+
+    def test_label_match_adds_score(self):
+        """Label 'Transfers' in message should add 5."""
+        from src.mcp_server.tools import score_model_relevance
+
+        schema = _make_schema_list()[0]  # label: "Transfers"
+        score = score_model_relevance(schema, "Show me all Transfers")
+        assert score >= 5  # label match = 5
+
+    def test_multiple_keywords_summed(self):
+        """Multiple keyword matches should sum their lengths."""
+        from src.mcp_server.tools import score_model_relevance
+
+        schema = _make_schema_list()[0]  # keywords: shipment(8) + delivery(8) + transfer(8)
+        score = score_model_relevance(schema, "shipment delivery transfer")
+        assert score >= 24  # 8 + 8 + 8 = 24
+
+    def test_schema_with_more_keywords_scores_higher(self):
+        """stock_picking should score higher than sale_order for 'shipment' message."""
+        from src.mcp_server.tools import score_model_relevance
+
+        stock = _make_schema_list()[0]  # keywords include "shipment"
+        sale = _make_schema_list()[1]  # keywords don't include "shipment"
+
+        stock_score = score_model_relevance(stock, "Create a shipment")
+        sale_score = score_model_relevance(sale, "Create a shipment")
+
+        assert stock_score > sale_score
+
+
+class TestEnhancedListModels:
+    """Tests for enhanced list_models_handler with message parameter."""
+
+    @patch("src.mcp_server.tools._get_schema_store")
+    async def test_list_models_with_message_returns_top_scored(self, mock_store):
+        """Passing a message should return models sorted by relevance."""
+        from src.mcp_server.tools import list_models_handler
+
+        mock_store.return_value.list_all.return_value = _make_schema_list()
+
+        result = await list_models_handler(message="Create a shipment")
+
+        text = result[0]["text"]
+        # stock_picking should appear first (has "shipment" keyword)
+        assert "stock.picking" in text
+        assert "relevance" in text.lower() or "top" in text.lower()
+
+    @patch("src.mcp_server.tools._get_schema_store")
+    async def test_list_models_without_message_returns_all(self, mock_store):
+        """No message should return all models (backward compatible)."""
+        from src.mcp_server.tools import list_models_handler
+
+        mock_store.return_value.list_all.return_value = _make_schema_list()
+
+        result = await list_models_handler()
+
+        text = result[0]["text"]
+        assert "stock.picking" in text
+        assert "sale.order" in text
+        assert "account.move" in text
+
+    @patch("src.mcp_server.tools._get_schema_store")
+    async def test_list_models_includes_keywords_and_fields(self, mock_store):
+        """Response should include keywords and field info."""
+        from src.mcp_server.tools import list_models_handler
+
+        mock_store.return_value.list_all.return_value = _make_schema_list()
+
+        result = await list_models_handler(message="shipment")
+
+        text = result[0]["text"]
+        assert "shipment" in text
+        assert "delivery" in text
+        assert "required" in text.lower()

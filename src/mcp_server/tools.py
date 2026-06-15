@@ -76,11 +76,20 @@ TOOLS: list[Tool] = [
     Tool(
         name="list_models",
         description=(
-            "List all available Odoo models and their fields. Use this to "
-            "discover what data is available before constructing a chat_odoo "
-            "request."
+            "List available Odoo models. Use this to discover what data "
+            "is available. Optionally pass a user message to get models "
+            "sorted by relevance to the message (for semantic matching "
+            "when the keyword router fails)."
         ),
-        inputSchema={"type": "object", "properties": {}},
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "description": "Optional user message for relevance scoring",
+                },
+            },
+        },
     ),
     Tool(
         name="list_agents",
@@ -354,23 +363,96 @@ def _format_field_detail(fi) -> str:
     return "".join(parts)
 
 
-async def list_models_handler() -> list[dict]:
-    """Handle list_models: return all available model schemas."""
+async def list_models_handler(message: str = "", top_n: int = 10) -> list[dict]:
+    """Handle list_models: return available model schemas.
+
+    When message is provided, models are scored by relevance
+    and sorted with the best matches first.  Claude can use this
+    to semantically discover models when keyword routing fails.
+
+    Args:
+        message: Optional user message for relevance scoring.
+        top_n: Max models to return when scoring (default 10).
+    """
     store = _get_schema_store()
     schemas = store.list_all()
 
-    lines = [f"Available Odoo Models ({len(schemas)}):", ""]
-    for schema in sorted(schemas, key=lambda s: s.label):
-        lines.append(f"### {schema.label} (`{schema.odoo_model}`)")
-        if schema.summary:
-            lines.append(f"  {schema.summary}")
-        lines.append(f"  Key: `{schema.key}`")
-        create_fields = schema.create_fields[:10]
-        if create_fields:
-            lines.append(f"  Fields: {', '.join(create_fields)}")
-        lines.append("")
+    if message:
+        scored = [(score_model_relevance(s, message), s) for s in schemas]
+        scored.sort(key=lambda x: x[0], reverse=True)
+        top = scored[:top_n]
+
+        lines = [
+            f"Available Odoo Models ({len(schemas)}) — "
+            f"top {len(top)} by relevance to: {message[:80]}",
+            "",
+        ]
+        for score, schema in top:
+            lines.extend(_format_model_entry(schema, score))
+    else:
+        lines = [f"Available Odoo Models ({len(schemas)}):", ""]
+        for schema in sorted(schemas, key=lambda s: s.label):
+            lines.extend(_format_model_entry(schema))
 
     return [{"type": "text", "text": "\n".join(lines)}]
+
+
+def score_model_relevance(schema, message: str) -> int:
+    """Score a model's relevance to a user message.
+
+    Pure Python — zero tokens, zero API calls.
+
+    Scoring criteria (weighted):
+    1. match_keywords substring matches — weight = keyword length
+    2. Label exact match — weight = 5
+    3. Model name words match — weight = 3 per word
+    4. Summary word overlap — weight = 1 per matching word
+    """
+    msg = message.lower()
+    score = 0
+
+    # Keyword matches (longer keywords = better match)
+    for kw in schema.match_keywords:
+        if kw.lower() in msg:
+            score += len(kw)
+
+    # Label match
+    if schema.label.lower() in msg:
+        score += 5
+
+    # Model name words match
+    model_words = schema.odoo_model.replace(".", " ").lower().split()
+    msg_words = set(msg.split())
+    for word in model_words:
+        if word in msg_words:
+            score += 3
+
+    # Summary word overlap
+    if schema.summary:
+        summary_words = set(schema.summary.lower().split())
+        score += len(summary_words & msg_words)
+
+    return score
+
+
+def _format_model_entry(schema, score: int | None = None) -> list[str]:
+    """Format a single model entry for Claude."""
+    lines = [
+        f"### {schema.label} (`{schema.odoo_model}`)"
+        + (f" [relevance: {score}]" if score is not None else ""),
+    ]
+    if schema.summary:
+        lines.append(f"  {schema.summary}")
+    if schema.match_keywords:
+        kws = schema.match_keywords[:8]
+        lines.append(f"  Keywords: {', '.join(kws)}")
+    field_count = len(schema.all_fields)
+    req = schema.required_fields[:5]
+    req_str = f" (required: {', '.join(req)})" if req else ""
+    lines.append(f"  Fields: {field_count}{req_str}")
+    lines.append(f"  Key: `{schema.key}`")
+    lines.append("")
+    return lines
 
 
 async def list_agents_handler() -> list[dict]:

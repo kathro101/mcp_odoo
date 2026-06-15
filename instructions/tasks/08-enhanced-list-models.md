@@ -26,6 +26,7 @@ Claude needs a way to **semantically search** across all models using its own LL
 Make `list_models` Claude-friendly so Claude can do the semantic matching itself:
 
 ### Current `list_models` Response
+
 ```
 Available Odoo Models (5):
 ### Transfers (stock.picking)
@@ -36,6 +37,7 @@ Available Odoo Models (5):
 ```
 
 ### Proposed `list_models` Response
+
 ```
 Available Odoo Models (47) — top 10 by relevance:
 ### Transfers (stock.picking) [score: 15]
@@ -134,16 +136,17 @@ Turn 2:
 
 ## Files to Create/Modify
 
-| File | Action | Description |
-|------|--------|-------------|
-| `src/mcp_server/tools.py` | Modify | Update `list_models_handler` to accept optional `message` param and return scored/filtered results |
-| `src/mcp_server/tools.py` | Add | `score_model_relevance()` function |
-| `src/mcp_server/tools.py` | Add | `_format_models_for_claude()` function |
-| `tests/test_mcp_tools_v2.py` | Add | 5 new tests for enhanced list_models |
+| File                         | Action | Description                                                                                        |
+| ---------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `src/mcp_server/tools.py`    | Modify | Update `list_models_handler` to accept optional `message` param and return scored/filtered results |
+| `src/mcp_server/tools.py`    | Add    | `score_model_relevance()` function                                                                 |
+| `src/mcp_server/tools.py`    | Add    | `_format_models_for_claude()` function                                                             |
+| `tests/test_mcp_tools_v2.py` | Add    | 5 new tests for enhanced list_models                                                               |
 
 ## Tests (TDD Required)
 
 ### `list_models` with message
+
 1. **`test_list_models_with_message_returns_scored`** — Passing a message returns models sorted by relevance score
 2. **`test_list_models_relevance_scores_keywords`** — Keyword matches contribute to score
 3. **`test_list_models_relevance_scores_label`** — Label matches contribute to score
@@ -151,6 +154,7 @@ Turn 2:
 5. **`test_list_models_limits_to_top_n`** — Only returns top N by default
 
 ### Scoring function
+
 6. **`test_score_model_relevance_keyword_match`** — "shipment" message scores stock_picking higher than sale_order
 7. **`test_score_model_relevance_no_match_returns_zero`** — Irrelevant message returns 0
 8. **`test_score_model_relevance_label_exact_match`** — "Transfers" matches stock_picking label
