@@ -39,6 +39,7 @@ Full rewrite of `agentic_tool_odoo` (~15,000 lines) into a clean MCP-first archi
 | `src/shared/date_utils.py`              | 164   | 15    | Natural language date parsing (stdlib only)                                                    |
 
 ### Test Suite
+
 - **140 tests** across 14 test files
 - All unit tests mocked — never hit live Odoo
 - Framework: pytest with pytest-asyncio
