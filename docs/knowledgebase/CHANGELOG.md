@@ -2,6 +2,22 @@
 
 All notable changes to the mcp_odoo project.
 
+## [2.1.0] — 2026-06-15
+
+### ✨ Smart Schema Pipeline
+
+- **Enhanced `list_models`** — semantic model scoring (zero tokens). Pass a user message to get models sorted by relevance using keyword, label, and summary matching.
+- **Richer schema output** — `help_text` on every field (captured from Odoo's `fields_get()`), selection labels show both key and display name (`draft (Draft)` instead of just `draft`).
+- **Workflow hints** — AI-generated domain knowledge for custom models. Generated once during enrichment, cached forever. Tells Claude how fields interact ("dates on parent apply to sub-model lines"), common user phrases ("road direct" → template lookup), and cross-model workflows ("from SO123" → link to sale_order_id).
+- **DMG wizard installer** — Flask-based 3-step setup wizard packaged as macOS .app/.dmg. Tests connection, saves config, auto-configures Claude Desktop, optional schema discovery.
+- **Integration tests** — 5 end-to-end tests simulating full pipeline: message → route → schema → field alias mapping → preview → create.
+
+### Stats
+- **199 tests** (+22 from baseline)
+- **~2,500 lines** of production code across 16 modules
+- Zero internal LLM calls in runtime code
+- All pre-commit hooks green (ruff, ruff-format, vulture)
+
 ## [2.0.0] — 2026-06-15
 
 ### ✨ Initial Release — Complete Rewrite
