@@ -154,3 +154,21 @@ class TestWizardRoutes:
             data = response.get_json()
             assert data["status"] == "ok"
             assert "Restart Claude" in data["message"]
+
+
+class TestSchemaDiscoveryErrorDict:
+    def test_filter_handles_error_dict(self):
+        from src.odoo_service.schema_discovery import SchemaDiscovery
+
+        disc = SchemaDiscovery(MagicMock())
+        result = disc._filter_user_facing_models({"status": "error", "message": "conn refused"})
+        assert result == []
+
+    def test_list_modules_handles_error_dict(self):
+        from src.odoo_service.schema_discovery import SchemaDiscovery
+
+        mock = MagicMock()
+        mock.search_read.return_value = {"status": "error", "message": "conn refused"}
+        disc = SchemaDiscovery(mock)
+        result = disc._list_installed_modules()
+        assert result == []

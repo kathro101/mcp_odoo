@@ -152,12 +152,16 @@ class SchemaDiscovery:
 
     def _list_installed_modules(self) -> list[dict]:
         """Fetch all installed model records from ir.model."""
-        return self.odoo.search_read(
+        result = self.odoo.search_read(
             "ir.model",
             [("state", "=", "base")],
             fields=["model", "name"],
             limit=5000,
         )
+        # Guard against Odoo error dicts
+        if isinstance(result, dict):
+            return []
+        return result
 
     def _filter_user_facing_models(self, modules: list[dict]) -> list[tuple[str, str]]:
         """Filter out technical/transient models, keep user-facing ones.
@@ -168,6 +172,10 @@ class SchemaDiscovery:
         Returns:
             List of (model_name, label) tuples for user-facing models.
         """
+        # Guard: if Odoo returned an error dict instead of a list
+        if isinstance(modules, dict):
+            return []
+
         result: list[tuple[str, str]] = []
         for mod in modules or []:
             name = mod.get("model", "")
