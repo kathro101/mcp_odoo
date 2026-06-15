@@ -6,15 +6,16 @@ All notable changes to the mcp_odoo project.
 
 ### ✨ Initial Release — Complete Rewrite
 
-Full rewrite of `agentic_tool_odoo` (~15,000 lines) into a clean MCP-first architecture (~2,000 lines, ~83% reduction).
+Full rewrite of `agentic_tool_odoo` (~15,000 lines) into a clean MCP-first architecture (~2,500 lines, ~83% reduction).
 
 ### Architecture
 
 - **No internal LLM** — Claude Desktop IS the AI brain. All LLM calls removed from runtime.
 - **Thin MCP server** — 3 tools: `chat_odoo`, `list_models`, `list_agents`
-- **Stateless operations** — search, create (update/delete/analytics pending)
+- **Complete CRUD** — search, create, update, delete, analytics
 - **Keyword-based routing** — no LLM needed for agent dispatch
 - **Flat config** — single `config.json`, schemas split per model
+- **Date utilities** — natural language date parsing (stdlib only)
 
 ### Modules Implemented
 
@@ -32,8 +33,15 @@ Full rewrite of `agentic_tool_odoo` (~15,000 lines) into a clean MCP-first archi
 | `src/mcp_server/tools.py`               | 180   | 8     | 3 tool definitions + handlers                                                                  |
 | `src/operations/search.py`              | 55    | 5     | Search records                                                                                 |
 | `src/operations/create.py`              | 73    | 4     | Create + preview records                                                                       |
+| `src/operations/update.py`              | 72    | 8     | Update records + preview changes                                                               |
+| `src/operations/delete.py`              | 63    | 5     | Delete records + confirmation                                                                  |
+| `src/operations/analytics.py`           | 102   | 8     | read_group aggregation + count_by_state                                                        |
+| `src/shared/date_utils.py`              | 164   | 15    | Natural language date parsing (stdlib only)                                                    |
 
-### Removed (vs old codebase)
+### Test Suite
+- **140 tests** across 14 test files
+- All unit tests mocked — never hit live Odoo
+- Framework: pytest with pytest-asyncio
 
 - `conversation.py` (1,383 lines) — God class, replaced by operations
 - `prompt_builder.py` (506 lines) — no internal LLM
