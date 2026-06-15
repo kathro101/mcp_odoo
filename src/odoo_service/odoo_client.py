@@ -49,17 +49,10 @@ class OdooClient:
         args: list,
         kwargs: dict | None = None,
     ) -> list | dict | int | bool:
-        """Execute an arbitrary Odoo model method via execute_kw.
+        """Execute an arbitrary Odoo model method via execute_kw."""
+        if not model:
+            return {"status": "error", "message": "Model name is required"}
 
-        Args:
-            model: Odoo model technical name (e.g. 'res.partner').
-            method: ORM method name (e.g. 'search', 'read', 'create').
-            args: Positional arguments for the method.
-            kwargs: Keyword arguments for the method.
-
-        Returns:
-            Raw Odoo result on success, or error dict on failure.
-        """
         try:
             self._authenticate()
             return self._object.execute_kw(  # type: ignore[union-attr]

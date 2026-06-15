@@ -23,6 +23,7 @@ def preview_record(schema: ModelSchema, params: dict) -> dict:
         {"status": "success"|"needs_input", "filled": [...], "missing": [...],
          "optional": [...]}
     """
+    params = params or {}
     filled = [f for f in schema.create_fields if f in params and params[f]]
     missing = [f for f in schema.required_fields if f not in params or not params.get(f)]
     optional = [f for f in schema.create_fields if f in params and f not in schema.required_fields]

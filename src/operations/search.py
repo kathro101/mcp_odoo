@@ -6,6 +6,8 @@ return structured result dicts.  No classes, no state, no AI.
 
 from __future__ import annotations
 
+import contextlib
+
 from src.odoo_service.odoo_client import OdooClient
 from src.shared.types import ModelSchema
 
@@ -31,15 +33,13 @@ def search_records(
         or {"status": "error", "message": "..."}
     """
     domain = []
-    for field, value in filters.items():
+    for field, value in (filters or {}).items():
         if not value:
             continue
         fi = schema.all_fields.get(field)
         if fi and fi.field_type in ("integer", "float", "monetary", "many2one"):
-            try:
+            with contextlib.suppress(ValueError, TypeError):
                 value = int(value)
-            except (ValueError, TypeError):
-                pass
             domain.append((field, "=", value))
         else:
             domain.append((field, "ilike", str(value)))
