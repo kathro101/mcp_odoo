@@ -237,9 +237,23 @@ def open_webui():
 
 
 def main():
-    """Run the setup wizard. Opens browser automatically."""
+    """Run the setup wizard. Opens browser after server is ready."""
+    import threading
+    import time
+
     port = int(os.environ.get("PORT", "8080"))
-    webbrowser.open(f"http://127.0.0.1:{port}")
+
+    def open_browser():
+        """Wait for Flask to be ready, then open browser."""
+        time.sleep(1.5)
+        try:
+            webbrowser.open(f"http://127.0.0.1:{port}")
+        except Exception:
+            # Fallback: write URL to temp file
+            url_file = Path.home() / "mcp_odoo_setup_url.txt"
+            url_file.write_text(f"http://127.0.0.1:{port}\n")
+
+    threading.Thread(target=open_browser, daemon=True).start()
     app.run(host="127.0.0.1", port=port, debug=False)
 
 
