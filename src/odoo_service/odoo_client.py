@@ -38,7 +38,20 @@ class OdooClient:
         try:
             self._common = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/common")
             self._object = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/object")
-            self._uid = self._common.authenticate(self.database, self.username, self.api_key)
+            # Try with user_agent_env for Odoo 16+, fall back for older versions
+            try:
+                self._uid = self._common.authenticate(
+                    self.database,
+                    self.username,
+                    self.api_key,
+                    {"user_agent_env": "mcp_odoo"},
+                )
+            except TypeError:
+                self._uid = self._common.authenticate(
+                    self.database,
+                    self.username,
+                    self.api_key,
+                )
         except (ConnectionRefusedError, OSError) as exc:
             raise ConnectionRefusedError(f"Cannot connect to Odoo at {self.url}: {exc}") from exc
 
