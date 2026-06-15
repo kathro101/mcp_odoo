@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Odoo — Setup Wizard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 520px;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .step { display: none; }
+        .step.active { display: block; }
+
+        label {
+            display: block;
+            margin: 12px 0 4px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #007aff;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover:not(:disabled) { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: #007aff; color: #fff; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-danger { background: #ff3b30; color: #fff; }
+        .btn-test { background: #30d158; color: #fff; }
+        .flex-1 { flex: 1; }
+
+        .status {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: none;
+        }
+        .status.show { display: block; }
+        .status.success { background: rgba(48,209,88,0.15); color: #30d158; }
+        .status.error { background: rgba(255,59,48,0.15); color: #ff3b30; }
+        .status.info { background: rgba(0,122,255,0.15); color: #007aff; }
+
+        .steps-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .steps-indicator span {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            transition: background 0.3s;
+        }
+        .steps-indicator span.done { background: #30d158; }
+        .steps-indicator span.current { background: #007aff; }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: auto;
+            accent-color: #007aff;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .progress-bar div {
+            height: 100%;
+            background: #007aff;
+            border-radius: 3px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1>MCP Odoo Setup</h1>
+        <h2>Connect Claude Desktop to your Odoo ERP</h2>
+
+        <div class="steps-indicator">
+            <span id="dot1" class="current"></span>
+            <span id="dot2"></span>
+            <span id="dot3"></span>
+        </div>
+
+        <!-- Step 1: Odoo Connection -->
+        <div id="step1" class="step active">
+            <label>Odoo URL</label>
+            <input type="text" id="url" placeholder="https://your-company.odoo.com" />
+
+            <label>Database</label>
+            <input type="text" id="database" placeholder="your-database" />
+
+            <label>Username (email)</label>
+            <input type="text" id="username" placeholder="admin@company.com" />
+
+            <label>API Key</label>
+            <input type="password" id="api_key" placeholder="Paste your Odoo API key" />
+
+            <div id="connStatus" class="status"></div>
+
+            <div class="button-group">
+                <button class="btn-test" onclick="testConnection()">Test Connection</button>
+                <span class="flex-1"></span>
+                <button class="btn-primary" onclick="nextStep(2)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Claude Desktop -->
+        <div id="step2" class="step">
+            <p style="margin-bottom:16px; line-height:1.5; color:#aaa;">
+                MCP Odoo needs to register with Claude Desktop so Claude can
+                access your Odoo data. We'll add an entry to your
+                Claude Desktop configuration.
+            </p>
+            <p style="font-size:0.8rem; color:#666; margin-bottom:16px;">
+                Config: ~/Library/Application Support/Claude/claude_desktop_config.json
+            </p>
+
+            <div id="claudeStatus" class="status"></div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep(1)">← Back</button>
+                <span class="flex-1"></span>
+                <button class="btn-primary" onclick="configureClaude()">
+                    Configure Claude Desktop
+                </button>
+            </div>
+            <div class="button-group">
+                <button class="btn-primary" onclick="nextStep(3)" style="width:100%;">
+                    Skip — Next →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Schema Discovery -->
+        <div id="step3" class="step">
+            <p style="margin-bottom:16px; line-height:1.5; color:#aaa;">
+                Discover your Odoo models to enable smart AI responses.
+                This takes ~30 seconds and runs once.
+            </p>
+            <div class="checkbox-row">
+                <input type="checkbox" id="discoverCheck" checked />
+                <label style="margin:0;">Discover Odoo models</label>
+            </div>
+            <div class="progress-bar" id="progressContainer" style="display:none;">
+                <div id="progressBar"></div>
+            </div>
+            <div id="discoverStatus" class="status"></div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep(2)">← Back</button>
+                <span class="flex-1"></span>
+                <button class="btn-primary" id="btnFinish" onclick="finish()">
+                    Finish Setup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+
+function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    ['dot1','dot2','dot3'].forEach((d, i) => {
+        const dot = document.getElementById(d);
+        dot.className = i + 1 < n ? 'done' : i + 1 === n ? 'current' : '';
+    });
+    currentStep = n;
+}
+
+function nextStep(n) { showStep(n); }
+function prevStep(n) { showStep(n); }
+
+async function testConnection() {
+    const status = document.getElementById('connStatus');
+    status.className = 'status show info';
+    status.textContent = 'Testing connection...';
+
+    const data = {
+        url: document.getElementById('url').value,
+        database: document.getElementById('database').value,
+        username: document.getElementById('username').value,
+        api_key: document.getElementById('api_key').value,
+    };
+
+    try {
+        const resp = await fetch('/api/test-connection', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
+        });
+        const result = await resp.json();
+        if (result.status === 'ok') {
+            status.className = 'status show success';
+            status.textContent = '✅ ' + result.message;
+            // Auto-save on success
+            await saveConfig(data);
+        } else {
+            status.className = 'status show error';
+            status.textContent = '❌ ' + result.message;
+        }
+    } catch (e) {
+        status.className = 'status show error';
+        status.textContent = '❌ Network error: ' + e.message;
+    }
+}
+
+async function saveConfig(data) {
+    await fetch('/api/save-config', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+    });
+}
+
+async function configureClaude() {
+    const status = document.getElementById('claudeStatus');
+    status.className = 'status show info';
+    status.textContent = 'Configuring Claude Desktop...';
+
+    try {
+        const resp = await fetch('/api/configure-claude', {method: 'POST'});
+        const result = await resp.json();
+        if (result.status === 'ok') {
+            status.className = 'status show success';
+            status.textContent = '✅ ' + result.message;
+        } else {
+            status.className = 'status show error';
+            status.textContent = '❌ ' + result.message;
+        }
+    } catch (e) {
+        status.className = 'status show error';
+        status.textContent = '❌ Error: ' + e.message;
+    }
+}
+
+async function finish() {
+    const btn = document.getElementById('btnFinish');
+    btn.disabled = true;
+    btn.textContent = 'Setting up...';
+
+    const doDiscover = document.getElementById('discoverCheck').checked;
+    if (doDiscover) {
+        const status = document.getElementById('discoverStatus');
+        const bar = document.getElementById('progressBar');
+        const container = document.getElementById('progressContainer');
+        status.className = 'status show info';
+        status.textContent = 'Discovering Odoo models...';
+        container.style.display = 'block';
+        bar.style.width = '30%';
+
+        try {
+            const resp = await fetch('/api/discover-schemas', {method: 'POST'});
+            const result = await resp.json();
+            bar.style.width = '100%';
+            if (result.status === 'ok') {
+                status.className = 'status show success';
+                status.textContent = '✅ Discovered ' + result.count + ' models';
+            } else {
+                status.className = 'status show error';
+                status.textContent = '⚠️ ' + result.message;
+            }
+        } catch (e) {
+            status.className = 'status show error';
+            status.textContent = '⚠️ Error: ' + e.message;
+        }
+    }
+
+    setTimeout(() => {
+        document.querySelector('.card').innerHTML =
+            '<h1>✅ Setup Complete!</h1>' +
+            '<p style="margin:16px 0;line-height:1.5;color:#aaa;">' +
+            'MCP Odoo is configured. Restart Claude Desktop to start using the Odoo tools.' +
+            '</p>' +
+            '<p style="font-size:0.8rem;color:#666;">' +
+            'You can close this window now.' +
+            '</p>';
+    }, 1500);
+}
+</script>
+</body>
+</html>
