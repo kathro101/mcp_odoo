@@ -38,15 +38,13 @@ class OdooClient:
         try:
             self._common = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/common")
             self._object = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/object")
-            # Try with user_agent_env for Odoo 16+, fall back for older versions
+            # Odoo 16+ requires user_agent_env as 4th positional arg,
+            # Odoo <16 rejects it with a Fault. Try both.
             try:
                 self._uid = self._common.authenticate(
-                    self.database,
-                    self.username,
-                    self.api_key,
-                    {"user_agent_env": "mcp_odoo"},
+                    self.database, self.username, self.api_key, {}
                 )
-            except TypeError:
+            except xmlrpc.client.Fault:
                 self._uid = self._common.authenticate(
                     self.database,
                     self.username,

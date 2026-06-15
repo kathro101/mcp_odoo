@@ -24,6 +24,29 @@ class TestOdooClient:
         assert client.username == "admin"
         assert client.api_key == "secret"
 
+    def test_authenticate_with_user_agent_env(self):
+        """authenticate should pass user_agent_env for Odoo 16+ compatibility."""
+        import xmlrpc.client
+
+        from src.odoo_service.odoo_client import OdooClient
+
+        mock_common = MagicMock()
+        # First call raises Fault (simulating old Odoo rejecting 4th arg)
+        # Second call succeeds (3-arg fallback)
+        mock_common.authenticate.side_effect = [
+            xmlrpc.client.Fault(1, "missing user_agent_env"),
+            1,
+        ]
+        mock_object = MagicMock()
+
+        with patch("xmlrpc.client.ServerProxy") as mock_proxy:
+            mock_proxy.side_effect = lambda url: mock_common if "common" in url else mock_object
+            client = OdooClient("url", "db", "user", "key")
+            client._authenticate()
+
+        # Should have been called twice — 4-arg failed, 3-arg succeeded
+        assert mock_common.authenticate.call_count == 2
+
     @patch("xmlrpc.client.ServerProxy")
     def test_execute_kw_calls_odoo(self, mock_server_proxy):
         """execute_kw should delegate to xmlrpc.client with correct params."""
