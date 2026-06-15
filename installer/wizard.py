@@ -14,10 +14,11 @@ from __future__ import annotations
 import json
 import logging
 import os
+import sys
 import webbrowser
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template_string, request
 
 from src.odoo_service.odoo_client import OdooClient
 
@@ -40,13 +41,42 @@ _EXECUTABLE_PATH = Path(
     )
 )
 
+
+def _find_template() -> Path | None:
+    """Find wizard.html in PyInstaller bundle or development paths."""
+    # PyInstaller bundle path
+    if getattr(sys, "frozen", False):
+        base = Path(sys._MEIPASS)  # type: ignore[attr-defined]
+        candidate = base / "installer" / "templates" / "wizard.html"
+        if candidate.exists():
+            return candidate
+        # Fallback: try root of bundle
+        candidate = base / "wizard.html"
+        if candidate.exists():
+            return candidate
+
+    # Development paths
+    candidates = [
+        Path(__file__).parent / "templates" / "wizard.html",
+        Path("installer/templates/wizard.html"),
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+
+    return None
+
+
 # ── Routes ─────────────────────────────────────────────────────────────
 
 
 @app.route("/")
 def wizard():
     """Serve the setup wizard page."""
-    return render_template("wizard.html")
+    template_path = _find_template()
+    if template_path:
+        return render_template_string(template_path.read_text())
+    return "<h1>Error: wizard.html not found</h1>", 500
 
 
 @app.route("/api/health")
