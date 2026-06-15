@@ -37,6 +37,23 @@ class TestWizardRoutes:
             response = client.get("/")
             assert response.status_code == 500  # Template not found
 
+    def test_wizard_page_returns_html(self, client):
+        """GET / should return a complete HTML wizard page with required elements."""
+        # Write a real template file to the test config dir
+        template_dir = Path("/tmp/mcp_odoo_test/installer/templates")
+        template_dir.mkdir(parents=True, exist_ok=True)
+        template_path = template_dir / "wizard.html"
+        template_path.write_text(
+            "<html><head><title>MCP Odoo Setup</title></head><body><h1>Wizard</h1></body></html>"
+        )
+
+        with patch("installer.wizard._find_template") as mock_find:
+            mock_find.return_value = template_path
+            response = client.get("/")
+            assert response.status_code == 200
+            assert "MCP Odoo" in response.get_data(as_text=True)
+            assert "Wizard" in response.get_data(as_text=True)
+
     def test_health_returns_ok(self, client):
         """GET /api/health should return ok."""
         response = client.get("/api/health")

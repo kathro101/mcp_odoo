@@ -257,20 +257,29 @@ def open_webui():
 
 def main():
     """Run the setup wizard. Opens browser after server is ready."""
+    import subprocess
     import threading
     import time
 
     port = int(os.environ.get("PORT", "8080"))
+    url = f"http://127.0.0.1:{port}"
 
     def open_browser():
-        """Wait for Flask to be ready, then open browser."""
-        time.sleep(1.5)
-        try:
-            webbrowser.open(f"http://127.0.0.1:{port}")
-        except Exception:
-            # Fallback: write URL to temp file
-            url_file = Path.home() / "mcp_odoo_setup_url.txt"
-            url_file.write_text(f"http://127.0.0.1:{port}\n")
+        """Wait for Flask, then try multiple ways to open the browser."""
+        time.sleep(2.0)
+        # Try multiple approaches in order
+        for cmd in [
+            ["open", url],
+            ["/usr/bin/open", url],
+        ]:
+            try:
+                subprocess.run(cmd, timeout=5, capture_output=True)
+                return
+            except Exception:
+                continue
+        # Last resort: write URL to a file the user can click
+        url_file = Path.home() / "Desktop" / "MCP Odoo Setup.url"
+        url_file.write_text(f"[InternetShortcut]\nURL={url}\n")
 
     threading.Thread(target=open_browser, daemon=True).start()
     app.run(host="127.0.0.1", port=port, debug=False)
