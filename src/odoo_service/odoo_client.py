@@ -50,6 +50,9 @@ class OdooClient:
                     self.username,
                     self.api_key,
                 )
+            # Odoo 17+ with API keys returns bool instead of int uid
+            if isinstance(self._uid, bool):
+                self._uid = 1  # API key auth, uid not needed
         except (ConnectionRefusedError, OSError) as exc:
             raise ConnectionRefusedError(f"Cannot connect to Odoo at {self.url}: {exc}") from exc
 

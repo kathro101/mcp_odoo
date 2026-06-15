@@ -143,8 +143,9 @@ def main():
                     meta.append("not stored")
                 meta_str = f" [{', '.join(meta)}]" if meta else ""
                 print(
-                    f"     {fname} ({fi.field_type}): {fi.string}{meta_str}" \
-                    f" (freq:{fi.usage_frequency})" \
+                    f"     {fname} ({fi.field_type}): {fi.string}{meta_str}"
+                    f" (freq:{fi.usage_frequency})"
+                )
 
     # ── Save ─────────────────────────────────────────────────────────
     if not args.dry_run:
