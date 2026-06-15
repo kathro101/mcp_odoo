@@ -42,6 +42,21 @@ _EXECUTABLE_PATH = Path(
 )
 
 
+def _find_project_root() -> Path:
+    """Find the mcp_odoo project root (where src/ and config/ live)."""
+    # In PyInstaller bundle, look relative to the executable
+    if getattr(sys, "frozen", False):
+        base = Path(sys._MEIPASS)  # type: ignore[attr-defined]
+        if (base / "src").is_dir():
+            return base
+    # In development, look relative to this file
+    candidate = Path(__file__).resolve().parent.parent
+    if (candidate / "src").is_dir():
+        return candidate
+    # Fallback
+    return Path.cwd()
+
+
 def _find_template() -> Path | None:
     """Find wizard.html in PyInstaller bundle or development paths."""
     # PyInstaller bundle path
@@ -166,10 +181,14 @@ def configure_claude():
             existing["mcpServers"] = {}
 
         python_cmd = "python3"
+        project_root = _find_project_root()
         existing["mcpServers"]["odoo"] = {
             "command": python_cmd,
             "args": ["-m", "src.mcp_server.server"],
-            "cwd": str(Path(__file__).resolve().parent.parent),
+            "cwd": str(project_root),
+            "env": {
+                "PYTHONPATH": str(project_root),
+            },
         }
 
         _CLAUDE_CONFIG_PATH.write_text(json.dumps(existing, indent=2))
@@ -210,7 +229,7 @@ def discover_schemas():
         discovery = SchemaDiscovery(odoo, cache_dir=str(_config_dir / "schemas"))
         schemas = discovery.discover()
 
-        # Also save to config/schemas/ so the MCP server finds them
+        # Save to config/schemas/ so the MCP server finds them
         discovery._save_schemas(schemas)
 
         return jsonify(

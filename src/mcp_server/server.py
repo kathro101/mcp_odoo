@@ -6,9 +6,17 @@ No business logic here — all delegation to tools.py.
 
 from __future__ import annotations
 
-from mcp.server import NotificationOptions, Server
+import sys
+from pathlib import Path
 
-from .tools import TOOLS, handle_tool_call
+# Ensure src/ is importable regardless of cwd (for Claude Desktop)
+_project_root = Path(__file__).resolve().parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+from mcp.server import NotificationOptions, Server  # noqa: E402
+
+from .tools import TOOLS, handle_tool_call  # noqa: E402
 
 # ── Server Instance ─────────────────────────────────────────────────────
 
