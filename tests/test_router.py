@@ -195,3 +195,24 @@ class TestRouteMessage:
         result = route_message(long_message, agents)
 
         assert result.agent_key == "logistics"
+
+    def test_tie_break_uses_alphabetical_order(self):
+        """When scores are equal, the agent key determines the winner alphabetically."""
+        from src.odoo_service.router import route_message
+
+        agents = {
+            "z_agent": AgentConfig(
+                key="z_agent", name="Z Agent", description="",
+                keywords=["shipment"], models=[], default_model="z_model",
+            ),
+            "a_agent": AgentConfig(
+                key="a_agent", name="A Agent", description="",
+                keywords=["shipment"], models=[], default_model="a_model",
+            ),
+        }
+
+        # Both have the same keyword "shipment" — same score
+        result = route_message("shipment", agents)
+
+        # a_agent should win because 'a' < 'z'
+        assert result.agent_key == "a_agent"

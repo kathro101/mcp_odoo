@@ -32,8 +32,17 @@ def search_records(
     """
     domain = []
     for field, value in filters.items():
-        if value:
-            domain.append((field, "ilike", value))
+        if not value:
+            continue
+        fi = schema.all_fields.get(field)
+        if fi and fi.field_type in ("integer", "float", "monetary", "many2one"):
+            try:
+                value = int(value)
+            except (ValueError, TypeError):
+                pass
+            domain.append((field, "=", value))
+        else:
+            domain.append((field, "ilike", str(value)))
 
     result = odoo.search_read(
         schema.odoo_model,

@@ -16,6 +16,7 @@ import json
 from mcp.types import Tool
 
 from src.odoo_service.router import route_message
+from src.odoo_service.odoo_client import OdooClient
 from src.odoo_service.schema_store import SchemaStore
 from src.odoo_service.session_store import SessionStore
 from src.operations.create import create_record, preview_record
@@ -102,8 +103,11 @@ _session_store: SessionStore = SessionStore()
 def _get_schema_store(config_path: str = "config/config.json") -> SchemaStore:
     global _schema_store
     if _schema_store is None:
-        config = load_config(config_path)
-        schema_dir = config.get("schema", {}).get("cache_dir", "config/schemas")
+        try:
+            config = load_config(config_path)
+            schema_dir = config.get("schema", {}).get("cache_dir", "config/schemas")
+        except FileNotFoundError:
+            schema_dir = "config/schemas"
         _schema_store = SchemaStore(schema_dir)
     return _schema_store
 
@@ -232,15 +236,27 @@ _odoo_client = None
 
 
 def _get_odoo_client():
-    """Lazy-initialize the OdooClient singleton."""
+    """Lazy-initialize the OdooClient singleton.
+    
+    Validates configuration before creating the client.
+    Raises RuntimeError with clear message if config is missing or incomplete.
+    """
     global _odoo_client
     if _odoo_client is None:
-        from src.odoo_service.odoo_client import OdooClient
-
-        cfg = load_config("config/config.json")
+        try:
+            cfg = load_config("config/config.json")
+        except FileNotFoundError:
+            raise RuntimeError(
+                "Odoo not configured. Create config/config.json first. "
+                "Copy from config/config.template.json."
+            )
         odoo_cfg = cfg.get("odoo", {})
+        if not odoo_cfg.get("url"):
+            raise RuntimeError(
+                "Odoo URL not set. Edit config/config.json and add odoo.url."
+            )
         _odoo_client = OdooClient(
-            url=odoo_cfg.get("url", ""),
+            url=odoo_cfg["url"],
             database=odoo_cfg.get("database", ""),
             username=odoo_cfg.get("username", ""),
             api_key=odoo_cfg.get("api_key", ""),

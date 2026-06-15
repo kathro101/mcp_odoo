@@ -101,25 +101,71 @@ class TestSearchOperations:
         mock_odoo = MagicMock()
         mock_odoo.search_read.return_value = []
 
+        fields = {
+            "name": FieldInfo(name="name", field_type="char", string="Name"),
+            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
+                                    string="Customer", relation="res.partner"),
+            "amount_total": FieldInfo(name="amount_total", field_type="monetary",
+                                      string="Total"),
+            "id": FieldInfo(name="id", field_type="integer", string="ID"),
+        }
         schema = ModelSchema(
             key="res_partner",
             label="Contacts",
             odoo_model="res.partner",
-            all_fields={},
-            search_fields=["name", "email"],
+            all_fields=fields,
+            search_fields=["name", "partner_id", "amount_total", "id"],
         )
 
         result = search_records(
             odoo=mock_odoo,
             schema=schema,
-            filters={"name": "ACME", "email": "test@acme.com"},
+            filters={"name": "ACME", "partner_id": 42},
         )
 
         mock_odoo.search_read.assert_called_once()
         domain = mock_odoo.search_read.call_args[0][1]
         assert len(domain) == 2
         assert ("name", "ilike", "ACME") in domain
-        assert ("email", "ilike", "test@acme.com") in domain
+        assert ("partner_id", "=", 42) in domain
+
+    def test_search_uses_ilike_for_text_fields(self):
+        """Char/text fields should use ilike operator."""
+        from src.operations.search import search_records
+
+        mock_odoo = MagicMock()
+        mock_odoo.search_read.return_value = []
+        fields = {"name": FieldInfo(name="name", field_type="char", string="Name")}
+        schema = ModelSchema(
+            key="test", label="Test", odoo_model="test.model",
+            all_fields=fields, search_fields=["name"],
+        )
+
+        search_records(odoo=mock_odoo, schema=schema, filters={"name": "ACME"})
+        domain = mock_odoo.search_read.call_args[0][1]
+        assert ("name", "ilike", "ACME") in domain
+
+    def test_search_uses_equals_for_integer_fields(self):
+        """Integer/float/monetary/many2one fields should use = operator."""
+        from src.operations.search import search_records
+
+        mock_odoo = MagicMock()
+        mock_odoo.search_read.return_value = []
+        fields = {
+            "id": FieldInfo(name="id", field_type="integer", string="ID"),
+            "partner_id": FieldInfo(name="partner_id", field_type="many2one",
+                                    string="Customer", relation="res.partner"),
+        }
+        schema = ModelSchema(
+            key="test", label="Test", odoo_model="test.model",
+            all_fields=fields, search_fields=["id", "partner_id"],
+        )
+
+        search_records(odoo=mock_odoo, schema=schema,
+                       filters={"id": 42, "partner_id": 5})
+        domain = mock_odoo.search_read.call_args[0][1]
+        assert ("id", "=", 42) in domain
+        assert ("partner_id", "=", 5) in domain
 
 
 class TestCreateOperations:

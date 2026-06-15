@@ -48,7 +48,6 @@ def parse_date_flexible(text: str, tz: timezone | None = None) -> datetime | Non
     text = text.strip().lower()
     tz = tz or timezone.utc
     today = date.today()
-    now = datetime.now(tz=tz)
 
     # ── Absolute dates ──────────────────────────────────────────────
 
