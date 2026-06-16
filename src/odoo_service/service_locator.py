@@ -4,12 +4,15 @@ Provides lazy-initialized singletons for SchemaStore, agents config,
 SessionStore, and OdooClient.  Used by both the MCP server (tools.py)
 and the web UI (webapp.py).
 
-All paths are resolved relative to this file's location, so the server
-works regardless of cwd (critical for Claude Desktop which may use /).
+All paths are resolved relative to the project root, which is:
+- In dev: Path(__file__).resolve().parent.parent.parent
+- In PyInstaller DMG: sys._MEIPASS (the unpacked .app bundle)
+This ensures the server works regardless of cwd.
 """
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from src.odoo_service.odoo_client import OdooClient
@@ -17,9 +20,14 @@ from src.odoo_service.schema_store import SchemaStore
 from src.odoo_service.session_store import SessionStore
 from src.shared.config import load_agents, load_config
 
-# ── Project root (resolved once, works regardless of cwd) ──────────────
+# ── Project root (resolved once, works regardless of cwd or PyInstaller) ──
 
-_project_root = Path(__file__).resolve().parent.parent.parent
+if getattr(sys, "frozen", False):
+    # PyInstaller bundle: all files under sys._MEIPASS
+    _project_root = Path(sys._MEIPASS)  # type: ignore[attr-defined]
+else:
+    # Development: resolve from this file's location
+    _project_root = Path(__file__).resolve().parent.parent.parent
 
 # ── Singletons ─────────────────────────────────────────────────────────
 
