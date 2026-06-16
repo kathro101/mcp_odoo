@@ -310,7 +310,34 @@ def open_webui():
 
 
 def main():
-    """Run the setup wizard. Opens browser after server is ready."""
+    """Run the setup wizard, or if -m src.mcp_server.server is passed,
+    act as the MCP server entry point (for DMG-built Claude Desktop config).
+
+    In a PyInstaller bundle, sys.executable points to THIS binary.
+    Claude Desktop will call this binary with -m src.mcp_server.server.
+    We detect the -m flag and route to the MCP server instead of Flask.
+    """
+    # ── MCP Server mode: -m src.mcp_server.server ──────────────────────
+    if "-m" in sys.argv and "src.mcp_server.server" in sys.argv:
+        import asyncio
+
+        # Suppress Flask banner and other stdout noise for MCP protocol
+        import logging as _logging
+
+        _logging.getLogger("werkzeug").setLevel(_logging.ERROR)
+
+        from mcp.server.stdio import stdio_server
+
+        from src.mcp_server.server import server
+
+        async def _run_mcp():
+            async with stdio_server() as (read_stream, write_stream):
+                await server.run(read_stream, write_stream, server.create_initialization_options())
+
+        asyncio.run(_run_mcp())
+        return
+
+    # ── Wizard mode: start Flask and open browser ─────────────────────
     import subprocess
     import threading
     import time
