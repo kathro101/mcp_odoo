@@ -2,6 +2,20 @@
 
 All notable changes to the mcp_odoo project.
 
+## [2.2.0] — 2026-06-16
+
+### ⚡ Parallel Schema Discovery
+
+- **ThreadPoolExecutor** — schema discovery now runs 10 parallel workers by default. 576 models discovered in ~6 minutes (down from ~60 minutes sequential).
+- **Odoo 17+ compatibility** — `allow_none=True` on `ServerProxy`, auto-detect `authenticate()` return type (bool→uid).
+- **Config backward compat** — supports both `"password"` and `"api_key"` keys in `config.json` (auto-mapped).
+- **`fields_get` optimization** — requests only needed attributes, reducing Odoo server None serialization errors.
+
+### Stats
+- **201 tests** passing, 2 skipped
+- 576 models discoverable in ~6 minutes
+- Zero internal LLM calls in runtime code
+
 ## [2.1.0] — 2026-06-15
 
 ### ✨ Smart Schema Pipeline

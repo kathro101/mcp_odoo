@@ -22,7 +22,7 @@ Claude Desktop (MCP Client) ← THE AI BRAIN
 │  │ router.py         — keyword dispatch│  │
 │  │ odoo_client.py    — XML-RPC wrapper │  │
 │  │ schema_store.py   — schema cache    │  │
-│  │ schema_discovery.py — introspection │  │
+│  │ schema_discovery.py — introspection (parallel) │  │
 │  │ schema_enrichment.py — AI enrichment│  │
 │  │ session_store.py  — per-session state│  │
 │  └────────────────────────────────────┘  │

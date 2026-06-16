@@ -55,8 +55,14 @@ python -m src.mcp_server.server
 # Build the DMG installer
 bash scripts/build_dmg.sh
 
-# Test schema discovery directly against your Odoo:
+# Discover schemas from your Odoo instance (6 min with 10 workers)
 python scripts/run_schema_discovery.py
+
+# Discover specific models (fast)
+python scripts/run_schema_discovery.py --models stock.picking,sale.order,res.partner
+
+# Preview without saving
+python scripts/run_schema_discovery.py --dry-run
 
 # Preview without saving:
 python scripts/run_schema_discovery.py --dry-run
