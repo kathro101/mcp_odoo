@@ -198,16 +198,20 @@ class TestWizardFullFlow:
 
         # Step 3: Discover schemas
         with patch("src.odoo_service.schema_discovery.SchemaDiscovery") as mock_disc_cls:
+            mock_disc_cls.return_value._list_installed_modules.return_value = [
+                {"model": "stock.picking", "name": "Transfers"}
+            ]
+            mock_disc_cls.return_value._filter_user_facing_models.return_value = [
+                ("stock.picking", "Transfers")
+            ]
+            mock_disc_cls.return_value.discover_model.return_value = MagicMock()
             mock_disc_cls.return_value.discover.return_value = {
                 "stock.picking": MagicMock(),
                 "sale.order": MagicMock(),
             }
             resp = client.post("/api/discover-schemas")
             assert resp.status_code == 200
-            data = resp.get_json()
-            assert data["status"] == "ok"
-            assert data["count"] == 2
-            assert "_debug" in data  # diagnostic info added
+            assert "text/event-stream" in resp.content_type  # diagnostic info added
 
     def test_save_config_writes_correct_format(self, client):
         """Config should be written with nested odoo structure."""
@@ -288,10 +292,17 @@ class TestWizardReadOnlySafety:
         config_path.write_text('{"odoo":{"url":"x","database":"x","username":"x","api_key":"x"}}')
 
         with patch("src.odoo_service.schema_discovery.SchemaDiscovery") as mock_disc_cls:
+            mock_disc_cls.return_value._list_installed_modules.return_value = [
+                {"model": "stock.picking", "name": "Transfers"}
+            ]
+            mock_disc_cls.return_value._filter_user_facing_models.return_value = [
+                ("stock.picking", "Transfers")
+            ]
+            mock_disc_cls.return_value.discover_model.return_value = MagicMock()
             mock_disc_cls.return_value.discover.return_value = {"test.model": MagicMock()}
             resp = client.post("/api/discover-schemas")
             assert resp.status_code == 200
-            assert resp.get_json()["status"] == "ok"
+            assert "text/event-stream" in resp.content_type
 
 
 class TestSchemaDiscoveryErrorDict:

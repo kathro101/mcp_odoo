@@ -211,55 +211,64 @@ def configure_claude():
 def discover_schemas():
     """Run schema discovery against the configured Odoo instance.
 
-    Reads config from the saved config.json and discovers all models.
+    Streams progress via Server-Sent Events so the frontend can
+    show real-time model discovery progress.
     """
+    from flask import Response
+
     config_path = _config_dir / "config.json"
     if not config_path.exists():
         return jsonify({"status": "error", "message": "Save config first"}), 400
 
-    try:
-        from src.odoo_service.schema_discovery import SchemaDiscovery
-        from src.shared.config import load_config
-
-        cfg = load_config(str(config_path))
-        odoo = OdooClient(
-            url=cfg["odoo"]["url"],
-            database=cfg["odoo"]["database"],
-            username=cfg["odoo"]["username"],
-            api_key=cfg["odoo"]["api_key"],
-        )
-
-        discovery = SchemaDiscovery(odoo, cache_dir=str(_config_dir / "schemas"))
-
-        # Diagnostic: check if basic Odoo queries work
-        partner_count = 0
+    def generate():
         try:
-            r = odoo.search_read("res.partner", [], fields=["id"], limit=1)
-            if isinstance(r, list):
-                partner_count = len(r)
-        except Exception:
-            pass
+            from src.odoo_service.schema_discovery import SchemaDiscovery
+            from src.shared.config import load_config
 
-        schemas = discovery.discover()
+            cfg = load_config(str(config_path))
+            odoo = OdooClient(
+                url=cfg["odoo"]["url"],
+                database=cfg["odoo"]["database"],
+                username=cfg["odoo"]["username"],
+                api_key=cfg["odoo"]["api_key"],
+            )
 
-        # Save schemas to _config_dir/schemas/ — the only writable location
-        discovery.cache_dir.mkdir(parents=True, exist_ok=True)
-        discovery._save_schemas(schemas)
+            discovery = SchemaDiscovery(odoo, cache_dir=str(_config_dir / "schemas"))
 
-        return jsonify(
-            {
-                "status": "ok",
-                "count": len(schemas),
-                "models": list(schemas.keys())[:10],
-                "_debug": {
-                    "partner_count": partner_count,
-                    "auth_uid": str(odoo._uid),
-                },
-            }
-        )
-    except Exception as exc:
-        logger.exception("Schema discovery failed")
-        return jsonify({"status": "error", "message": str(exc)})
+            # Yield progress as models are discovered
+            modules = discovery._list_installed_modules()
+            models = discovery._filter_user_facing_models(modules)
+            total = len(models)
+
+            yield f"data: {json.dumps({'event': 'start', 'total': total})}\n\n"
+
+            schemas = {}
+            for i, (model_name, label) in enumerate(models):
+                try:
+                    schema = discovery.discover_model(model_name, label)
+                    schemas[model_name] = schema
+                    yield f"data: {json.dumps({'event': 'progress', 'current': i + 1, 'total': total, 'model': model_name, 'label': label})}\n\n"
+                except Exception as exc:
+                    yield f"data: {json.dumps({'event': 'skip', 'current': i + 1, 'total': total, 'model': model_name, 'error': str(exc)[:100]})}\n\n"
+
+            # Save
+            discovery.cache_dir.mkdir(parents=True, exist_ok=True)
+            discovery._save_schemas(schemas)
+
+            yield f"data: {json.dumps({'event': 'done', 'count': len(schemas), 'models': list(schemas.keys())[:10]})}\n\n"
+
+        except Exception as exc:
+            logger.exception("Schema discovery failed")
+            yield f"data: {json.dumps({'event': 'error', 'message': str(exc)})}\n\n"
+
+    return Response(
+        generate(),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.route("/api/open-webui", methods=["POST"])
