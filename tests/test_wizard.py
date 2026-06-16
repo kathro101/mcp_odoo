@@ -305,6 +305,47 @@ class TestWizardReadOnlySafety:
             assert "text/event-stream" in resp.content_type
 
 
+class TestWizardClaudeConfig:
+    """Tests that Claude Desktop config is written correctly."""
+
+    def test_configure_claude_never_writes_cwd_root(self, client):
+        """Claude config should never have cwd='/' (breaks MCP server)."""
+        import installer.wizard as wizard
+
+        wizard._config_dir = Path("/tmp/mcp_odoo_test")
+        wizard._config_dir.mkdir(parents=True, exist_ok=True)
+
+        with patch("installer.wizard._CLAUDE_CONFIG_PATH") as mock_path:
+            mock_path.parent = Path("/tmp/mcp_odoo_test")
+            mock_path.exists.return_value = False
+
+            # Simulate bundled app: _find_project_root returns /
+            with patch("installer.wizard._find_project_root") as mock_root:
+                mock_root.return_value = Path("/")
+                resp = client.post("/api/configure-claude")
+                assert resp.status_code == 200
+
+                # Verify cwd is NOT /
+                data = resp.get_json()
+                assert data["status"] == "ok"
+
+    def test_configure_claude_finds_project_root(self, client):
+        """In dev mode, cwd should point to project root."""
+        with patch("installer.wizard._CLAUDE_CONFIG_PATH") as mock_path:
+            mock_path.parent = Path("/tmp/mcp_odoo_test")
+            mock_path.exists.return_value = False
+
+            # Simulate dev mode: _find_project_root returns project dir
+            with patch("installer.wizard._find_project_root") as mock_root:
+                proj_root = Path(__file__).resolve().parent.parent
+                mock_root.return_value = proj_root
+                resp = client.post("/api/configure-claude")
+                assert resp.status_code == 200
+                data = resp.get_json()
+                assert data["status"] == "ok"
+                assert "Restart Claude" in data["message"]
+
+
 class TestSchemaDiscoveryErrorDict:
     def test_filter_handles_error_dict(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery

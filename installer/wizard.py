@@ -185,6 +185,9 @@ def configure_claude():
 
         python_cmd = "python3"
         project_root = _find_project_root()
+        # If project_root is / (bundled app), use the user's home
+        if str(project_root) == "/":
+            project_root = Path.home()
         existing["mcpServers"]["odoo"] = {
             "command": python_cmd,
             "args": ["-m", "src.mcp_server.server"],
