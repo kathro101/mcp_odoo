@@ -75,6 +75,15 @@ python scripts/run_schema_discovery.py --models stock.picking,sale.order
 
 # Save to custom directory:
 python scripts/run_schema_discovery.py --output /tmp/my_schemas
+
+
+# Step 1: Install the project in dev mode
+cd /Users/kath/personal_projects/odoo/mcp_odoo
+source .venv/bin/activate
+pip install -e .
+
+# Step 2: Update your Claude Desktop config to use the dev venv
+# Edit ~/Library/Application Support/Claude/claude_desktop_config.json:
 ```
 
 ## Configuration

@@ -189,9 +189,7 @@ def enrich_workflow_hints(schemas: dict[str, ModelSchema], llm) -> None:
 
         sub_lines = []
         for sub in schema.sub_models:
-            sub_lines.append(
-                f"  - {sub.field_name} (one2many \u2192 {sub.related_model})"
-            )
+            sub_lines.append(f"  - {sub.field_name} (one2many \u2192 {sub.related_model})")
 
         prompt = (
             f"Model: {schema.odoo_model} ({schema.label})\n"

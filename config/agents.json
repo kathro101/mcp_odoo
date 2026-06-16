@@ -3,9 +3,9 @@
         "key": "logistics",
         "name": "Logistics Agent",
         "description": "Handles shipments, stock moves, deliveries, and warehouse operations",
-        "default_model": "stock_picking",
-        "keywords": ["shipment", "delivery", "stock", "warehouse", "picking", "freight", "carrier", "tracking", "transfer", "move", "inventory", "receipt"],
-        "models": ["stock.picking", "stock.move", "stock.quant", "shipment.tracking"]
+        "default_model": "ops_logistics_shipment",
+        "keywords": ["shipment", "delivery", "stock", "warehouse", "picking", "freight", "carrier", "tracking", "transfer", "move", "inventory", "receipt", "logistics", "ops", "road", "sea", "air", "transport", "container", "cargo", "port"],
+        "models": ["ops_logistics_shipment", "stock.picking", "stock.move", "stock.quant"]
     },
     "salesman": {
         "key": "salesman",

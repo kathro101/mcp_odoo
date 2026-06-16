@@ -15,15 +15,23 @@ import json
 
 from mcp.types import Tool
 
-from src.odoo_service.odoo_client import OdooClient
 from src.odoo_service.router import route_message
-from src.odoo_service.schema_store import SchemaStore
-from src.odoo_service.session_store import SessionStore
-from src.operations.create import preview_record
+from src.odoo_service.service_locator import (
+    get_agents as _svc_get_agents,
+)
+from src.odoo_service.service_locator import (
+    get_odoo_client as _svc_get_odoo_client,
+)
+from src.odoo_service.service_locator import (
+    get_schema_store as _svc_get_schema_store,
+)
+from src.odoo_service.service_locator import (
+    get_session_store as _svc_get_session_store,
+)
+from src.operations.create import create_record, preview_record
 from src.operations.delete import confirm_delete, delete_record
 from src.operations.search import search_records
 from src.operations.update import update_record
-from src.shared.config import load_agents, load_config
 
 # ── Tool Definitions ────────────────────────────────────────────────────
 
@@ -39,6 +47,7 @@ TOOLS: list[Tool] = [
             "2. ACTION MODE (action= set): Execute operations directly.\n"
             "   - action='preview': Validate params against schema, return "
             "what's missing. ALWAYS preview before creating.\n"
+            "   - action='create': Create a new record (preview MUST pass first).\n"
             "   - action='search': Search records by field values.\n"
             "   - action='update': Update an existing record.\n"
             "   - action='delete': Delete a record (returns confirmation)."
@@ -52,15 +61,19 @@ TOOLS: list[Tool] = [
                 },
                 "action": {
                     "type": "string",
-                    "description": "Action to execute: preview, search, update, delete",
+                    "description": "Action to execute: preview, create, search, update, delete",
                 },
                 "model": {
                     "type": "string",
-                    "description": "Odoo model key (e.g., stock_picking). Required for action mode.",
+                    "description": (
+                        "Odoo model key (e.g., stock_picking). Required for action mode."
+                    ),
                 },
                 "params": {
                     "type": "object",
-                    "description": "Field values as {field_name: value}. Use aliases from routing mode.",
+                    "description": (
+                        "Field values as {field_name: value}. Use aliases from routing mode."
+                    ),
                 },
                 "record_id": {
                     "type": "integer",
@@ -103,29 +116,28 @@ TOOLS: list[Tool] = [
 ]
 
 # ── Lazy-initialized service references ─────────────────────────────────
-
-_schema_store: SchemaStore | None = None
-_agents: dict | None = None
-_session_store: SessionStore = SessionStore()
-
-
-def _get_schema_store(config_path: str = "config/config.json") -> SchemaStore:
-    global _schema_store
-    if _schema_store is None:
-        try:
-            config = load_config(config_path)
-            schema_dir = config.get("schema", {}).get("cache_dir", "config/schemas")
-        except FileNotFoundError:
-            schema_dir = "config/schemas"
-        _schema_store = SchemaStore(schema_dir)
-    return _schema_store
+# All path resolution is delegated to service_locator, which resolves
+# paths relative to _project_root (with sys._MEIPASS support for
+# PyInstaller DMG builds). This prevents "file not found" errors
+# when Claude Desktop spawns the server with a non-project CWD.
 
 
-def _get_agents(agents_path: str = "config/agents.json") -> dict:
-    global _agents
-    if _agents is None:
-        _agents = load_agents(agents_path)
-    return _agents
+def _get_schema_store():
+    """Get the SchemaStore singleton via service_locator.
+
+    Delegates to service_locator which resolves config/schemas/
+    relative to the project root (works with PyInstaller DMG builds).
+    """
+    return _svc_get_schema_store()
+
+
+def _get_agents():
+    """Get the agents config dict via service_locator.
+
+    Delegates to service_locator which resolves config/agents.json
+    relative to the project root.
+    """
+    return _svc_get_agents()
 
 
 # ── Tool Call Dispatch ──────────────────────────────────────────────────
@@ -192,7 +204,7 @@ async def chat_odoo_handler(
                 parts.append(f"Model: {route.model_key}")
 
         if session_id:
-            _session_store.set_last_agent(session_id, route.agent_key)
+            _svc_get_session_store().set_last_agent(session_id, route.agent_key)
     else:
         parts.append("No specific agent matched. Available agents:\n")
         for a in agents.values():
@@ -220,6 +232,9 @@ async def _handle_action(action: str, model: str, params: dict, record_id: int) 
         case "preview":
             result = preview_record(schema, params)
             result["field_aliases"] = schema.field_aliases
+        case "create":
+            odoo = _get_odoo_client()
+            result = create_record(odoo, schema, params)
         case "search":
             odoo = _get_odoo_client()
             result = search_records(odoo, schema, params)
@@ -236,7 +251,9 @@ async def _handle_action(action: str, model: str, params: dict, record_id: int) 
             return [
                 {
                     "type": "text",
-                    "text": f"Unknown action: {action}. Valid: preview, search, update, delete.",
+                    "text": (
+                        f"Unknown action: {action}. Valid: preview, create, search, update, delete."
+                    ),
                 }
             ]
 
@@ -247,30 +264,12 @@ _odoo_client = None
 
 
 def _get_odoo_client():
-    """Lazy-initialize the OdooClient singleton.
+    """Get the OdooClient singleton via service_locator.
 
-    Validates configuration before creating the client.
-    Raises RuntimeError with clear message if config is missing or incomplete.
+    Delegates to service_locator which resolves config/config.json
+    relative to the project root (works with PyInstaller DMG builds).
     """
-    global _odoo_client
-    if _odoo_client is None:
-        try:
-            cfg = load_config("config/config.json")
-        except FileNotFoundError:
-            raise RuntimeError(
-                "Odoo not configured. Create config/config.json first. "
-                "Copy from config/config.template.json."
-            )
-        odoo_cfg = cfg.get("odoo", {})
-        if not odoo_cfg.get("url"):
-            raise RuntimeError("Odoo URL not set. Edit config/config.json and add odoo.url.")
-        _odoo_client = OdooClient(
-            url=odoo_cfg["url"],
-            database=odoo_cfg.get("database", ""),
-            username=odoo_cfg.get("username", ""),
-            api_key=odoo_cfg.get("api_key", ""),
-        )
-    return _odoo_client
+    return _svc_get_odoo_client()
 
 
 # ── Schema Formatting Helpers ──────────────────────────────────────────

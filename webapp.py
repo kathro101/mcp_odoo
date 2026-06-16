@@ -11,33 +11,34 @@ import logging
 from flask import Flask, jsonify, render_template, request
 
 from src.odoo_service.router import route_message
-from src.odoo_service.schema_store import SchemaStore
-from src.odoo_service.session_store import SessionStore
-from src.shared.config import load_agents
+from src.odoo_service.service_locator import (
+    get_agents as _svc_get_agents,
+)
+from src.odoo_service.service_locator import (
+    get_schema_store as _svc_get_schema_store,
+)
+from src.odoo_service.service_locator import (
+    get_session_store as _svc_get_session_store,
+)
 
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
 # ── Lazy service singletons ────────────────────────────────────────────
-
-_schema_store: SchemaStore | None = None
-_agents: dict | None = None
-_session_store: SessionStore = SessionStore()
-
-
-def _get_schema_store() -> SchemaStore:
-    global _schema_store
-    if _schema_store is None:
-        _schema_store = SchemaStore("config/schemas")
-    return _schema_store
+# All path resolution is delegated to service_locator, which resolves
+# paths relative to _project_root (with sys._MEIPASS support for
+# PyInstaller DMG builds).
 
 
-def _get_agents() -> dict:
-    global _agents
-    if _agents is None:
-        _agents = load_agents("config/agents.json")
-    return _agents
+def _get_schema_store():
+    """Get the SchemaStore singleton via service_locator."""
+    return _svc_get_schema_store()
+
+
+def _get_agents():
+    """Get the agents config dict via service_locator."""
+    return _svc_get_agents()
 
 
 # ── Routes ─────────────────────────────────────────────────────────────
@@ -95,7 +96,7 @@ def chat():
                 pass
 
         if session_id:
-            _session_store.set_last_agent(session_id, route.agent_key)
+            _svc_get_session_store().set_last_agent(session_id, route.agent_key)
 
     else:
         result["status"] = "needs_input"
