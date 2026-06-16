@@ -42,11 +42,17 @@ def get_schema_store() -> SchemaStore:
         except FileNotFoundError:
             pass
         _schema_store = SchemaStore(schema_dir)
-        # If empty, also try the DMG wizard's save location
-        if not _schema_store.list_all():
-            user_schemas = Path.home() / "Library" / "Application Support" / "MCP Odoo" / "schemas"
-            if user_schemas.is_dir():
-                _schema_store = SchemaStore(str(user_schemas))
+        # Also merge schemas from the DMG wizard's save location
+        user_schemas = Path.home() / "Library" / "Application Support" / "MCP Odoo" / "schemas"
+        if user_schemas.is_dir():
+            try:
+                user_store = SchemaStore(str(user_schemas))
+                existing_keys = {s.key for s in _schema_store.list_all()}
+                for s in user_store.list_all():
+                    if s.key not in existing_keys:
+                        _schema_store._schemas[s.key] = s
+            except Exception:
+                pass
     return _schema_store
 
 
@@ -81,7 +87,7 @@ def get_odoo_client() -> OdooClient:
             raise RuntimeError(
                 "Odoo not configured. Create config/config.json first. "
                 "Copy from config/config.template.json and fill in your Odoo credentials."
-            )
+            ) from None
         odoo_cfg = cfg.get("odoo", {})
         if not odoo_cfg.get("url"):
             raise RuntimeError("Odoo URL not set. Edit config/config.json and add your Odoo URL.")
