@@ -188,6 +188,14 @@ def configure_claude():
         # If project_root is / (bundled app), use the user's home
         if str(project_root) == "/":
             project_root = Path.home()
+        # Use venv Python if available
+        venv_python = project_root / ".venv" / "bin" / "python3"
+        if venv_python.exists():
+            python_cmd = str(venv_python)
+        project_root = _find_project_root()
+        # If project_root is / (bundled app), use the user's home
+        if str(project_root) == "/":
+            project_root = Path.home()
         existing["mcpServers"]["odoo"] = {
             "command": python_cmd,
             "args": ["-m", "src.mcp_server.server"],
