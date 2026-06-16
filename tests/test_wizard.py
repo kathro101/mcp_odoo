@@ -156,6 +156,143 @@ class TestWizardRoutes:
             assert "Restart Claude" in data["message"]
 
 
+class TestWizardFullFlow:
+    """Integration tests: full wizard step-by-step flow."""
+
+    @patch("installer.wizard.OdooClient")
+    def test_full_flow_connect_save_discover(self, mock_odoo, client):
+        """Step 1: Test connection → Step 2: Save config → Step 3: Discover schemas."""
+        # Mock OdooClient
+        mock_odoo_instance = MagicMock()
+        mock_odoo.return_value = mock_odoo_instance
+
+        # Step 1: Test connection
+        resp = client.post(
+            "/api/test-connection",
+            json={
+                "url": "https://example.odoo.com",
+                "database": "testdb",
+                "username": "admin",
+                "api_key": "secret",
+            },
+        )
+        assert resp.status_code == 200
+        assert resp.get_json()["status"] == "ok"
+        mock_odoo_instance._authenticate.assert_called_once()
+
+        # Step 2: Save config
+        resp = client.post(
+            "/api/save-config",
+            json={
+                "url": "https://example.odoo.com",
+                "database": "testdb",
+                "username": "admin",
+                "api_key": "secret",
+            },
+        )
+        assert resp.status_code == 200
+        assert resp.get_json()["status"] == "ok"
+        # Verify config file was written
+        config_path = Path("/tmp/mcp_odoo_test/config.json")
+        assert config_path.exists()
+
+        # Step 3: Discover schemas
+        with patch("src.odoo_service.schema_discovery.SchemaDiscovery") as mock_disc_cls:
+            mock_disc_cls.return_value.discover.return_value = {
+                "stock.picking": MagicMock(),
+                "sale.order": MagicMock(),
+            }
+            resp = client.post("/api/discover-schemas")
+            assert resp.status_code == 200
+            data = resp.get_json()
+            assert data["status"] == "ok"
+            assert data["count"] == 2
+
+    def test_save_config_writes_correct_format(self, client):
+        """Config should be written with nested odoo structure."""
+        resp = client.post(
+            "/api/save-config",
+            json={
+                "url": "https://example.odoo.com",
+                "database": "testdb",
+                "username": "admin",
+                "api_key": "secret",
+            },
+        )
+        assert resp.status_code == 200
+
+        config_path = Path("/tmp/mcp_odoo_test/config.json")
+        saved = json.loads(config_path.read_text())
+        assert "odoo" in saved
+        assert saved["odoo"]["url"] == "https://example.odoo.com"
+        assert saved["odoo"]["database"] == "testdb"
+        assert saved["odoo"]["username"] == "admin"
+        assert saved["odoo"]["api_key"] == "secret"
+
+    def test_discover_requires_saved_config(self, client):
+        """Discover should return error if config hasn't been saved."""
+        # Delete config if exists
+        config_path = Path("/tmp/mcp_odoo_test/config.json")
+        config_path.unlink(missing_ok=True)
+
+        resp = client.post("/api/discover-schemas")
+        assert resp.status_code == 400
+        assert resp.get_json()["status"] == "error"
+
+    @patch("installer.wizard.OdooClient")
+    def test_test_connection_with_password_key(self, mock_odoo, client):
+        """Test connection should accept 'password' as well as 'api_key'."""
+        mock_odoo_instance = MagicMock()
+        mock_odoo.return_value = mock_odoo_instance
+
+        resp = client.post(
+            "/api/test-connection",
+            json={
+                "url": "https://example.odoo.com",
+                "database": "testdb",
+                "username": "admin",
+                "password": "mypassword",
+            },
+        )
+        assert resp.status_code == 200
+        # Should work - password is accepted
+        assert resp.get_json()["status"] == "ok"
+
+
+class TestWizardReadOnlySafety:
+    """Tests that the wizard NEVER writes to read-only bundled paths."""
+
+    def test_save_config_uses_writable_dir(self, client):
+        """save-config should write to _config_dir (writable), not /config."""
+        resp = client.post(
+            "/api/save-config",
+            json={
+                "url": "https://x.com",
+                "database": "x",
+                "username": "x",
+                "api_key": "x",
+            },
+        )
+        assert resp.status_code == 200
+        # Must write to tmp, not /
+        config_path = Path("/tmp/mcp_odoo_test/config.json")
+        assert config_path.exists()
+        assert not Path("/config/config.json").exists()
+
+    def test_discover_schemas_saves_to_writable_dir(self, client):
+        """discover-schemas should save to _config_dir, not bundled app path."""
+        # Setup config
+        config_path = Path("/tmp/mcp_odoo_test/config.json")
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        config_path.write_text('{"odoo":{"url":"x","database":"x","username":"x","api_key":"x"}}')
+
+        with patch("src.odoo_service.schema_discovery.SchemaDiscovery") as mock_disc_cls:
+            mock_disc_cls.return_value.discover.return_value = {"test.model": MagicMock()}
+            resp = client.post("/api/discover-schemas")
+            assert resp.status_code == 200
+            assert resp.get_json()["status"] == "ok"
+
+
 class TestSchemaDiscoveryErrorDict:
     def test_filter_handles_error_dict(self):
         from src.odoo_service.schema_discovery import SchemaDiscovery

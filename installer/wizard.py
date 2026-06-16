@@ -104,6 +104,9 @@ def health():
 def test_connection():
     """Test Odoo connection with provided credentials."""
     data = request.get_json(silent=True) or {}
+    # Accept both 'password' and 'api_key' keys
+    if "password" in data and "api_key" not in data:
+        data["api_key"] = data["password"]
     required = ["url", "database", "username", "api_key"]
     missing = [f for f in required if not data.get(f)]
 
