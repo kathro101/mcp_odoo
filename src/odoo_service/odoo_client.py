@@ -36,8 +36,8 @@ class OdooClient:
             return
 
         try:
-            self._common = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/common")
-            self._object = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/object")
+            self._common = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/common", allow_none=True)
+            self._object = xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/object", allow_none=True)
             # Odoo 16+ requires user_agent_env as 4th positional arg,
             # Odoo <16 rejects it with a Fault. Try both.
             try:

@@ -102,7 +102,19 @@ class SchemaDiscovery:
             A complete ModelSchema for the model.
         """
         # Phase 1: Deterministic field extraction
-        raw_fields = self.odoo.fields_get(model_name)
+        raw_fields = self.odoo.fields_get(
+            model_name,
+            attributes=[
+                "type",
+                "string",
+                "help",
+                "required",
+                "readonly",
+                "store",
+                "relation",
+                "selection",
+            ],
+        )
         if isinstance(raw_fields, dict) and raw_fields.get("status") == "error":
             raise RuntimeError(f"Odoo error for {model_name}: {raw_fields['message']}")
 

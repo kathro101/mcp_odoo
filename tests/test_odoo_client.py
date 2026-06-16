@@ -40,7 +40,9 @@ class TestOdooClient:
         mock_object = MagicMock()
 
         with patch("xmlrpc.client.ServerProxy") as mock_proxy:
-            mock_proxy.side_effect = lambda url: mock_common if "common" in url else mock_object
+            mock_proxy.side_effect = (
+                lambda url, **kw: mock_common if "common" in url else mock_object
+            )
             client = OdooClient("url", "db", "user", "key")
             client._authenticate()
 
@@ -57,7 +59,7 @@ class TestOdooClient:
         mock_common = MagicMock()
         mock_common.authenticate.return_value = 1
 
-        def server_proxy_side_effect(url):
+        def server_proxy_side_effect(url, **kw):
             if "common" in url:
                 return mock_common
             return mock_object
@@ -83,7 +85,7 @@ class TestOdooClient:
         mock_common = MagicMock()
         mock_common.authenticate.return_value = 1
 
-        def server_proxy_side_effect(url):
+        def server_proxy_side_effect(url, **kw):
             if "common" in url:
                 return mock_common
             return mock_object
@@ -115,7 +117,7 @@ class TestOdooClient:
         mock_common = MagicMock()
         mock_common.authenticate.return_value = 1
 
-        def server_proxy_side_effect(url):
+        def server_proxy_side_effect(url, **kw):
             if "common" in url:
                 return mock_common
             return mock_object
@@ -127,6 +129,8 @@ class TestOdooClient:
         result = client.fields_get("res.partner")
 
         assert result == {"name": {"type": "char", "string": "Name"}}
+        # Verify execute_kw was called — allow_none=True changes the call pattern
+        mock_object.execute_kw.assert_called()
 
     @patch("xmlrpc.client.ServerProxy")
     def test_connection_refused_returns_error(self, mock_server_proxy):
@@ -153,7 +157,7 @@ class TestOdooClient:
         mock_common = MagicMock()
         mock_common.authenticate.return_value = 1
 
-        def server_proxy_side_effect(url):
+        def server_proxy_side_effect(url, **kw):
             if "common" in url:
                 return mock_common
             return mock_object

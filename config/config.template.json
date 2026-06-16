@@ -2,8 +2,8 @@
     "odoo": {
         "url": "https://your-odoo-instance.odoo.com",
         "database": "your-database",
-        "username": "your-username",
-        "api_key": "your-api-key"
+        "username": "your-email@example.com",
+        "password": "your-password-or-api-key"
     },
     "mcp": {
         "transport": "stdio",

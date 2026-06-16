@@ -41,6 +41,10 @@ def load_config(path: str) -> dict:
     if not odoo.get("url"):
         raise ValueError("Config 'odoo.url' is required and must not be empty")
 
+    # Support both "password" and "api_key" keys
+    if "password" in odoo and "api_key" not in odoo:
+        odoo["api_key"] = odoo["password"]
+
     return raw
 
 
