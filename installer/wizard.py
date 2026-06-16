@@ -229,7 +229,13 @@ def discover_schemas():
         discovery = SchemaDiscovery(odoo, cache_dir=str(_config_dir / "schemas"))
         schemas = discovery.discover()
 
-        # Save to config/schemas/ so the MCP server finds them
+        # Save to config/schemas/ so the MCP server finds them (relative to project root)
+        discovery._save_schemas(schemas)
+
+        # Also save where the MCP server looks (config/schemas/)
+        project_root = _find_project_root()
+        discovery.cache_dir = project_root / "config" / "schemas"
+        discovery.cache_dir.mkdir(parents=True, exist_ok=True)
         discovery._save_schemas(schemas)
 
         return jsonify(
