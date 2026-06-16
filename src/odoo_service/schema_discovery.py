@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from src.odoo_service.odoo_client import OdooClient
@@ -72,8 +73,11 @@ class SchemaDiscovery:
 
     # ── Public API ──────────────────────────────────────────────────────
 
-    def discover(self) -> dict[str, ModelSchema]:
+    def discover(self, workers: int = 10) -> dict[str, ModelSchema]:
         """Discover all user-facing Odoo models and return their schemas.
+
+        Args:
+            workers: Number of concurrent discovery threads (default 10).
 
         Returns:
             Dict mapping model technical names to ModelSchema instances.
@@ -81,15 +85,34 @@ class SchemaDiscovery:
         modules = self._list_installed_modules()
         models = self._filter_user_facing_models(modules)
 
+        if not models:
+            return {}
+
         schemas: dict[str, ModelSchema] = {}
-        for model_name, label in models:
-            try:
-                schema = self.discover_model(model_name, label)
-                schemas[model_name] = schema
-            except Exception as exc:
-                logger.warning("Failed to discover model %s: %s", model_name, exc)
+
+        # Parallel discovery — each thread shares the same OdooClient
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(self._discover_safe, model_name, label): model_name
+                for model_name, label in models
+            }
+            for future in as_completed(futures):
+                model_name = futures[future]
+                try:
+                    schema = future.result()
+                    if schema:
+                        schemas[model_name] = schema
+                except Exception as exc:
+                    logger.warning("Failed to discover model %s: %s", model_name, exc)
 
         return schemas
+
+    def _discover_safe(self, model_name: str, label: str) -> ModelSchema | None:
+        """Call discover_model with exception handling for parallelism."""
+        try:
+            return self.discover_model(model_name, label)
+        except Exception:
+            return None
 
     def discover_model(self, model_name: str, label: str = "") -> ModelSchema:
         """Discover the schema for a single Odoo model.
