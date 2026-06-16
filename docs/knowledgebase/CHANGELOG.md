@@ -12,6 +12,7 @@ All notable changes to the mcp_odoo project.
 - **`fields_get` optimization** — requests only needed attributes, reducing Odoo server None serialization errors.
 
 ### Stats
+
 - **201 tests** passing, 2 skipped
 - 576 models discoverable in ~6 minutes
 - Zero internal LLM calls in runtime code

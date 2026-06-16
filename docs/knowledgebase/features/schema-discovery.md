@@ -23,11 +23,11 @@ Discovers Odoo model schemas through deterministic introspection (no AI) with op
 
 ### Performance
 
-| Workers | ~576 models | Command |
-|---------|------------|---------|
-| 1 (sequential) | ~60 min | `--workers 1` |
-| **10 (default)** | **~6 min** | `python scripts/run_schema_discovery.py` |
-| 20 (aggressive) | ~3 min | `--workers 20` |
+| Workers          | ~576 models | Command                                  |
+| ---------------- | ----------- | ---------------------------------------- |
+| 1 (sequential)   | ~60 min     | `--workers 1`                            |
+| **10 (default)** | **~6 min**  | `python scripts/run_schema_discovery.py` |
+| 20 (aggressive)  | ~3 min      | `--workers 20`                           |
 
 ### Enrichment Pipeline (One-Time, Cached)
 
