@@ -14,7 +14,7 @@ _project_root = Path(__file__).resolve().parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from mcp.server import NotificationOptions, Server  # noqa: E402
+from mcp.server import Server  # noqa: E402
 
 from .tools import TOOLS, handle_tool_call  # noqa: E402
 
@@ -42,15 +42,14 @@ def main() -> None:
     """Run the MCP server via stdio transport."""
     import asyncio
 
+    from mcp.server.stdio import stdio_server
+
     async def run() -> None:
-        async with server.transport_stdio() as streams:
+        async with stdio_server() as (read_stream, write_stream):
             await server.run(
-                streams[0],
-                streams[1],
-                server.create_initialization_options(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
-                ),
+                read_stream,
+                write_stream,
+                server.create_initialization_options(),
             )
 
     asyncio.run(run())
