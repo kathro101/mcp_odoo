@@ -11,6 +11,8 @@ Handles:
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from src.odoo_service.odoo_client import OdooClient
 from src.odoo_service.schema_store import SchemaStore
 from src.odoo_service.session_store import SessionStore
@@ -28,7 +30,8 @@ def get_schema_store() -> SchemaStore:
     """Get the SchemaStore singleton.
 
     Loads schemas from config/schemas/ (or from config if available).
-    Gracefully falls back to default directory if config is missing.
+    Gracefully falls back to user's Application Support directory
+    when schemas were discovered via the DMG wizard.
     """
     global _schema_store
     if _schema_store is None:
@@ -37,8 +40,13 @@ def get_schema_store() -> SchemaStore:
             config = load_config("config/config.json")
             schema_dir = config.get("schema", {}).get("cache_dir", schema_dir)
         except FileNotFoundError:
-            pass  # Use default
+            pass
         _schema_store = SchemaStore(schema_dir)
+        # If empty, also try the DMG wizard's save location
+        if not _schema_store.list_all():
+            user_schemas = Path.home() / "Library" / "Application Support" / "MCP Odoo" / "schemas"
+            if user_schemas.is_dir():
+                _schema_store = SchemaStore(str(user_schemas))
     return _schema_store
 
 
