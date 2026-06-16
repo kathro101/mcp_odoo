@@ -230,6 +230,16 @@ def discover_schemas():
         )
 
         discovery = SchemaDiscovery(odoo, cache_dir=str(_config_dir / "schemas"))
+
+        # Diagnostic: check if basic Odoo queries work
+        partner_count = 0
+        try:
+            r = odoo.search_read("res.partner", [], fields=["id"], limit=1)
+            if isinstance(r, list):
+                partner_count = len(r)
+        except Exception:
+            pass
+
         schemas = discovery.discover()
 
         # Save schemas to _config_dir/schemas/ — the only writable location
@@ -240,7 +250,11 @@ def discover_schemas():
             {
                 "status": "ok",
                 "count": len(schemas),
-                "models": list(schemas.keys()),
+                "models": list(schemas.keys())[:10],
+                "_debug": {
+                    "partner_count": partner_count,
+                    "auth_uid": odoo._uid,
+                },
             }
         )
     except Exception as exc:

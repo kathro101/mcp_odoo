@@ -207,6 +207,7 @@ class TestWizardFullFlow:
             data = resp.get_json()
             assert data["status"] == "ok"
             assert data["count"] == 2
+            assert "_debug" in data  # diagnostic info added
 
     def test_save_config_writes_correct_format(self, client):
         """Config should be written with nested odoo structure."""
