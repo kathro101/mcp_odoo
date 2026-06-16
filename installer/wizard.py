@@ -253,7 +253,7 @@ def discover_schemas():
                 "models": list(schemas.keys())[:10],
                 "_debug": {
                     "partner_count": partner_count,
-                    "auth_uid": odoo._uid,
+                    "auth_uid": str(odoo._uid),
                 },
             }
         )
