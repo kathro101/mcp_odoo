@@ -168,6 +168,10 @@ def configure_claude():
 
     Merges with existing config if present. Creates a backup
     of the existing config before writing.
+
+    Uses sys.executable (the Python running THIS wizard) as the
+    Claude Desktop command — this ensures the same Python with
+    all installed packages (mcp, etc.) is used.
     """
     try:
         existing: dict = {"mcpServers": {}}
@@ -183,19 +187,12 @@ def configure_claude():
         if "mcpServers" not in existing:
             existing["mcpServers"] = {}
 
-        python_cmd = "python3"
+        # Use the Python that's running RIGHT NOW — it has all needed packages
+        python_cmd = sys.executable
         project_root = _find_project_root()
-        # If project_root is / (bundled app), use the user's home
         if str(project_root) == "/":
             project_root = Path.home()
-        # Use venv Python if available
-        venv_python = project_root / ".venv" / "bin" / "python3"
-        if venv_python.exists():
-            python_cmd = str(venv_python)
-        project_root = _find_project_root()
-        # If project_root is / (bundled app), use the user's home
-        if str(project_root) == "/":
-            project_root = Path.home()
+
         existing["mcpServers"]["odoo"] = {
             "command": python_cmd,
             "args": ["-m", "src.mcp_server.server"],
@@ -258,15 +255,34 @@ def discover_schemas():
                 try:
                     schema = discovery.discover_model(model_name, label)
                     schemas[model_name] = schema
-                    yield f"data: {json.dumps({'event': 'progress', 'current': i + 1, 'total': total, 'model': model_name, 'label': label})}\n\n"
+                    progress = {
+                        "event": "progress",
+                        "current": i + 1,
+                        "total": total,
+                        "model": model_name,
+                        "label": label,
+                    }
+                    yield f"data: {json.dumps(progress)}\n\n"
                 except Exception as exc:
-                    yield f"data: {json.dumps({'event': 'skip', 'current': i + 1, 'total': total, 'model': model_name, 'error': str(exc)[:100]})}\n\n"
+                    skip = {
+                        "event": "skip",
+                        "current": i + 1,
+                        "total": total,
+                        "model": model_name,
+                        "error": str(exc)[:100],
+                    }
+                    yield f"data: {json.dumps(skip)}\n\n"
 
             # Save
             discovery.cache_dir.mkdir(parents=True, exist_ok=True)
             discovery._save_schemas(schemas)
 
-            yield f"data: {json.dumps({'event': 'done', 'count': len(schemas), 'models': list(schemas.keys())[:10]})}\n\n"
+            done = {
+                "event": "done",
+                "count": len(schemas),
+                "models": list(schemas.keys())[:10],
+            }
+            yield f"data: {json.dumps(done)}\n\n"
 
         except Exception as exc:
             logger.exception("Schema discovery failed")
