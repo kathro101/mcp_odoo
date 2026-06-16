@@ -4,9 +4,8 @@ Provides lazy-initialized singletons for SchemaStore, agents config,
 SessionStore, and OdooClient.  Used by both the MCP server (tools.py)
 and the web UI (webapp.py).
 
-Handles:
-- Graceful fallback when config/config.json is missing (#1 fix)
-- Validation of Odoo URL before creating OdooClient (#2 fix)
+All paths are resolved relative to this file's location, so the server
+works regardless of cwd (critical for Claude Desktop which may use /).
 """
 
 from __future__ import annotations
@@ -17,6 +16,10 @@ from src.odoo_service.odoo_client import OdooClient
 from src.odoo_service.schema_store import SchemaStore
 from src.odoo_service.session_store import SessionStore
 from src.shared.config import load_agents, load_config
+
+# ── Project root (resolved once, works regardless of cwd) ──────────────
+
+_project_root = Path(__file__).resolve().parent.parent.parent
 
 # ── Singletons ─────────────────────────────────────────────────────────
 
@@ -35,10 +38,16 @@ def get_schema_store() -> SchemaStore:
     """
     global _schema_store
     if _schema_store is None:
-        schema_dir = "config/schemas"
+        schema_dir = str(_project_root / "config" / "schemas")
         try:
-            config = load_config("config/config.json")
-            schema_dir = config.get("schema", {}).get("cache_dir", schema_dir)
+            config = load_config(str(_project_root / "config" / "config.json"))
+            configured = config.get("schema", {}).get("cache_dir", "")
+            if configured:
+                # Resolve relative paths against project root
+                configured_path = Path(configured)
+                if not configured_path.is_absolute():
+                    configured_path = _project_root / configured_path
+                schema_dir = str(configured_path)
         except FileNotFoundError:
             pass
         _schema_store = SchemaStore(schema_dir)
@@ -56,10 +65,12 @@ def get_schema_store() -> SchemaStore:
     return _schema_store
 
 
-def get_agents(agents_path: str = "config/agents.json") -> dict:
+def get_agents(agents_path: str | None = None) -> dict:
     """Get the agents configuration singleton."""
     global _agents
     if _agents is None:
+        if agents_path is None:
+            agents_path = str(_project_root / "config" / "agents.json")
         _agents = load_agents(agents_path)
     return _agents
 
@@ -82,7 +93,7 @@ def get_odoo_client() -> OdooClient:
     global _odoo_client
     if _odoo_client is None:
         try:
-            cfg = load_config("config/config.json")
+            cfg = load_config(str(_project_root / "config" / "config.json"))
         except FileNotFoundError:
             raise RuntimeError(
                 "Odoo not configured. Create config/config.json first. "
