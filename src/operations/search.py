@@ -12,6 +12,17 @@ from src.odoo_service.odoo_client import OdooClient
 from src.shared.types import ModelSchema
 
 
+def _build_odoo_url(url: str, database: str, model: str, record_id: int) -> str:
+    """Build a clickable Odoo record URL.
+
+    Uses Odoo's /web#id=X&model=Y&view_type=form format.
+    """
+    if not url or not model or not record_id:
+        return ""
+    base = url.rstrip("/")
+    return f"{base}/web#id={record_id}&model={model}&view_type=form"
+
+
 def search_records(
     odoo: OdooClient,
     schema: ModelSchema,
@@ -55,8 +66,21 @@ def search_records(
     if isinstance(result, dict) and result.get("status") == "error":
         return result
 
+    # Enrich each record with a clickable Odoo URL
+    enriched = []
+    for record in result or []:
+        rid = record.get("id")
+        if rid:
+            record["odoo_url"] = _build_odoo_url(
+                url=odoo.url,
+                database=odoo.database,
+                model=schema.odoo_model,
+                record_id=rid,
+            )
+        enriched.append(record)
+
     return {
         "status": "success",
-        "records": result,
-        "count": len(result),
+        "records": enriched,
+        "count": len(enriched),
     }

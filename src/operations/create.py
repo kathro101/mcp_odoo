@@ -9,6 +9,27 @@ from src.odoo_service.odoo_client import OdooClient
 from src.shared.types import ModelSchema
 
 
+def _build_odoo_url(url: str, database: str, model: str, record_id: int) -> str:
+    """Build a clickable Odoo record URL.
+
+    Uses Odoo's /web#id=X&model=Y&view_type=form format which works
+    across Odoo versions and doesn't require knowing the menu/action ID.
+
+    Args:
+        url: Base Odoo URL (e.g. https://example.odoo.com).
+        database: Odoo database name.
+        model: Odoo model technical name (e.g. sale.order).
+        record_id: Record ID.
+
+    Returns:
+        Full Odoo record URL string, or empty string if url/model/record_id missing.
+    """
+    if not url or not model or not record_id:
+        return ""
+    base = url.rstrip("/")
+    return f"{base}/web#id={record_id}&model={model}&view_type=form"
+
+
 def preview_record(schema: ModelSchema, params: dict) -> dict:
     """Preview what a record creation would look like.
 
@@ -55,7 +76,7 @@ def create_record(odoo: OdooClient, schema: ModelSchema, params: dict) -> dict:
         params: Dict of field_name -> value for the new record.
 
     Returns:
-        {"status": "success", "record_id": <int>}
+        {"status": "success", "record_id": <int>, "odoo_url": "<url>"}
         or {"status": "error", "message": "..."}
     """
     result = odoo.execute_kw(schema.odoo_model, "create", [params])
@@ -66,4 +87,10 @@ def create_record(odoo: OdooClient, schema: ModelSchema, params: dict) -> dict:
     return {
         "status": "success",
         "record_id": result,
+        "odoo_url": _build_odoo_url(
+            url=odoo.url,
+            database=odoo.database,
+            model=schema.odoo_model,
+            record_id=result,
+        ),
     }

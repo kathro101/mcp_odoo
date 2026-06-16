@@ -1,180 +1,145 @@
 # MCP Odoo — AI Agent for Odoo ERP
 
-MCP server that connects **Claude Desktop** to **Odoo ERP**. Claude is the AI brain — the server is a thin, stateless bridge that provides Odoo data access and CRUD operations.
+Talk to your Odoo ERP through Claude Desktop. Ask questions, search records, create shipments, manage sales orders — all in natural language.
 
-## Architecture
+## What It Does
 
-```
-Claude Desktop (MCP Client) ← THE AI BRAIN
-        │
-        ▼
-MCP Server (thin JSON-RPC bridge)
-  ├── chat_odoo     — route + lookup
-  ├── list_models   — enumerate schemas
-  └── list_agents   — enumerate personas
-        │
-        ▼
-Odoo Service Layer (pure Python, no AI)
-  ├── Router        — keyword-based dispatch
-  ├── SchemaStore   — cached model metadata
-  ├── OdooClient    — XML-RPC wrapper
-  └── SessionStore  — per-session state
-        │
-        ▼
-Odoo XML-RPC
-```
+Connect Claude Desktop to your Odoo instance and you can:
 
-## Key Principles
+- **"Show me 5 sale orders from December 2025"** → lists matching orders
+- **"Create a shipment from Rotterdam to Amsterdam for ACME Corp"** → creates a logistics shipment
+- **"How many invoices are overdue?"** → searches and counts invoices
+- **"Update the price on quotation SO-0042"** → modifies a sales order
 
-- **No internal LLM** — Claude Desktop IS the AI. The MCP server never calls an LLM during runtime.
-- **Stateless tools** — Each MCP tool call is independent. Session state via `session_id`.
-- **Keyword routing** — No LLM-based intent classification. Simple keyword scoring.
-- **Flat config** — One `config.json`. Schemas in `config/schemas/*.json`.
-- **TDD mandatory** — Tests written before implementation.
+Claude handles all the conversation and reasoning. The MCP server is just a bridge — it gives Claude access to your Odoo data and lets it perform CRUD operations.
 
-## Quick Start
+## Quick Start (macOS)
+
+### 1. Install
 
 ```bash
-# Clone and setup
-git clone <repo-url> mcp_odoo
+# Clone the repo
+git clone https://github.com/kathro101/mcp_odoo.git
 cd mcp_odoo
+
+# Create virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
 
-# Configure
-cp config/config.template.json config/config.json
-# Edit config/config.json with your Odoo credentials
-
-# Run tests
-pytest tests/ -v
-
-# Run MCP server (for Claude Desktop)
-python -m src.mcp_server.server
-
-# Build the DMG installer
-bash scripts/build_dmg.sh
-
-# Discover schemas from your Odoo instance (6 min with 10 workers)
-python scripts/run_schema_discovery.py
-
-# Discover specific models (fast)
-python scripts/run_schema_discovery.py --models stock.picking,sale.order,res.partner
-
-# Preview without saving
-python scripts/run_schema_discovery.py --dry-run
-
-# Preview without saving:
-python scripts/run_schema_discovery.py --dry-run
-
-# Show all field details:
-python scripts/run_schema_discovery.py --verbose
-
-# Discover specific models:
-python scripts/run_schema_discovery.py --models stock.picking,sale.order
-
-# Save to custom directory:
-python scripts/run_schema_discovery.py --output /tmp/my_schemas
-
-
-# Step 1: Install the project in dev mode
-cd /Users/kath/personal_projects/odoo/mcp_odoo
-source .venv/bin/activate
+# Install
 pip install -e .
-
-# Step 2: Update your Claude Desktop config to use the dev venv
-# Edit ~/Library/Application Support/Claude/claude_desktop_config.json:
 ```
 
-## Configuration
+### 2. Configure
 
-### config/config.json
+```bash
+# Copy the template
+cp config/config.template.json config/config.json
+```
+
+Edit `config/config.json` with your Odoo credentials:
 
 ```json
 {
   "odoo": {
-    "url": "https://your-odoo.odoo.com",
-    "database": "your-database",
-    "username": "your-username",
-    "api_key": "your-api-key"
-  },
-  "mcp": {
-    "transport": "stdio"
-  },
-  "schema": {
-    "cache_dir": "config/schemas"
+    "url": "https://your-company.odoo.com",
+    "database": "your-database-name",
+    "username": "your-email@example.com",
+    "api_key": "your-api-key-or-password"
   }
 }
 ```
 
-### Claude Desktop Setup
+> **API Key:** In Odoo, go to Preferences → Account Security → API Keys to generate one (recommended over password).
 
-Add to your `claude_desktop_config.json`:
+### 3. Connect Claude Desktop
+
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "odoo": {
-      "command": "python",
-      "args": ["-m", "src.mcp_server.server"],
+      "command": "/path/to/mcp_odoo/.venv/bin/mcp-odoo",
       "cwd": "/path/to/mcp_odoo"
     }
   }
 }
 ```
 
-## Project Structure
+> Replace `/path/to/mcp_odoo` with the actual path. Use `pwd` in the terminal to find it.
+
+### 4. Restart Claude Desktop and Start Talking
+
+Quit Claude Desktop completely (Cmd+Q), reopen it, and try:
+
+> "What can you do with Odoo?"
+
+You should see the list of available agents and models.
+
+## Available Commands in Claude
+
+| What You Say                               | What Happens                               |
+| ------------------------------------------ | ------------------------------------------ |
+| "Show me sale orders from last month"      | Searches `sale.order` records              |
+| "Create a shipment to Berlin for Client X" | Previews then creates a logistics shipment |
+| "Update invoice INV-0042 to paid"          | Updates `account.move` record              |
+| "How many POs are in draft?"               | Analytics: counts by state                 |
+| "List all available models"                | Lists all Odoo models                      |
+| "What agents are available?"               | Shows logistics, sales, accounting, etc.   |
+
+## How It Works
 
 ```
-mcp_odoo/
-├── src/
-│   ├── mcp_server/       # MCP protocol layer
-│   │   ├── server.py     # MCP SDK-based server
-│   │   └── tools.py      # Tool definitions + handlers (3 tools)
-│   ├── odoo_service/     # Business logic (no AI)
-│   │   ├── router.py     # Keyword-based agent routing
-│   │   ├── odoo_client.py # XML-RPC wrapper
-│   │   ├── schema_store.py # Schema cache + lookup
-│   │   └── session_store.py # Session state
-│   ├── operations/       # Stateless CRUD
-│   │   ├── search.py
-│   │   └── create.py
-│   └── shared/           # Types, config, utilities
-│       ├── types.py      # Dataclasses
-│       └── config.py     # Config loader
-├── config/
-│   ├── config.template.json
-│   ├── agents.json
-│   └── schemas/          # One JSON per Odoo model
-├── tests/
-├── CLAUDE.md
-└── pyproject.toml
+You → Claude Desktop → MCP Server → Odoo (XML-RPC) → Back to Claude → You
 ```
 
-## MCP Tools
+- **Claude is the brain** — it understands your intent, plans multi-step actions, and generates responses
+- **MCP Server is the bridge** — thin, stateless, no AI. It routes keywords, looks up schemas, calls Odoo
+- **Your Odoo data stays private** — everything runs locally, nothing is sent to external services
 
-| Tool          | Description                                                        |
-| ------------- | ------------------------------------------------------------------ |
-| `chat_odoo`   | Send a user message — routes to agent, returns model schema + data |
-| `list_models` | List all available Odoo models and their fields                    |
-| `list_agents` | List all agent personas (logistics, sales, accounting, etc.)       |
+## Customizing Agents and Models
 
-## Agents
+Edit `config/agents.json` to add your own agents or change keywords. For example, to add a "Shipping" agent for your custom `x_shipping_order` model:
 
-| Agent      | Keywords                             | Default Model    |
-| ---------- | ------------------------------------ | ---------------- |
-| Logistics  | shipment, delivery, stock, warehouse | `stock.picking`  |
-| Sales      | sale, order, quotation, customer     | `sale.order`     |
-| Accounting | invoice, payment, bill, journal      | `account.move`   |
-| Purchasing | purchase, PO, vendor, supplier       | `purchase.order` |
-| CS         | hello, help, menu                    | (routing only)   |
+```json
+"shipping": {
+  "key": "shipping",
+  "name": "Shipping Agent",
+  "description": "Handles custom shipping orders",
+  "default_model": "x_shipping_order",
+  "keywords": ["shipping", "container", "vessel", "port"],
+  "models": ["x_shipping_order"]
+}
+```
 
-## Testing
+## Troubleshooting
+
+### "Agents file not found" or "Schema directory not found"
+
+Make sure you run the server from the project root. If using a PyInstaller DMG build, the server automatically resolves paths relative to the `.app` bundle.
+
+### "No module named 'src'"
+
+Run `pip install -e .` from the project root to install in development mode.
+
+### Claude says "Unknown model"
+
+Your Odoo instance may have custom models not yet discovered. Run the setup wizard or schema discovery script to populate `config/schemas/`.
+
+## Developing
+
+See [DEV_COMMANDS.md](DEV_COMMANDS.md) for development setup, testing, linting, and build instructions. See [CLAUDE.md](CLAUDE.md) for project architecture and coding standards.
 
 ```bash
-pytest tests/ -v              # All unit tests
-pytest tests/ --cov=src       # With coverage
-pytest tests/ -k "test_router" # Specific module
+# Run tests
+pytest tests/ -v
+
+# Run linting
+ruff check src/ tests/
+
+# Build the DMG installer
+bash scripts/build_dmg.sh
 ```
 
 ## License

@@ -21,6 +21,7 @@ from pathlib import Path
 from flask import Flask, jsonify, render_template_string, request
 
 from src.odoo_service.odoo_client import OdooClient
+from src.odoo_service.schema_enrichment import apply_heuristics
 
 logger = logging.getLogger(__name__)
 
@@ -272,6 +273,9 @@ def discover_schemas():
                         "error": str(exc)[:100],
                     }
                     yield f"data: {json.dumps(skip)}\n\n"
+
+            # Apply deterministic heuristics (promote important fields, add hints)
+            apply_heuristics(schemas)
 
             # Save
             discovery.cache_dir.mkdir(parents=True, exist_ok=True)

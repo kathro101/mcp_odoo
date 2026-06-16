@@ -12,6 +12,7 @@ This ensures the server works regardless of cwd.
 
 from __future__ import annotations
 
+import contextlib
 import sys
 from pathlib import Path
 
@@ -94,22 +95,36 @@ def get_session_store() -> SessionStore:
 def get_odoo_client() -> OdooClient:
     """Get the OdooClient singleton.
 
+    Tries to load config from:
+    1. User's App Support directory (where the DMG wizard saves it)
+    2. Project root config/ (development mode)
+
     Validates that Odoo URL is configured before creating the client.
     Raises RuntimeError with a clear message if config is missing or
     incomplete.
     """
     global _odoo_client
     if _odoo_client is None:
-        try:
-            cfg = load_config(str(_project_root / "config" / "config.json"))
-        except FileNotFoundError:
+        cfg: dict | None = None
+
+        # Try user's Application Support directory first (DMG wizard save location)
+        user_config = Path.home() / "Library" / "Application Support" / "MCP Odoo" / "config.json"
+        if user_config.exists():
+            cfg = load_config(str(user_config))
+        else:
+            # Fall back to project root config/ (development mode)
+            with contextlib.suppress(FileNotFoundError):
+                cfg = load_config(str(_project_root / "config" / "config.json"))
+
+        if cfg is None:
             raise RuntimeError(
-                "Odoo not configured. Create config/config.json first. "
-                "Copy from config/config.template.json and fill in your Odoo credentials."
-            ) from None
+                "Odoo not configured. Run the setup wizard first, or create "
+                "config/config.json. Copy from config/config.template.json "
+                "and fill in your Odoo credentials."
+            )
         odoo_cfg = cfg.get("odoo", {})
         if not odoo_cfg.get("url"):
-            raise RuntimeError("Odoo URL not set. Edit config/config.json and add your Odoo URL.")
+            raise RuntimeError("Odoo URL not set. Edit config.json and add your Odoo URL.")
         _odoo_client = OdooClient(
             url=odoo_cfg["url"],
             database=odoo_cfg.get("database", ""),

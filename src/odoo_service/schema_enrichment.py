@@ -58,6 +58,80 @@ def _is_standard_model(model_name: str) -> bool:
     return any(model_name.startswith(prefix) for prefix in _STANDARD_PREFIXES)
 
 
+# ── Deterministic heuristic enrichment (ZERO AI TOKENS) ────────────────
+
+# Fields that are commonly required at the business-logic level
+# even when ir.model.fields reports required=False.
+# Promoted to required for models where they exist and are used in views.
+_IMPORTANT_FIELDS: set[str] = {
+    "partner_id",  # Customer/Vendor/Contact — always conceptually required
+    "name",  # Display name / reference
+}
+
+
+def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
+    """Apply deterministic heuristics to improve schema quality.
+
+    Zero AI tokens.  Zero API calls.  Pure Python rules.
+
+    Rules applied:
+    1. Promote important fields to required if they exist in the model
+       and are in create_fields.  (e.g. partner_id is often required
+       at the business-logic level but not at the database level.)
+    2. Generate default workflow_hints when none exist.
+    3. Add standard field aliases for common patterns.
+
+    Args:
+        schemas: Dict of model_name → ModelSchema (mutated in place).
+
+    Returns:
+        The same schemas dict (for chaining).
+    """
+    for _key, schema in schemas.items():
+        # Rule 1: Promote important fields to required
+        for field_name in _IMPORTANT_FIELDS:
+            if (
+                field_name in schema.all_fields
+                and field_name in schema.create_fields
+                and field_name not in schema.required_fields
+            ):
+                schema.required_fields.append(field_name)
+                # Also mark the FieldInfo
+                schema.all_fields[field_name].required = True
+
+        # Sort required_fields for stable ordering
+        schema.required_fields.sort()
+
+        # Rule 2: Default workflow_hints for models that have none
+        if not schema.workflow_hints:
+            hints: list[str] = []
+            # Template pattern: if a sub-model name hints at templates
+            template_subs = [
+                s.field_name for s in schema.sub_models if "template" in s.related_model.lower()
+            ]
+            if template_subs:
+                hints.append(
+                    f"This model may support templates ({', '.join(template_subs)}). "
+                    "Ask the user if they want to load a template before creating."
+                )
+            # Required field reminder
+            if len(schema.required_fields) >= 3:
+                hints.append(
+                    "All required fields must be filled. "
+                    "Use preview action to check what's missing."
+                )
+            # Partner reminder
+            if "partner_id" in schema.required_fields:
+                hints.append(
+                    "partner_id is required — always confirm the customer/vendor before creating."
+                )
+
+            if hints:
+                schema.workflow_hints = "\n".join(f"- {h}" for h in hints)
+
+    return schemas
+
+
 # ── Custom model summarization ──────────────────────────────────────────
 
 

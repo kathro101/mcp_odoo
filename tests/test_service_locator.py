@@ -41,14 +41,17 @@ class TestGetSchemaStore:
 class TestGetOdooClient:
     """Tests for get_odoo_client()."""
 
+    @patch("src.odoo_service.service_locator.Path.exists")
     @patch("src.odoo_service.service_locator.load_config")
-    def test_raises_when_config_missing(self, mock_load):
-        """Should raise RuntimeError when config.json doesn't exist."""
+    def test_raises_when_config_missing(self, mock_load, mock_exists):
+        """Should raise RuntimeError when no config.json is found anywhere."""
         import src.odoo_service.service_locator as sl
         from src.odoo_service.service_locator import get_odoo_client
 
         sl._odoo_client = None
 
+        # Simulate: user App Support config doesn't exist, project config doesn't exist
+        mock_exists.return_value = False
         mock_load.side_effect = FileNotFoundError()
 
         with pytest.raises(RuntimeError, match="not configured"):
@@ -56,14 +59,17 @@ class TestGetOdooClient:
 
         sl._odoo_client = None
 
+    @patch("src.odoo_service.service_locator.Path.exists")
     @patch("src.odoo_service.service_locator.load_config")
-    def test_raises_when_url_empty(self, mock_load):
+    def test_raises_when_url_empty(self, mock_load, mock_exists):
         """Should raise RuntimeError when odoo.url is empty."""
         import src.odoo_service.service_locator as sl
         from src.odoo_service.service_locator import get_odoo_client
 
         sl._odoo_client = None
 
+        # User App Support config exists (DMG wizard), but URL is empty
+        mock_exists.return_value = True
         mock_load.return_value = {"odoo": {"url": ""}}
 
         with pytest.raises(RuntimeError, match="URL not set"):

@@ -222,3 +222,87 @@ class TestEnrichAliases:
 
         # Should NOT call LLM — already enriched
         mock_llm.ask_json.assert_not_called()
+
+
+class TestApplyHeuristics:
+    """Tests for apply_heuristics() — deterministic schema improvement."""
+
+    def test_promotes_partner_id_to_required(self):
+        """partner_id in create_fields should be promoted to required."""
+        from src.odoo_service.schema_enrichment import apply_heuristics
+
+        schema = _make_schema_with_fields("ops_logistics.shipment")
+        schema.create_fields = ["name", "partner_id"]
+        schema.required_fields = ["name"]
+        schema.all_fields["partner_id"].required = False
+
+        apply_heuristics({"shipment": schema})
+
+        assert "partner_id" in schema.required_fields
+        assert schema.all_fields["partner_id"].required is True
+
+    def test_does_not_duplicate_already_required(self):
+        """Should not add duplicate if partner_id already required."""
+        from src.odoo_service.schema_enrichment import apply_heuristics
+
+        schema = _make_schema_with_fields("stock.picking")
+        schema.create_fields = ["name", "partner_id"]
+        schema.required_fields = ["name", "partner_id"]
+
+        apply_heuristics({"stock_picking": schema})
+
+        assert schema.required_fields.count("partner_id") == 1
+
+    def test_generates_default_workflow_hints(self):
+        """Should generate hints when model has template sub-models."""
+        from src.odoo_service.schema_enrichment import apply_heuristics
+        from src.shared.types import SubModelSchema
+
+        schema = _make_schema_with_fields("ops_logistics.shipment")
+        schema.create_fields = ["name", "partner_id"]
+        schema.required_fields = ["name", "partner_id", "company_id"]
+        schema.sub_models = [
+            SubModelSchema(
+                field_name="template_lane_ids",
+                related_model="ops_logistics.shipment_template",
+            )
+        ]
+        assert not schema.workflow_hints
+
+        apply_heuristics({"shipment": schema})
+
+        assert schema.workflow_hints
+        assert "template" in schema.workflow_hints.lower()
+
+    def test_sorts_required_fields(self):
+        """required_fields should be sorted for stable ordering."""
+        from src.odoo_service.schema_enrichment import apply_heuristics
+
+        schema = _make_schema_with_fields("test.model")
+        schema.create_fields = ["zebra", "apple", "partner_id"]
+        schema.required_fields = ["zebra"]
+        schema.all_fields["partner_id"].required = False
+
+        apply_heuristics({"test_model": schema})
+
+        assert schema.required_fields == sorted(schema.required_fields)
+
+    def test_empty_schemas_no_error(self):
+        """Should handle empty schemas without error."""
+        from src.odoo_service.schema_enrichment import apply_heuristics
+
+        result = apply_heuristics({})
+        assert result == {}
+
+    def test_standard_model_also_gets_heuristics(self):
+        """Heuristics apply to ALL models, not just custom ones."""
+        from src.odoo_service.schema_enrichment import apply_heuristics
+
+        schema = _make_schema_with_fields("sale.order")
+        schema.create_fields = ["name", "partner_id"]
+        schema.required_fields = ["name"]
+        schema.all_fields["partner_id"].required = False
+
+        apply_heuristics({"sale_order": schema})
+
+        assert "partner_id" in schema.required_fields
