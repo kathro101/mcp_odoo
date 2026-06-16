@@ -129,18 +129,23 @@ Your Odoo instance may have custom models not yet discovered. Run the setup wiza
 
 ## Developing
 
-See [DEV_COMMANDS.md](DEV_COMMANDS.md) for development setup, testing, linting, and build instructions. See [CLAUDE.md](CLAUDE.md) for project architecture and coding standards.
+### Quick Commands
 
 ```bash
-# Run tests
-pytest tests/ -v
+# Activate environment (always run first)
+source .venv/bin/activate
 
-# Run linting
-ruff check src/ tests/
+# Run all tests
+pytest
 
-# Build the DMG installer
+# Build DMG installer
 bash scripts/build_dmg.sh
+
+# Rebuild DMG (clean + build)
+rm -rf build/ dist/ && bash scripts/build_dmg.sh
 ```
+
+See [DEV_COMMANDS.md](DEV_COMMANDS.md) for full development documentation. See [CLAUDE.md](CLAUDE.md) for project architecture and coding standards.
 
 ## License
 
