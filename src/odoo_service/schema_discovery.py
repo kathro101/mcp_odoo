@@ -164,6 +164,9 @@ class SchemaDiscovery:
                 help_text=meta.get("help", ""),
             )
 
+        # Detect auto-generated fields
+        self._detect_auto_generated(all_fields, model_name)
+
         # Classify fields
         create_f, search_f, required_f = self._classify_fields(all_fields)
 
@@ -323,6 +326,31 @@ class SchemaDiscovery:
         return freq
 
     # ── Field classification ────────────────────────────────────────────
+
+    @staticmethod
+    def _detect_auto_generated(fields: dict[str, FieldInfo], model_name: str) -> None:
+        """Mark auto-generated fields (sequence numbers, computed defaults).
+
+        Heuristic: a char field named 'name' or 'number' that is stored
+        but has no compute method AND is not required is likely auto-generated
+        by an Odoo sequence.
+
+        Args:
+            fields: Dict of field_name → FieldInfo (mutated in place).
+            model_name: Odoo model name (unused, available for future I/O).
+        """
+        _ = model_name  # reserved for future ir.default lookup
+        for fname, fi in fields.items():
+            if (
+                fi.field_type == "char"
+                and fname in ("name", "number")
+                and fi.store
+                and not fi.computed
+                and not fi.required
+                and not fi.readonly
+                and not fi.related
+            ):
+                fi.auto_generated = True
 
     @staticmethod
     def _classify_fields(fields: dict[str, FieldInfo]) -> tuple[list[str], list[str], list[str]]:

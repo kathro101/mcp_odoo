@@ -55,7 +55,7 @@ def confirm_delete(
 
     # Build a descriptive identifier from the record data
     name = record_data.get("name", "")
-    if isinstance(name, (list, tuple)):
+    if isinstance(name, list | tuple):
         name = name[0] if name else ""
 
     identifier = f"{name} (ID: {record_id})" if name else f"Record ID: {record_id}"

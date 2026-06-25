@@ -312,6 +312,22 @@ def _format_schema_for_claude(schema) -> list[str]:
                 lines.append(f"  - {detail}")
         lines.append("")
 
+    # Auto-generated fields (WARN Claude not to set these)
+    auto_gen = [
+        fn
+        for fn in schema.create_fields
+        if schema.all_fields.get(fn) and schema.all_fields[fn].auto_generated
+    ]
+    if auto_gen:
+        lines.append("### AUTO-GENERATED FIELDS (DO NOT SET)")
+        lines.append(
+            "These fields are system-generated — setting them manually will have no effect:"
+        )
+        for fname in auto_gen:
+            fi = schema.all_fields[fname]
+            lines.append(f"  - `{fname}`: {fi.string} — system-generated sequence number")
+        lines.append("")
+
     # Top optional fields (by usage frequency)
     optional_fields = [
         fn
@@ -337,7 +353,14 @@ def _format_schema_for_claude(schema) -> list[str]:
     if schema.sub_models:
         lines.append("### SUB-MODELS (one-to-many)")
         for sub in schema.sub_models:
-            lines.append(f"  - `{sub.field_name}` → {sub.related_model}")
+            line = f"  - `{sub.field_name}` → {sub.related_model}"
+            if sub.target_fields:
+                tf = sub.target_fields[:8]
+                line += f"\n    Fields: {', '.join(tf)}"
+            if sub.target_required_fields:
+                trf = sub.target_required_fields
+                line += f"\n    Required: {', '.join(trf)}"
+            lines.append(line)
         lines.append("")
 
     # Match keywords
@@ -354,6 +377,8 @@ def _format_field_detail(fi) -> str:
         parts.append(f" → {fi.relation}")
     parts.append(f"): {fi.string}")
 
+    if fi.auto_generated:
+        parts.append(" ⚠️ AUTO-GENERATED — do NOT set manually")
     if fi.selection:
         options = [f"{s[0]} ({s[1]})" for s in fi.selection]
         parts.append(f" [options: {', '.join(options)}]")

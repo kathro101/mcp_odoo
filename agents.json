@@ -1,0 +1,33 @@
+{
+    "agents": {
+        "odoo_expert": {
+            "description": "General-purpose Odoo assistant for exploration, Q&A, and guided workflows.",
+            "model": "claude-sonnet-4-20250514",
+            "system_prompt": "agents/odoo_expert.prompt.md",
+            "tools": ["search_read", "read", "fields_get", "ir_filters", "list_databases"],
+            "allowed_models": []
+        },
+        "odoo_dev": {
+            "description": "Developer-focused agent for debugging, schema inspection, and diagnostics.",
+            "model": "claude-sonnet-4-20250514",
+            "system_prompt": "agents/odoo_dev.prompt.md",
+            "tools": [
+                "search_read", "read", "fields_get", "ir_filters",
+                "list_databases", "execute_kw", "ir_model_access",
+                "ir_model_fields", "ir_cron", "server_actions"
+            ],
+            "allowed_models": []
+        },
+        "odoo_support": {
+            "description": "Support agent for safe create/write/unlink with guardrails.",
+            "model": "claude-sonnet-4-20250514",
+            "system_prompt": "agents/odoo_support.prompt.md",
+            "tools": [
+                "search_read", "read", "fields_get", "ir_filters",
+                "list_databases", "create", "write", "unlink",
+                "change_password", "execute_kw"
+            ],
+            "allowed_models": []
+        }
+    }
+}

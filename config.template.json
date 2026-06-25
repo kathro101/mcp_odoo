@@ -1,0 +1,35 @@
+{
+    "odoo": {
+        "url": "https://your-odoo.odoo.com",
+        "db": "your-database",
+        "username": "admin",
+        "password": "admin",
+        "http_url": "https://your-odoo.odoo.com"
+    },
+    "mcp": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "name": "Odoo MCP Server"
+    },
+    "limits": {
+        "max_search_results": 100,
+        "max_create_batch": 50,
+        "max_field_preview_length": 200,
+        "request_timeout_seconds": 30,
+        "schema_refresh_minutes": 60
+    },
+    "agents": {
+        "default": "odoo_expert",
+        "available": ["odoo_expert", "odoo_dev", "odoo_support"]
+    },
+    "rag": {
+        "enabled": true,
+        "max_context_chars": 8000,
+        "provider": "openai",
+        "model": "text-embedding-3-small"
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "logs/mcp_odoo.log"
+    }
+}

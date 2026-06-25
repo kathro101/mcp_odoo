@@ -109,11 +109,36 @@ def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
             template_subs = [
                 s.field_name for s in schema.sub_models if "template" in s.related_model.lower()
             ]
+            # Milestone/line pattern: sub-models with milestone/line/item/stage in name
+            milestone_subs = [
+                s
+                for s in schema.sub_models
+                if any(
+                    w in s.related_model.lower()
+                    for w in ("milestone", "line", "item", "move", "stage")
+                )
+            ]
+
             if template_subs:
                 hints.append(
-                    f"This model may support templates ({', '.join(template_subs)}). "
-                    "Ask the user if they want to load a template before creating."
+                    "- **Template flow**: After creating the parent record, search for "
+                    "templates using the search action on the template model. Load a "
+                    "template by updating the parent record's template_id field."
                 )
+            if milestone_subs:
+                field_names = ", ".join(s.field_name for s in milestone_subs)
+                hints.append(
+                    f"- **Sub-records**: After creating the parent record, create sub-records "
+                    f"via the sub-model fields: {field_names}. "
+                    "Always preview the parent first, then create sub-records in a second step."
+                )
+            if milestone_subs and template_subs:
+                hints.append(
+                    "- **Route mapping**: When user says 'from X to Y', this maps to "
+                    "milestone sub-records, NOT the parent header. If using a template, "
+                    "the template auto-populates milestones with placeholders."
+                )
+
             # Required field reminder
             if len(schema.required_fields) >= 3:
                 hints.append(
@@ -127,7 +152,11 @@ def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
                 )
 
             if hints:
-                schema.workflow_hints = "\n".join(f"- {h}" for h in hints)
+                schema.workflow_hints = (
+                    "\n".join(f"- {h}" for h in hints)
+                    if hints[0].startswith("- ")
+                    else "\n".join(hints)
+                )
 
     return schemas
 

@@ -181,3 +181,97 @@ class TestSchemaStore:
             import shutil
 
             shutil.rmtree(tmpdir)
+
+
+class TestSchemaStoreNewFields:
+    """Tests for new FieldInfo/SubModelSchema fields in schema store."""
+
+    def test_auto_generated_roundtrips(self):
+        """auto_generated flag should survive save → reload."""
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from src.odoo_service.schema_store import SchemaStore
+        from src.shared.types import FieldInfo, ModelSchema
+
+        fields = {
+            "number": FieldInfo(
+                name="number",
+                field_type="char",
+                string="Number",
+                auto_generated=True,
+            ),
+        }
+        schema = ModelSchema(
+            key="test_model",
+            label="Test",
+            odoo_model="test.model",
+            all_fields=fields,
+            create_fields=["number"],
+        )
+
+        tmpdir = tempfile.mkdtemp()
+        schema_path = Path(tmpdir) / "test_model.json"
+        # Manually serialize
+        data = {
+            "key": schema.key,
+            "label": schema.label,
+            "odoo_model": schema.odoo_model,
+            "all_fields": {
+                "number": {
+                    "name": "number",
+                    "field_type": "char",
+                    "string": "Number",
+                    "auto_generated": True,
+                }
+            },
+            "create_fields": ["number"],
+        }
+        schema_path.write_text(json.dumps(data))
+
+        try:
+            store = SchemaStore(tmpdir)
+            loaded = store.get("test_model")
+            assert loaded.all_fields["number"].auto_generated is True
+        finally:
+            import shutil
+
+            shutil.rmtree(tmpdir)
+
+    def test_sub_model_target_fields_roundtrip(self):
+        """SubModelSchema target_fields should survive save → reload."""
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from src.odoo_service.schema_store import SchemaStore
+
+        tmpdir = tempfile.mkdtemp()
+        schema_path = Path(tmpdir) / "test_model.json"
+        data = {
+            "key": "test_model",
+            "label": "Test",
+            "odoo_model": "test.model",
+            "all_fields": {},
+            "sub_models": [
+                {
+                    "field_name": "reference_ids",
+                    "related_model": "ops_logistics.reference",
+                    "target_fields": ["name", "type"],
+                    "target_required_fields": ["name"],
+                }
+            ],
+        }
+        schema_path.write_text(json.dumps(data))
+
+        try:
+            store = SchemaStore(tmpdir)
+            loaded = store.get("test_model")
+            sub = loaded.sub_models[0]
+            assert sub.target_fields == ["name", "type"]
+            assert sub.target_required_fields == ["name"]
+        finally:
+            import shutil
+
+            shutil.rmtree(tmpdir)

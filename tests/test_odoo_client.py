@@ -40,8 +40,8 @@ class TestOdooClient:
         mock_object = MagicMock()
 
         with patch("xmlrpc.client.ServerProxy") as mock_proxy:
-            mock_proxy.side_effect = (
-                lambda url, **kw: mock_common if "common" in url else mock_object
+            mock_proxy.side_effect = lambda url, **kw: (
+                mock_common if "common" in url else mock_object
             )
             client = OdooClient("url", "db", "user", "key")
             client._authenticate()

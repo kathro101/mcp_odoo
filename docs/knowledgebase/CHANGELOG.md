@@ -2,6 +2,24 @@
 
 All notable changes to the mcp_odoo project.
 
+## [2.3.0] — 2026-06-16
+
+### 🔧 Generic Sub-Model Support — Fix Shipment Field Mapping
+
+- **`FieldInfo.auto_generated`** — new flag to prevent Claude from overriding sequence-generated fields like `number`/`name`. Detected via `ir.model.fields` compute + store analysis.
+- **`SubModelSchema.target_fields` + `target_required_fields`** — sub-models now expose their target model's writable fields. Claude can now construct proper sub-record data (references, milestones, order lines).
+- **Auto-generated field warnings** — `_format_schema_for_claude` now shows an "AUTO-GENERATED FIELDS (DO NOT SET)" section with clear warnings.
+- **Sub-model target details** — schema output now shows target fields per sub-model: `reference_ids → ops_logistics.reference (Fields: name, type, ...)`
+- **Template/milestone workflow hints** — `apply_heuristics` now auto-generates hints for models with template-like or milestone-like sub-models (e.g., "Template flow: load templates AFTER creation")
+- **Route-mapping hints** — when models have both template and milestone sub-models, adds "Route mapping: 'from X to Y' maps to milestone sub-records"
+- **Schema store round-trip** — all new fields serialized/deserialized correctly
+
+### Stats
+
+- **260 tests** (+28 from 232)
+- Generic fix benefits ALL Odoo models, not just `ops_logistics.shipment`
+- Zero new LLM runtime calls — all hints are heuristic-generated
+
 ## [2.2.0] — 2026-06-16
 
 ### ⚡ Parallel Schema Discovery

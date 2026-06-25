@@ -81,9 +81,8 @@ class TestRouteMessage:
 
         result = route_message("shipment order sale delivery", agents)
 
-        # salesman has 2 matches (shipment, sale, order) vs logistics 2 matches (shipment, delivery)
-        # Both have 2 — sale length 4 > delivery length 8? No, we score by keyword length
-        # shipment(8) + delivery(8) = 16 for logistics vs shipment(8) + sale(4) + order(5) = 17 for salesman
+        # salesman: shipment(8)+sale(4)+order(5)=17
+        # logistics: shipment(8)+delivery(8)=16
         assert result.agent_key == "salesman"
 
     def test_no_keyword_match_returns_no_match(self):

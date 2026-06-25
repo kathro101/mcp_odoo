@@ -31,6 +31,7 @@ class FieldInfo:
     depends: list[str] = field(default_factory=list)
     usage_frequency: int = 0
     help_text: str = ""
+    auto_generated: bool = False
 
 
 @dataclass
@@ -41,6 +42,8 @@ class SubModelSchema:
     related_model: str
     relation_field: str = ""
     is_one_to_many: bool = False
+    target_fields: list[str] = field(default_factory=list)
+    target_required_fields: list[str] = field(default_factory=list)
 
 
 @dataclass

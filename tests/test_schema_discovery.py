@@ -65,7 +65,7 @@ def _make_odoo_mock(
         results = []
         if model == "ir.model":
             for item in domain:
-                if isinstance(item, (list, tuple)) and len(item) == 3 and item[0] == "model":
+                if isinstance(item, list | tuple) and len(item) == 3 and item[0] == "model":
                     results.append(hash(item[2]) % 10000)
         return results[:1] if results else []
 

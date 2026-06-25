@@ -78,6 +78,25 @@ class TestFieldInfo:
         )
         assert fi.help_text == "Reference of the document that generated this picking request"
 
+    def test_field_info_auto_generated_defaults_false(self):
+        """FieldInfo.auto_generated should default to False."""
+        from src.shared.types import FieldInfo
+
+        fi = FieldInfo(name="test", field_type="char", string="Test")
+        assert fi.auto_generated is False
+
+    def test_field_info_auto_generated_can_be_set(self):
+        """FieldInfo.auto_generated should be settable to True."""
+        from src.shared.types import FieldInfo
+
+        fi = FieldInfo(
+            name="number",
+            field_type="char",
+            string="Number",
+            auto_generated=True,
+        )
+        assert fi.auto_generated is True
+
 
 class TestSubModelSchema:
     """Tests for SubModelSchema dataclass."""
@@ -106,6 +125,27 @@ class TestSubModelSchema:
 
         assert sub.relation_field == ""
         assert sub.is_one_to_many is False
+
+    def test_sub_model_schema_target_fields_default(self):
+        """SubModelSchema.target_fields should default to empty list."""
+        from src.shared.types import SubModelSchema
+
+        sub = SubModelSchema(field_name="line_ids", related_model="sale.order.line")
+        assert sub.target_fields == []
+        assert sub.target_required_fields == []
+
+    def test_sub_model_schema_with_target_fields(self):
+        """SubModelSchema should accept target field lists."""
+        from src.shared.types import SubModelSchema
+
+        sub = SubModelSchema(
+            field_name="reference_ids",
+            related_model="ops_logistics.reference",
+            target_fields=["name", "type", "description"],
+            target_required_fields=["name"],
+        )
+        assert sub.target_fields == ["name", "type", "description"]
+        assert sub.target_required_fields == ["name"]
 
 
 class TestModelSchema:

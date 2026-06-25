@@ -152,6 +152,20 @@
 
 ---
 
+## Phase 6.5: Generic Sub-Model Support ✅ COMPLETE
+
+**Task:** [11-generic-submodel-support.md](./11-generic-submodel-support.md)
+**Tests:** 28 new → 260 total
+
+- [x] Add `auto_generated` to `FieldInfo` (prevent overriding sequence fields)
+- [x] Add `target_fields` to `SubModelSchema` (Claude knows sub-model structure)
+- [x] Enhance `_format_schema_for_claude` with AUTO-GENERATED warnings
+- [x] Enhance sub-model section with target field details
+- [x] Extend `apply_heuristics()` with template/milestone/route workflow hints
+- [x] Schema store serialization round-trip for new fields
+
+---
+
 ## Phase 7: Polish & Documentation 🔴
 
 ### 7A. Documentation
@@ -196,7 +210,7 @@
 | 6     | Web UI & Installer                   | 🔴      | 0     |
 | 7     | Polish & Documentation               | 🔴      | 0     |
 
-**Current test count: 104**
+**Current test count: 232**
 
 ---
 

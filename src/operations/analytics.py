@@ -60,7 +60,7 @@ def aggregate(
     groups: list[dict] = []
     for row in result or []:
         key = row.get(group_by, "")
-        if isinstance(key, (list, tuple)):
+        if isinstance(key, list | tuple):
             key = key[1] if len(key) > 1 else str(key)
 
         if metric == "count":

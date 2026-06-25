@@ -83,10 +83,7 @@ def parse_date_flexible(text: str, tz: timezone | None = None) -> datetime | Non
         num = int(rel_match.group(1))
         unit = rel_match.group(2).lower()
 
-        if "ago" in text or "last" in text or "past" in text:
-            sign = -1
-        else:
-            sign = 1
+        sign = -1 if "ago" in text or "last" in text or "past" in text else 1
 
         if unit == "day":
             target = today + timedelta(days=sign * num)

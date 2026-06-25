@@ -107,6 +107,7 @@ class SchemaStore:
                 depends=fdata.get("depends", []),
                 usage_frequency=fdata.get("usage_frequency", 0),
                 help_text=fdata.get("help_text", ""),
+                auto_generated=fdata.get("auto_generated", False),
             )
 
         sub_models = [
@@ -115,6 +116,8 @@ class SchemaStore:
                 related_model=s.get("related_model", ""),
                 relation_field=s.get("relation_field", ""),
                 is_one_to_many=s.get("is_one_to_many", False),
+                target_fields=s.get("target_fields", []),
+                target_required_fields=s.get("target_required_fields", []),
             )
             for s in raw.get("sub_models", [])
         ]
