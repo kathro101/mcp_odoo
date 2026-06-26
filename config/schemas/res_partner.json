@@ -17,7 +17,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Restrict to a specific website."
+      "help_text": "Restrict to a specific website.",
+      "auto_generated": false
     },
     "website_published": {
       "name": "website_published",
@@ -32,7 +33,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_published": {
       "name": "is_published",
@@ -47,7 +49,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "can_publish": {
       "name": "can_publish",
@@ -62,7 +65,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "website_url": {
       "name": "website_url",
@@ -77,7 +81,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "The full URL to access the document through the website."
+      "help_text": "The full URL to access the document through the website.",
+      "auto_generated": false
     },
     "message_is_follower": {
       "name": "message_is_follower",
@@ -92,7 +97,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "message_follower_ids": {
       "name": "message_follower_ids",
@@ -107,7 +113,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "message_partner_ids": {
       "name": "message_partner_ids",
@@ -122,7 +129,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "message_ids": {
       "name": "message_ids",
@@ -137,7 +145,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "has_message": {
       "name": "has_message",
@@ -152,7 +161,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "message_needaction": {
       "name": "message_needaction",
@@ -167,7 +177,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "If checked, new messages require your attention."
+      "help_text": "If checked, new messages require your attention.",
+      "auto_generated": false
     },
     "message_needaction_counter": {
       "name": "message_needaction_counter",
@@ -182,7 +193,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Number of messages requiring action"
+      "help_text": "Number of messages requiring action",
+      "auto_generated": false
     },
     "message_has_error": {
       "name": "message_has_error",
@@ -197,7 +209,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "If checked, some messages have a delivery error."
+      "help_text": "If checked, some messages have a delivery error.",
+      "auto_generated": false
     },
     "message_has_error_counter": {
       "name": "message_has_error_counter",
@@ -212,7 +225,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Number of messages with delivery error"
+      "help_text": "Number of messages with delivery error",
+      "auto_generated": false
     },
     "message_attachment_count": {
       "name": "message_attachment_count",
@@ -227,7 +241,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "rating_ids": {
       "name": "rating_ids",
@@ -242,7 +257,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "website_message_ids": {
       "name": "website_message_ids",
@@ -257,7 +273,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Website communication history"
+      "help_text": "Website communication history",
+      "auto_generated": false
     },
     "message_has_sms_error": {
       "name": "message_has_sms_error",
@@ -272,7 +289,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "If checked, some messages have a delivery error."
+      "help_text": "If checked, some messages have a delivery error.",
+      "auto_generated": false
     },
     "email_normalized": {
       "name": "email_normalized",
@@ -287,7 +305,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "This field is used to search on email address as the primary email field can contain more than strictly an email address."
+      "help_text": "This field is used to search on email address as the primary email field can contain more than strictly an email address.",
+      "auto_generated": false
     },
     "is_blacklisted": {
       "name": "is_blacklisted",
@@ -302,7 +321,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "If the email address is on the blacklist, the contact won't receive mass mailing anymore, from any list"
+      "help_text": "If the email address is on the blacklist, the contact won't receive mass mailing anymore, from any list",
+      "auto_generated": false
     },
     "message_bounce": {
       "name": "message_bounce",
@@ -317,7 +337,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Counter of the number of bounced emails for this contact"
+      "help_text": "Counter of the number of bounced emails for this contact",
+      "auto_generated": false
     },
     "activity_ids": {
       "name": "activity_ids",
@@ -332,7 +353,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 2,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "activity_state": {
       "name": "activity_state",
@@ -360,7 +382,8 @@
       ],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Status based on activities\nOverdue: Due date is already passed\nToday: Activity date is today\nPlanned: Future activities."
+      "help_text": "Status based on activities\nOverdue: Due date is already passed\nToday: Activity date is today\nPlanned: Future activities.",
+      "auto_generated": false
     },
     "activity_user_id": {
       "name": "activity_user_id",
@@ -375,7 +398,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "activity_type_id": {
       "name": "activity_type_id",
@@ -390,7 +414,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "activity_type_icon": {
       "name": "activity_type_icon",
@@ -405,7 +430,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Font awesome icon e.g. fa-tasks"
+      "help_text": "Font awesome icon e.g. fa-tasks",
+      "auto_generated": false
     },
     "activity_date_deadline": {
       "name": "activity_date_deadline",
@@ -420,7 +446,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "my_activity_date_deadline": {
       "name": "my_activity_date_deadline",
@@ -435,7 +462,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "activity_summary": {
       "name": "activity_summary",
@@ -450,7 +478,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "activity_exception_decoration": {
       "name": "activity_exception_decoration",
@@ -474,7 +503,8 @@
       ],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Type of the exception activity on record."
+      "help_text": "Type of the exception activity on record.",
+      "auto_generated": false
     },
     "activity_exception_icon": {
       "name": "activity_exception_icon",
@@ -489,7 +519,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Icon to indicate an exception activity."
+      "help_text": "Icon to indicate an exception activity.",
+      "auto_generated": false
     },
     "activity_calendar_event_id": {
       "name": "activity_calendar_event_id",
@@ -504,7 +535,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "form_has_lastname_first": {
       "name": "form_has_lastname_first",
@@ -519,7 +551,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "firstname_required": {
       "name": "firstname_required",
@@ -534,7 +567,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "lastname_required": {
       "name": "lastname_required",
@@ -549,7 +583,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "image_1920": {
       "name": "image_1920",
@@ -564,7 +599,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "image_1024": {
       "name": "image_1024",
@@ -579,7 +615,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "image_512": {
       "name": "image_512",
@@ -594,7 +631,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "image_256": {
       "name": "image_256",
@@ -609,7 +647,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "image_128": {
       "name": "image_128",
@@ -624,7 +663,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "avatar_1920": {
       "name": "avatar_1920",
@@ -639,7 +679,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "avatar_1024": {
       "name": "avatar_1024",
@@ -654,7 +695,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "avatar_512": {
       "name": "avatar_512",
@@ -669,7 +711,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "avatar_256": {
       "name": "avatar_256",
@@ -684,7 +727,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "avatar_128": {
       "name": "avatar_128",
@@ -699,7 +743,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "name": {
       "name": "name",
@@ -714,7 +759,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 27,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": true
     },
     "complete_name": {
       "name": "complete_name",
@@ -729,7 +775,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 2,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "title": {
       "name": "title",
@@ -744,7 +791,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "parent_id": {
       "name": "parent_id",
@@ -759,7 +807,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 16,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "parent_name": {
       "name": "parent_name",
@@ -774,7 +823,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "child_ids": {
       "name": "child_ids",
@@ -789,7 +839,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "ref": {
       "name": "ref",
@@ -804,7 +855,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "lang": {
       "name": "lang",
@@ -824,7 +876,8 @@
       ],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": "All the emails and documents sent to this contact will be translated in this language."
+      "help_text": "All the emails and documents sent to this contact will be translated in this language.",
+      "auto_generated": false
     },
     "active_lang_count": {
       "name": "active_lang_count",
@@ -839,7 +892,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "tz": {
       "name": "tz",
@@ -3243,7 +3297,8 @@
       ],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "When printing documents and exporting/importing data, time values are computed according to this timezone.\nIf the timezone is not set, UTC (Coordinated Universal Time) is used.\nAnywhere else, time values are computed according to the time offset of your web client."
+      "help_text": "When printing documents and exporting/importing data, time values are computed according to this timezone.\nIf the timezone is not set, UTC (Coordinated Universal Time) is used.\nAnywhere else, time values are computed according to the time offset of your web client.",
+      "auto_generated": false
     },
     "tz_offset": {
       "name": "tz_offset",
@@ -3258,7 +3313,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "user_id": {
       "name": "user_id",
@@ -3273,7 +3329,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": "The internal user in charge of this contact."
+      "help_text": "The internal user in charge of this contact.",
+      "auto_generated": false
     },
     "vat": {
       "name": "vat",
@@ -3288,7 +3345,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 10,
-      "help_text": "The Tax Identification Number. Values here will be validated based on the country format. You can use '/' to indicate that the partner is not subject to tax."
+      "help_text": "The Tax Identification Number. Values here will be validated based on the country format. You can use '/' to indicate that the partner is not subject to tax.",
+      "auto_generated": false
     },
     "vat_label": {
       "name": "vat_label",
@@ -3303,7 +3361,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "same_vat_partner_id": {
       "name": "same_vat_partner_id",
@@ -3318,7 +3377,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "same_company_registry_partner_id": {
       "name": "same_company_registry_partner_id",
@@ -3333,7 +3393,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "company_registry": {
       "name": "company_registry",
@@ -3348,7 +3409,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": "The registry number of the company. Use it if it is different from the Tax ID. It must be unique across all partners of a same country"
+      "help_text": "The registry number of the company. Use it if it is different from the Tax ID. It must be unique across all partners of a same country",
+      "auto_generated": false
     },
     "company_registry_label": {
       "name": "company_registry_label",
@@ -3363,7 +3425,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "bank_ids": {
       "name": "bank_ids",
@@ -3378,7 +3441,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "website": {
       "name": "website",
@@ -3393,7 +3457,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "comment": {
       "name": "comment",
@@ -3408,7 +3473,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "category_id": {
       "name": "category_id",
@@ -3423,7 +3489,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 7,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "active": {
       "name": "active",
@@ -3438,7 +3505,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 1,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "employee": {
       "name": "employee",
@@ -3453,7 +3521,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Check this box if this contact is an Employee."
+      "help_text": "Check this box if this contact is an Employee.",
+      "auto_generated": false
     },
     "function": {
       "name": "function",
@@ -3468,7 +3537,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 14,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "type": {
       "name": "type",
@@ -3500,7 +3570,8 @@
       ],
       "depends": [],
       "usage_frequency": 21,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "street": {
       "name": "street",
@@ -3515,7 +3586,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 17,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "street2": {
       "name": "street2",
@@ -3530,7 +3602,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 15,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "zip": {
       "name": "zip",
@@ -3545,7 +3618,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 18,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "city": {
       "name": "city",
@@ -3560,7 +3634,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 27,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "state_id": {
       "name": "state_id",
@@ -3575,7 +3650,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 20,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "country_id": {
       "name": "country_id",
@@ -3590,7 +3666,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 21,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "country_code": {
       "name": "country_code",
@@ -3605,7 +3682,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "The ISO country code in two chars. \nYou can use this field for quick search."
+      "help_text": "The ISO country code in two chars. \nYou can use this field for quick search.",
+      "auto_generated": false
     },
     "partner_latitude": {
       "name": "partner_latitude",
@@ -3620,7 +3698,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "partner_longitude": {
       "name": "partner_longitude",
@@ -3635,7 +3714,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "email": {
       "name": "email",
@@ -3650,7 +3730,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 22,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "email_formatted": {
       "name": "email_formatted",
@@ -3665,7 +3746,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Format email address \"Name <email@domain>\""
+      "help_text": "Format email address \"Name <email@domain>\"",
+      "auto_generated": false
     },
     "phone": {
       "name": "phone",
@@ -3680,7 +3762,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 21,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "mobile": {
       "name": "mobile",
@@ -3695,7 +3778,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 20,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_company": {
       "name": "is_company",
@@ -3710,7 +3794,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 8,
-      "help_text": "Check if the contact is a company, otherwise it is a person"
+      "help_text": "Check if the contact is a company, otherwise it is a person",
+      "auto_generated": false
     },
     "is_public": {
       "name": "is_public",
@@ -3725,7 +3810,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "industry_id": {
       "name": "industry_id",
@@ -3740,7 +3826,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "company_type": {
       "name": "company_type",
@@ -3764,7 +3851,8 @@
       ],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "company_id": {
       "name": "company_id",
@@ -3779,7 +3867,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 15,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "color": {
       "name": "color",
@@ -3794,7 +3883,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "user_ids": {
       "name": "user_ids",
@@ -3809,7 +3899,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 1,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "partner_share": {
       "name": "partner_share",
@@ -3824,7 +3915,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Either customer (not a user), either shared user. Indicated the current partner is a customer without access or with a limited access created for sharing data."
+      "help_text": "Either customer (not a user), either shared user. Indicated the current partner is a customer without access or with a limited access created for sharing data.",
+      "auto_generated": false
     },
     "contact_address": {
       "name": "contact_address",
@@ -3839,7 +3931,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "commercial_partner_id": {
       "name": "commercial_partner_id",
@@ -3854,7 +3947,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "commercial_company_name": {
       "name": "commercial_company_name",
@@ -3869,7 +3963,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "company_name": {
       "name": "company_name",
@@ -3884,7 +3979,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "barcode": {
       "name": "barcode",
@@ -3899,7 +3995,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Use a barcode to identify this contact."
+      "help_text": "Use a barcode to identify this contact.",
+      "auto_generated": false
     },
     "self": {
       "name": "self",
@@ -3914,7 +4011,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "id": {
       "name": "id",
@@ -3929,7 +4027,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 1,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "display_name": {
       "name": "display_name",
@@ -3944,7 +4043,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 2,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "create_uid": {
       "name": "create_uid",
@@ -3959,7 +4059,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "create_date": {
       "name": "create_date",
@@ -3974,7 +4075,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "write_uid": {
       "name": "write_uid",
@@ -3989,7 +4091,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "write_date": {
       "name": "write_date",
@@ -4004,7 +4107,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "im_status": {
       "name": "im_status",
@@ -4019,7 +4123,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "firstname": {
       "name": "firstname",
@@ -4034,7 +4139,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "lastname": {
       "name": "lastname",
@@ -4049,7 +4155,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 18,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "contact_address_complete": {
       "name": "contact_address_complete",
@@ -4064,7 +4171,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 1,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "channel_ids": {
       "name": "channel_ids",
@@ -4079,7 +4187,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "contact_address_inline": {
       "name": "contact_address_inline",
@@ -4094,7 +4203,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "starred_message_ids": {
       "name": "starred_message_ids",
@@ -4109,7 +4219,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "image_medium": {
       "name": "image_medium",
@@ -4124,7 +4235,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "signup_type": {
       "name": "signup_type",
@@ -4139,7 +4251,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "meeting_count": {
       "name": "meeting_count",
@@ -4154,7 +4267,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "meeting_ids": {
       "name": "meeting_ids",
@@ -4169,7 +4283,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "calendar_last_notif_ack": {
       "name": "calendar_last_notif_ack",
@@ -4184,7 +4299,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "portal_user_ids": {
       "name": "portal_user_ids",
@@ -4199,7 +4315,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "property_product_pricelist": {
       "name": "property_product_pricelist",
@@ -4214,7 +4331,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "This pricelist will be used, instead of the default one, for sales to the current partner"
+      "help_text": "This pricelist will be used, instead of the default one, for sales to the current partner",
+      "auto_generated": false
     },
     "specific_property_product_pricelist": {
       "name": "specific_property_product_pricelist",
@@ -4229,7 +4347,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "street_name": {
       "name": "street_name",
@@ -4244,7 +4363,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "street_number": {
       "name": "street_number",
@@ -4259,7 +4379,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "street_number2": {
       "name": "street_number2",
@@ -4274,7 +4395,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "city_id": {
       "name": "city_id",
@@ -4289,7 +4411,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "country_enforce_cities": {
       "name": "country_enforce_cities",
@@ -4304,7 +4427,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": "Check this box to ensure every address created in that country has a 'City' chosen in the list of the country's cities."
+      "help_text": "Check this box to ensure every address created in that country has a 'City' chosen in the list of the country's cities.",
+      "auto_generated": false
     },
     "ocn_token": {
       "name": "ocn_token",
@@ -4319,7 +4443,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Used for sending notification to registered devices"
+      "help_text": "Used for sending notification to registered devices",
+      "auto_generated": false
     },
     "partner_gid": {
       "name": "partner_gid",
@@ -4334,7 +4459,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "additional_info": {
       "name": "additional_info",
@@ -4349,7 +4475,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "phone_sanitized": {
       "name": "phone_sanitized",
@@ -4364,7 +4491,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Field used to store sanitized phone number. Helps speeding up searches and comparisons."
+      "help_text": "Field used to store sanitized phone number. Helps speeding up searches and comparisons.",
+      "auto_generated": false
     },
     "phone_sanitized_blacklisted": {
       "name": "phone_sanitized_blacklisted",
@@ -4379,7 +4507,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "If the sanitized phone number is on the blacklist, the contact won't receive mass mailing sms anymore, from any list"
+      "help_text": "If the sanitized phone number is on the blacklist, the contact won't receive mass mailing sms anymore, from any list",
+      "auto_generated": false
     },
     "phone_blacklisted": {
       "name": "phone_blacklisted",
@@ -4394,7 +4523,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": "Indicates if a blacklisted sanitized phone number is a phone number. Helps distinguish which number is blacklisted             when there is both a mobile and phone field in a model."
+      "help_text": "Indicates if a blacklisted sanitized phone number is a phone number. Helps distinguish which number is blacklisted             when there is both a mobile and phone field in a model.",
+      "auto_generated": false
     },
     "mobile_blacklisted": {
       "name": "mobile_blacklisted",
@@ -4409,7 +4539,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": "Indicates if a blacklisted sanitized phone number is a mobile number. Helps distinguish which number is blacklisted             when there is both a mobile and phone field in a model."
+      "help_text": "Indicates if a blacklisted sanitized phone number is a mobile number. Helps distinguish which number is blacklisted             when there is both a mobile and phone field in a model.",
+      "auto_generated": false
     },
     "phone_mobile_search": {
       "name": "phone_mobile_search",
@@ -4424,7 +4555,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 1,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "payment_token_ids": {
       "name": "payment_token_ids",
@@ -4439,7 +4571,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "payment_token_count": {
       "name": "payment_token_count",
@@ -4454,7 +4587,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "signature_count": {
       "name": "signature_count",
@@ -4469,7 +4603,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "fiscal_country_codes": {
       "name": "fiscal_country_codes",
@@ -4484,7 +4619,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "partner_vat_placeholder": {
       "name": "partner_vat_placeholder",
@@ -4499,7 +4635,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "partner_company_registry_placeholder": {
       "name": "partner_company_registry_placeholder",
@@ -4514,7 +4651,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "duplicate_bank_partner_ids": {
       "name": "duplicate_bank_partner_ids",
@@ -4529,7 +4667,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "credit": {
       "name": "credit",
@@ -4544,7 +4683,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Total amount this customer owes you."
+      "help_text": "Total amount this customer owes you.",
+      "auto_generated": false
     },
     "credit_to_invoice": {
       "name": "credit_to_invoice",
@@ -4559,7 +4699,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "credit_limit": {
       "name": "credit_limit",
@@ -4574,7 +4715,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Credit limit specific to this partner."
+      "help_text": "Credit limit specific to this partner.",
+      "auto_generated": false
     },
     "use_partner_credit_limit": {
       "name": "use_partner_credit_limit",
@@ -4589,7 +4731,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Set a value greater than 0.0 to activate a credit limit check"
+      "help_text": "Set a value greater than 0.0 to activate a credit limit check",
+      "auto_generated": false
     },
     "show_credit_limit": {
       "name": "show_credit_limit",
@@ -4604,7 +4747,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "days_sales_outstanding": {
       "name": "days_sales_outstanding",
@@ -4619,7 +4763,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "[(Total Receivable/Total Revenue) * number of days since the first invoice] for this customer"
+      "help_text": "[(Total Receivable/Total Revenue) * number of days since the first invoice] for this customer",
+      "auto_generated": false
     },
     "debit": {
       "name": "debit",
@@ -4634,7 +4779,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Total amount you have to pay to this vendor."
+      "help_text": "Total amount you have to pay to this vendor.",
+      "auto_generated": false
     },
     "debit_limit": {
       "name": "debit_limit",
@@ -4649,7 +4795,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "total_invoiced": {
       "name": "total_invoiced",
@@ -4664,7 +4811,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "currency_id": {
       "name": "currency_id",
@@ -4679,7 +4827,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "journal_item_count": {
       "name": "journal_item_count",
@@ -4694,7 +4843,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "property_account_payable_id": {
       "name": "property_account_payable_id",
@@ -4709,7 +4859,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": "This account will be used instead of the default one as the payable account for the current partner"
+      "help_text": "This account will be used instead of the default one as the payable account for the current partner",
+      "auto_generated": false
     },
     "property_account_receivable_id": {
       "name": "property_account_receivable_id",
@@ -4724,7 +4875,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": "This account will be used instead of the default one as the receivable account for the current partner"
+      "help_text": "This account will be used instead of the default one as the receivable account for the current partner",
+      "auto_generated": false
     },
     "property_account_position_id": {
       "name": "property_account_position_id",
@@ -4739,7 +4891,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "The fiscal position determines the taxes/accounts used for this contact."
+      "help_text": "The fiscal position determines the taxes/accounts used for this contact.",
+      "auto_generated": false
     },
     "property_payment_term_id": {
       "name": "property_payment_term_id",
@@ -4754,7 +4907,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": "This payment term will be used instead of the default one for sales orders and customer invoices"
+      "help_text": "This payment term will be used instead of the default one for sales orders and customer invoices",
+      "auto_generated": false
     },
     "property_supplier_payment_term_id": {
       "name": "property_supplier_payment_term_id",
@@ -4769,7 +4923,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 9,
-      "help_text": "This payment term will be used instead of the default one for purchase orders and vendor bills"
+      "help_text": "This payment term will be used instead of the default one for purchase orders and vendor bills",
+      "auto_generated": false
     },
     "ref_company_ids": {
       "name": "ref_company_ids",
@@ -4784,7 +4939,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "supplier_invoice_count": {
       "name": "supplier_invoice_count",
@@ -4799,7 +4955,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "invoice_ids": {
       "name": "invoice_ids",
@@ -4814,7 +4971,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "contract_ids": {
       "name": "contract_ids",
@@ -4829,7 +4987,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "bank_account_count": {
       "name": "bank_account_count",
@@ -4844,7 +5003,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "trust": {
       "name": "trust",
@@ -4872,7 +5032,8 @@
       ],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "ignore_abnormal_invoice_date": {
       "name": "ignore_abnormal_invoice_date",
@@ -4887,7 +5048,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "ignore_abnormal_invoice_amount": {
       "name": "ignore_abnormal_invoice_amount",
@@ -4902,7 +5064,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "invoice_warn": {
       "name": "invoice_warn",
@@ -4930,7 +5093,8 @@
       ],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field."
+      "help_text": "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field.",
+      "auto_generated": false
     },
     "invoice_warn_msg": {
       "name": "invoice_warn_msg",
@@ -4945,7 +5109,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "invoice_sending_method": {
       "name": "invoice_sending_method",
@@ -4973,7 +5138,8 @@
       ],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "invoice_edi_format": {
       "name": "invoice_edi_format",
@@ -5017,7 +5183,8 @@
       ],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "invoice_edi_format_store": {
       "name": "invoice_edi_format_store",
@@ -5032,7 +5199,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "display_invoice_edi_format": {
       "name": "display_invoice_edi_format",
@@ -5047,7 +5215,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "invoice_template_pdf_report_id": {
       "name": "invoice_template_pdf_report_id",
@@ -5062,7 +5231,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "display_invoice_template_pdf_report_id": {
       "name": "display_invoice_template_pdf_report_id",
@@ -5077,7 +5247,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "supplier_rank": {
       "name": "supplier_rank",
@@ -5092,7 +5263,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "customer_rank": {
       "name": "customer_rank",
@@ -5107,7 +5279,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "autopost_bills": {
       "name": "autopost_bills",
@@ -5135,7 +5308,8 @@
       ],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Automatically post bills for this trusted partner"
+      "help_text": "Automatically post bills for this trusted partner",
+      "auto_generated": false
     },
     "duplicated_bank_account_partners_count": {
       "name": "duplicated_bank_account_partners_count",
@@ -5150,7 +5324,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_coa_installed": {
       "name": "is_coa_installed",
@@ -5165,7 +5340,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "property_outbound_payment_method_line_id": {
       "name": "property_outbound_payment_method_line_id",
@@ -5180,7 +5356,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": "Preferred payment method when buying from this vendor. This will be set by default on all outgoing payments created for this vendor"
+      "help_text": "Preferred payment method when buying from this vendor. This will be set by default on all outgoing payments created for this vendor",
+      "auto_generated": false
     },
     "property_inbound_payment_method_line_id": {
       "name": "property_inbound_payment_method_line_id",
@@ -5195,7 +5372,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Preferred payment method when selling to this customer. This will be set by default on all incoming payments created for this customer"
+      "help_text": "Preferred payment method when selling to this customer. This will be set by default on all incoming payments created for this customer",
+      "auto_generated": false
     },
     "opportunity_ids": {
       "name": "opportunity_ids",
@@ -5210,7 +5388,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "opportunity_count": {
       "name": "opportunity_count",
@@ -5225,7 +5404,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "document_count": {
       "name": "document_count",
@@ -5240,7 +5420,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "employee_ids": {
       "name": "employee_ids",
@@ -5255,7 +5436,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Related employees based on their private address"
+      "help_text": "Related employees based on their private address",
+      "auto_generated": false
     },
     "employees_count": {
       "name": "employees_count",
@@ -5270,7 +5452,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "project_ids": {
       "name": "project_ids",
@@ -5285,7 +5468,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "task_ids": {
       "name": "task_ids",
@@ -5300,7 +5484,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "task_count": {
       "name": "task_count",
@@ -5315,7 +5500,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "visitor_ids": {
       "name": "visitor_ids",
@@ -5330,7 +5516,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_ubl_format": {
       "name": "is_ubl_format",
@@ -5345,7 +5532,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_peppol_edi_format": {
       "name": "is_peppol_edi_format",
@@ -5360,7 +5548,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "peppol_endpoint": {
       "name": "peppol_endpoint",
@@ -5375,7 +5564,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Unique identifier used by the BIS Billing 3.0 and its derivatives, also known as 'Endpoint ID'."
+      "help_text": "Unique identifier used by the BIS Billing 3.0 and its derivatives, also known as 'Endpoint ID'.",
+      "auto_generated": false
     },
     "peppol_eas": {
       "name": "peppol_eas",
@@ -5751,7 +5941,8 @@
       ],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Code used to identify the Endpoint for BIS Billing 3.0 and its derivatives.\n             List available at https://docs.peppol.eu/poacc/billing/3.0/codelist/eas/"
+      "help_text": "Code used to identify the Endpoint for BIS Billing 3.0 and its derivatives.\n             List available at https://docs.peppol.eu/poacc/billing/3.0/codelist/eas/",
+      "auto_generated": false
     },
     "available_peppol_eas": {
       "name": "available_peppol_eas",
@@ -5766,7 +5957,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "vies_valid": {
       "name": "vies_valid",
@@ -5781,7 +5973,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "European VAT numbers are automatically checked on the VIES database."
+      "help_text": "European VAT numbers are automatically checked on the VIES database.",
+      "auto_generated": false
     },
     "perform_vies_validation": {
       "name": "perform_vies_validation",
@@ -5796,7 +5989,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "vies_vat_to_check": {
       "name": "vies_vat_to_check",
@@ -5811,7 +6005,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_customer": {
       "name": "is_customer",
@@ -5826,7 +6021,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "is_supplier": {
       "name": "is_supplier",
@@ -5841,7 +6037,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 6,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "property_purchase_currency_id": {
       "name": "property_purchase_currency_id",
@@ -5856,7 +6053,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "This currency will be used, instead of the default one, for purchases from the current partner"
+      "help_text": "This currency will be used, instead of the default one, for purchases from the current partner",
+      "auto_generated": false
     },
     "purchase_order_count": {
       "name": "purchase_order_count",
@@ -5871,7 +6069,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "purchase_warn": {
       "name": "purchase_warn",
@@ -5899,7 +6098,8 @@
       ],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field."
+      "help_text": "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field.",
+      "auto_generated": false
     },
     "purchase_warn_msg": {
       "name": "purchase_warn_msg",
@@ -5914,7 +6114,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "receipt_reminder_email": {
       "name": "receipt_reminder_email",
@@ -5929,7 +6130,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date."
+      "help_text": "Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date.",
+      "auto_generated": false
     },
     "reminder_date_before_receipt": {
       "name": "reminder_date_before_receipt",
@@ -5944,7 +6146,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Number of days to send reminder email before the promised receipt date"
+      "help_text": "Number of days to send reminder email before the promised receipt date",
+      "auto_generated": false
     },
     "buyer_id": {
       "name": "buyer_id",
@@ -5959,7 +6162,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "online_partner_information": {
       "name": "online_partner_information",
@@ -5974,7 +6178,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "box_1099_id": {
       "name": "box_1099_id",
@@ -5989,7 +6194,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Journal items of this vendor will be summed in the selected box of the 1099 report."
+      "help_text": "Journal items of this vendor will be summed in the selected box of the 1099 report.",
+      "auto_generated": false
     },
     "sale_order_count": {
       "name": "sale_order_count",
@@ -6004,7 +6210,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 4,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "sale_order_ids": {
       "name": "sale_order_ids",
@@ -6019,7 +6226,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "sale_warn": {
       "name": "sale_warn",
@@ -6047,7 +6255,8 @@
       ],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field."
+      "help_text": "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field.",
+      "auto_generated": false
     },
     "sale_warn_msg": {
       "name": "sale_warn_msg",
@@ -6062,7 +6271,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 3,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "account_represented_company_ids": {
       "name": "account_represented_company_ids",
@@ -6077,7 +6287,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": ""
+      "help_text": "",
+      "auto_generated": false
     },
     "eori_nr": {
       "name": "eori_nr",
@@ -6092,7 +6303,8 @@
       "selection": [],
       "depends": [],
       "usage_frequency": 0,
-      "help_text": "Economic Operators Registration and Identification Nr"
+      "help_text": "Economic Operators Registration and Identification Nr",
+      "auto_generated": false
     }
   },
   "create_fields": [
@@ -6277,115 +6489,153 @@
       "field_name": "message_follower_ids",
       "related_model": "mail.followers",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "message_ids",
       "related_model": "mail.message",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "rating_ids",
       "related_model": "rating.rating",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "website_message_ids",
       "related_model": "mail.message",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "activity_ids",
       "related_model": "mail.activity",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "child_ids",
       "related_model": "res.partner",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "bank_ids",
       "related_model": "res.partner.bank",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "user_ids",
       "related_model": "res.users",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "payment_token_ids",
       "related_model": "payment.token",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "ref_company_ids",
       "related_model": "res.company",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "invoice_ids",
       "related_model": "account.move",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "contract_ids",
       "related_model": "account.analytic.account",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "opportunity_ids",
       "related_model": "crm.lead",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "employee_ids",
       "related_model": "hr.employee",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "project_ids",
       "related_model": "project.project",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "task_ids",
       "related_model": "project.task",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "visitor_ids",
       "related_model": "website.visitor",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "sale_order_ids",
       "related_model": "sale.order",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     },
     {
       "field_name": "account_represented_company_ids",
       "related_model": "res.company",
       "relation_field": "res_partner_id",
-      "is_one_to_many": true
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
     }
   ],
   "usage_frequency_total": 695,

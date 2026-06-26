@@ -22,6 +22,7 @@ The `ops_logistics.shipment` case is just the most visible example. The root cau
 ### RC1 🔴: Missing Schema = Silent Failure (ANY model)
 
 **Current behavior** (`tools.py:201-208`):
+
 ```python
 except KeyError:
     parts.append(f"Model: {route.model_key}")  # ← bare string, zero context
@@ -30,6 +31,7 @@ except KeyError:
 Claude receives just `"Model: x_y_z"` — no field info, no aliases, no hints, no error indication. This applies to **every** model without a schema file.
 
 **Fix**: Return an actionable diagnostic block telling Claude:
+
 - The model has no schema loaded
 - This means `schema_discovery` has not been run (or the model is new)
 - Suggest running `list_models` to find models that DO have schemas
@@ -38,6 +40,7 @@ Claude receives just `"Model: x_y_z"` — no field info, no aliases, no hints, n
 ### RC2 🟡: `preview_record()` Only Checks Presence, Not Validity (ANY model)
 
 **Current behavior** (`create.py:47-49`):
+
 ```python
 filled = [f for f in schema.create_fields if f in params and params[f]]
 missing = [f for f in schema.required_fields if f not in params or not params.get(f)]
@@ -50,9 +53,11 @@ missing = [f for f in schema.required_fields if f not in params or not params.ge
 ### RC3 🟡: Schema Output Is Descriptive, Not Prescriptive (ANY model)
 
 **Current behavior** (`tools.py:_format_schema_for_claude`):
+
 ```
 - `partner_id` (many2one → res.partner): Contact *REQUIRED*
 ```
+
 Tells Claude WHAT, not HOW to ask. Claude must interpret raw schema into conversational follow-up questions. Works for standard models (LLMs know `res.partner`) but fails for custom models.
 
 **Fix**: Generate "ask prompts" from field metadata — type-aware, selection-aware, relation-aware.
@@ -69,25 +74,25 @@ Multi-turn workflows (ask → answer → ask) are unsupported because the sessio
 
 ### Phase 1: Immediate — Diagnostics & Preview (P0)
 
-| Item | What | File | Effort |
-|------|------|------|--------|
-| **A** | Actionable diagnostic when any schema is missing | `tools.py` | 15 min |
-| **B** | Per-field guidance in preview (type-aware hints) | `create.py` | 30 min |
-| **C** | "Ask prompts" in schema formatting for all models | `tools.py` | 30 min |
+| Item  | What                                              | File        | Effort |
+| ----- | ------------------------------------------------- | ----------- | ------ |
+| **A** | Actionable diagnostic when any schema is missing  | `tools.py`  | 15 min |
+| **B** | Per-field guidance in preview (type-aware hints)  | `create.py` | 30 min |
+| **C** | "Ask prompts" in schema formatting for all models | `tools.py`  | 30 min |
 
 ### Phase 2: Schema Coverage (P1)
 
-| Item | What | File | Effort |
-|------|------|------|--------|
-| **D** | Run schema discovery for all models in agents.json | `scripts/` | runtime |
-| **E** | Schema discovery warning in setup wizard | `wizard.py` | 15 min |
+| Item  | What                                               | File        | Effort  |
+| ----- | -------------------------------------------------- | ----------- | ------- |
+| **D** | Run schema discovery for all models in agents.json | `scripts/`  | runtime |
+| **E** | Schema discovery warning in setup wizard           | `wizard.py` | 15 min  |
 
 ### Phase 3: UX (P2)
 
-| Item | What | File | Effort |
-|------|------|------|--------|
-| **F** | Multi-model ranking in router (user selects) | `router.py` | 20 min |
-| **G** | Session-context hints in responses | `tools.py`, `session_store.py` | 20 min |
+| Item  | What                                         | File                           | Effort |
+| ----- | -------------------------------------------- | ------------------------------ | ------ |
+| **F** | Multi-model ranking in router (user selects) | `router.py`                    | 20 min |
+| **G** | Session-context hints in responses           | `tools.py`, `session_store.py` | 20 min |
 
 ---
 

@@ -108,10 +108,18 @@ class SchemaDiscovery:
         return schemas
 
     def _discover_safe(self, model_name: str, label: str) -> ModelSchema | None:
-        """Call discover_model with exception handling for parallelism."""
+        """Call discover_model with exception handling for parallelism.
+
+        Logs failures at WARNING level so users can see which models
+        failed during discovery (useful for staging/testing).
+        """
         try:
             return self.discover_model(model_name, label)
-        except Exception:
+        except RuntimeError as exc:
+            logger.warning("Model %s not available: %s", model_name, exc)
+            return None
+        except Exception as exc:
+            logger.warning("Unexpected error discovering %s: %s", model_name, exc)
             return None
 
     def discover_model(self, model_name: str, label: str = "") -> ModelSchema:

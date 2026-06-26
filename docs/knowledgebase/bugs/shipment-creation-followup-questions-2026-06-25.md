@@ -19,6 +19,7 @@
 **The logistics agent routes to `ops_logistics_shipment`, but NO schema file exists for it.**
 
 In `config/agents.json`:
+
 ```json
 "logistics": {
     "default_model": "ops_logistics_shipment",
@@ -27,6 +28,7 @@ In `config/agents.json`:
 ```
 
 In `config/schemas/`, only 3 files exist:
+
 - `res_partner.json`
 - `sale_order.json`
 - `stock_picking.json`
@@ -82,6 +84,7 @@ Claude receives just `"Model: ops_logistics_shipment"` — a bare string with ze
 **Important clarification**: `stock.picking` and `ops_logistics.shipment` are **completely different models**. Falling back to `stock.picking` would route to the wrong model (core Odoo "Transfers" vs the custom shipment module). The correct fix is to give Claude actionable diagnostic information, not silently substitute a different model.
 
 **Fix**: When a schema is missing, return a clear diagnostic telling Claude:
+
 - The model `ops_logistics_shipment` has no schema loaded
 - This means schema discovery has not been run for this model
 - Claude should tell the user to run `python scripts/run_schema_discovery.py`
@@ -100,6 +103,7 @@ missing = [f for f in schema.required_fields if f not in params or not params.ge
 ```
 
 This means:
+
 - `params = {"partner_id": 0}` → "filled" (but 0 is an invalid partner ID!)
 - `params = {"partner_id": "some random text"}` → "filled" (but should be an integer!)
 - `params = {"picking_type_id": 9999}` → "filled" (but 9999 may not exist!)
@@ -143,6 +147,7 @@ The field aliases system works correctly (e.g., "customer" → "partner_id", "ty
 ### Finding #6: Workflow Hints Are Heuristic-Only for Missing Schemas
 
 The `apply_heuristics` function generates useful hints like:
+
 ```
 - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields.
 - **Template flow**: After creating the parent record, search for templates...
@@ -153,6 +158,7 @@ But this only works if a schema exists. With no schema → no hints.
 ### Finding #7: No Session-Context Carryover
 
 When Claude asks "Which customer?" and the user responds "ACME Corp", Claude needs to:
+
 1. Search for ACME Corp → gets `partner_id: 42`
 2. Call preview with `partner_id: 42`
 3. Get back what's still missing
@@ -169,9 +175,11 @@ This multi-turn workflow IS supported by `session_id` in `SessionStore`, but the
 **A. Create schema for `ops_logistics.shipment`**
 
 Run schema discovery against the user's Odoo instance:
+
 ```bash
 python scripts/run_schema_discovery.py
 ```
+
 This will auto-discover `ops_logistics.shipment`, `ops_logistics.shipment_template`, `ops_logistics.reference`, `ops_logistics.milestone`, and all other custom models, generating the needed JSON schema files in `config/schemas/`.
 
 If discovery can't be run (no Odoo access), manually create `config/schemas/ops_logistics_shipment.json` with the minimum required fields for the shipment model.
@@ -179,11 +187,13 @@ If discovery can't be run (no Odoo access), manually create `config/schemas/ops_
 **B. Return actionable diagnostic when schema is missing**
 
 When `schema_store.get(route.model_key)` raises `KeyError`, instead of silently printing just the model key, return a clear diagnostic explaining:
+
 1. Which model has a missing schema
 2. Why this happened (schema discovery not run for this model)
 3. What the user/Claude can do about it (run discovery or describe fields manually)
 
 **Files to change:**
+
 - `src/mcp_server/tools.py` — `chat_odoo_handler` error handling
 
 ### Phase 2: Enhanced Preview & Guidance (Should Do — Addresses RC #3, #4)
@@ -191,28 +201,33 @@ When `schema_store.get(route.model_key)` raises `KeyError`, instead of silently 
 **C. Generate "ask prompts" from field metadata**
 
 Enhance `_format_field_detail` to produce user-facing questions:
+
 - `many2one` fields → "Which [relation]?" + suggestion to search
 - `selection` fields → list options as choices
 - `char` fields → "What [string]?"
 - `datetime` fields → "When?"
 
 **Files to change:**
+
 - `src/mcp_server/tools.py` — `_format_field_detail` and `_format_schema_for_claude`
 - `src/operations/create.py` — `preview_record` to include field-level guidance
 
 **D. Add `preview_record` field-type validation hints**
 
 When a value is provided for a many2one field that's an integer, include a hint like:
+
 ```
 "partner_id is set to 42. You may want to verify this customer exists by searching res.partner."
 ```
 
 When a value is missing for a selection field, show the options:
+
 ```
 "picking_type_id is missing. Valid options: delivery, receipt, internal_transfer."
 ```
 
 **Files to change:**
+
 - `src/operations/create.py` — `preview_record`
 
 ### Phase 3: Robustness & UX (Nice to Do)
@@ -224,11 +239,13 @@ Instead of just returning `default_model`, the router could return all matching 
 **F. Add session-context hints in routing response**
 
 When a session_id is present and has prior context, include a summary of what's already known:
+
 ```
 Session context: partner_id=42 (ACME Corp), origin=BOOKREF123
 ```
 
 **Files to change:**
+
 - `src/mcp_server/tools.py` — `chat_odoo_handler`
 - `src/odoo_service/session_store.py` — enhanced context storage
 
@@ -237,21 +254,22 @@ Session context: partner_id=42 (ACME Corp), origin=BOOKREF123
 Ensure the DMG wizard and setup flow make it clear that schema discovery must be run after connecting to Odoo. Add a warning if schemas directory has fewer than N files.
 
 **Files to change:**
+
 - `installer/wizard.py`
 
 ---
 
 ## Implementation Priority
 
-| Priority | Item                                          | Effort | Impact | Depends On           |
-| -------- | --------------------------------------------- | ------ | ------ | -------------------- |
-| 🔴 P0    | Run schema discovery for ops_logistics models | 5 min  | HUGE   | Odoo access          |
-| 🔴 P0    | Actionable diagnostic when schema missing     | 15 min | HIGH   | None                 |
-| 🟡 P1    | "Ask prompts" in schema formatting            | 30 min | HIGH   | P0 complete          |
-| 🟡 P1    | Field-type validation in preview              | 30 min | HIGH   | P0 complete          |
-| 🟢 P2    | Router multi-model ranking (user choice)      | 20 min | MEDIUM | None                 |
-| 🟢 P2    | Session-context hints                         | 20 min | MEDIUM | P0 complete          |
-| 🟢 P2    | Setup wizard schema discovery warning         | 15 min | LOW    | None                 |
+| Priority | Item                                          | Effort | Impact | Depends On  |
+| -------- | --------------------------------------------- | ------ | ------ | ----------- |
+| 🔴 P0    | Run schema discovery for ops_logistics models | 5 min  | HUGE   | Odoo access |
+| 🔴 P0    | Actionable diagnostic when schema missing     | 15 min | HIGH   | None        |
+| 🟡 P1    | "Ask prompts" in schema formatting            | 30 min | HIGH   | P0 complete |
+| 🟡 P1    | Field-type validation in preview              | 30 min | HIGH   | P0 complete |
+| 🟢 P2    | Router multi-model ranking (user choice)      | 20 min | MEDIUM | None        |
+| 🟢 P2    | Session-context hints                         | 20 min | MEDIUM | P0 complete |
+| 🟢 P2    | Setup wizard schema discovery warning         | 15 min | LOW    | None        |
 
 ---
 

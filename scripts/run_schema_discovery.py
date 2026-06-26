@@ -46,6 +46,17 @@ def main():
         action="store_true",
         help="Print detailed field info for each model",
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=3,
+        help="Number of parallel discovery threads (default: 3, use 10 for production)",
+    )
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Only discover models listed in config/agents.json (fast, for staging/testing)",
+    )
     args = parser.parse_args()
 
     # ── Load config ──────────────────────────────────────────────────
@@ -92,6 +103,20 @@ def main():
     try:
         specific_models = [m.strip() for m in args.models.split(",") if m.strip()]
 
+        # --quick mode: only discover models listed in agents.json
+        if args.quick and not specific_models:
+            import json
+
+            agents_path = Path("config/agents.json")
+            if agents_path.exists():
+                agents = json.loads(agents_path.read_text())
+                for _key, agent in agents.items():
+                    for model in agent.get("models", []):
+                        if model not in specific_models:
+                            specific_models.append(model)
+                if specific_models:
+                    print(f"   Quick mode: only discovering {len(specific_models)} agent models")
+
         if specific_models:
             schemas = {}
             for model_name in specific_models:
@@ -103,7 +128,7 @@ def main():
                 except Exception as e:
                     print(f"❌ {e}")
         else:
-            schemas = discovery.discover()
+            schemas = discovery.discover(workers=args.workers)
             print(f"   ✅ Discovered {len(schemas)} models\n")
     except Exception as e:
         print(f"   ❌ Discovery failed: {e}")
