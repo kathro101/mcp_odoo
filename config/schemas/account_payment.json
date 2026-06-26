@@ -853,7 +853,7 @@
       "name": "partner_id",
       "field_type": "many2one",
       "string": "Customer/Vendor",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -1573,12 +1573,13 @@
     "expense_sheet_id"
   ],
   "required_fields": [
+    "company_id",
     "date",
     "journal_id",
-    "company_id",
-    "state",
+    "partner_id",
+    "partner_type",
     "payment_type",
-    "partner_type"
+    "state"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -1633,5 +1634,5 @@
     }
   ],
   "usage_frequency_total": 191,
-  "workflow_hints": ""
+  "workflow_hints": "All required fields must be filled. Use preview action to check what's missing.\npartner_id is required \u2014 always confirm the customer/vendor before creating."
 }

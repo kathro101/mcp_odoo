@@ -850,9 +850,9 @@
   ],
   "required_fields": [
     "name",
-    "product_qty",
+    "order_id",
     "price_unit",
-    "order_id"
+    "product_qty"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -867,5 +867,5 @@
     }
   ],
   "usage_frequency_total": 65,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: invoice_lines. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing."
 }

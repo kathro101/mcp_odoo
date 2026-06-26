@@ -750,7 +750,7 @@
       "name": "name",
       "field_type": "char",
       "string": "Name",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -6480,7 +6480,8 @@
     "sale_warn"
   ],
   "required_fields": [
-    "autopost_bills"
+    "autopost_bills",
+    "name"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -6639,5 +6640,5 @@
     }
   ],
   "usage_frequency_total": 695,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: invoice_ids. Always preview the parent first, then create sub-records in a second step."
 }

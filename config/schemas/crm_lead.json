@@ -1128,7 +1128,7 @@
       "name": "partner_id",
       "field_type": "many2one",
       "string": "Customer",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -2067,6 +2067,7 @@
   ],
   "required_fields": [
     "name",
+    "partner_id",
     "type"
   ],
   "field_aliases": {},
@@ -2130,5 +2131,5 @@
     }
   ],
   "usage_frequency_total": 665,
-  "workflow_hints": ""
+  "workflow_hints": "All required fields must be filled. Use preview action to check what's missing.\npartner_id is required \u2014 always confirm the customer/vendor before creating."
 }

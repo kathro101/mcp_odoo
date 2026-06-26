@@ -400,15 +400,15 @@
     "product_tmpl_id"
   ],
   "required_fields": [
-    "partner_id",
-    "min_qty",
-    "price",
     "currency_id",
-    "delay"
+    "delay",
+    "min_qty",
+    "partner_id",
+    "price"
   ],
   "field_aliases": {},
   "match_keywords": [],
   "sub_models": [],
   "usage_frequency_total": 70,
-  "workflow_hints": ""
+  "workflow_hints": "All required fields must be filled. Use preview action to check what's missing.\npartner_id is required \u2014 always confirm the customer/vendor before creating."
 }

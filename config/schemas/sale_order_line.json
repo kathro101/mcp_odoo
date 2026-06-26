@@ -2013,11 +2013,11 @@
     "display_name"
   ],
   "required_fields": [
-    "order_id",
+    "customer_lead",
     "name",
-    "product_uom_qty",
+    "order_id",
     "price_unit",
-    "customer_lead"
+    "product_uom_qty"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -2080,5 +2080,5 @@
     }
   ],
   "usage_frequency_total": 106,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: linked_line_ids, analytic_line_ids, purchase_line_ids, reached_milestones_ids, timesheet_ids. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing."
 }

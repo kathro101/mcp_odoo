@@ -2055,13 +2055,13 @@
     "nacha_discretionary_data"
   ],
   "required_fields": [
-    "name",
     "code",
-    "type",
-    "invoice_reference_type",
-    "invoice_reference_model",
     "company_id",
-    "nacha_entry_class_code"
+    "invoice_reference_model",
+    "invoice_reference_type",
+    "nacha_entry_class_code",
+    "name",
+    "type"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -2124,5 +2124,5 @@
     }
   ],
   "usage_frequency_total": 239,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: inbound_payment_method_line_ids, outbound_payment_method_line_ids. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing."
 }

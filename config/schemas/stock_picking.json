@@ -1,81 +1,184 @@
 {
-    "key": "stock_picking",
-    "label": "Transfers",
-    "odoo_model": "stock.picking",
-    "summary": "Stock transfer document for moving inventory between locations. Used for deliveries, receipts, and internal transfers.",
-    "all_fields": {
-        "name": {
-            "name": "name",
-            "field_type": "char",
-            "string": "Reference",
-            "required": true,
-            "usage_frequency": 15
-        },
-        "partner_id": {
-            "name": "partner_id",
-            "field_type": "many2one",
-            "string": "Contact",
-            "required": true,
-            "relation": "res.partner",
-            "usage_frequency": 10
-        },
-        "picking_type_id": {
-            "name": "picking_type_id",
-            "field_type": "many2one",
-            "string": "Operation Type",
-            "required": true,
-            "relation": "stock.picking.type",
-            "usage_frequency": 10
-        },
-        "scheduled_date": {
-            "name": "scheduled_date",
-            "field_type": "datetime",
-            "string": "Scheduled Date",
-            "usage_frequency": 5
-        },
-        "state": {
-            "name": "state",
-            "field_type": "selection",
-            "string": "Status",
-            "selection": [["draft", "Draft"], ["done", "Done"], ["cancel", "Cancelled"]],
-            "usage_frequency": 8
-        },
-        "origin": {
-            "name": "origin",
-            "field_type": "char",
-            "string": "Source Document",
-            "usage_frequency": 3
-        },
-        "move_line_ids": {
-            "name": "move_line_ids",
-            "field_type": "one2many",
-            "string": "Operations",
-            "relation": "stock.move.line",
-            "usage_frequency": 6,
-            "store": true
-        }
+  "key": "stock_picking",
+  "label": "Transfers",
+  "odoo_model": "stock.picking",
+  "summary": "Stock transfer document for moving inventory between locations. Used for deliveries, receipts, and internal transfers.",
+  "all_fields": {
+    "name": {
+      "name": "name",
+      "field_type": "char",
+      "string": "Reference",
+      "required": true,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "",
+      "selection": [],
+      "depends": [],
+      "usage_frequency": 15,
+      "help_text": "",
+      "auto_generated": false
     },
-    "create_fields": ["name", "partner_id", "picking_type_id", "scheduled_date", "origin", "move_line_ids"],
-    "search_fields": ["name", "partner_id", "state", "origin"],
-    "required_fields": ["name", "partner_id", "picking_type_id"],
-    "field_aliases": {
-        "customer": "partner_id",
-        "contact": "partner_id",
-        "date": "scheduled_date",
-        "status": "state",
-        "reference": "name",
-        "source": "origin",
-        "type": "picking_type_id",
-        "operation_type": "picking_type_id"
+    "partner_id": {
+      "name": "partner_id",
+      "field_type": "many2one",
+      "string": "Contact",
+      "required": true,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "res.partner",
+      "selection": [],
+      "depends": [],
+      "usage_frequency": 10,
+      "help_text": "",
+      "auto_generated": false
     },
-    "match_keywords": ["shipment", "delivery", "transfer", "picking", "stock move", "receipt", "warehouse", "inventory move"],
-    "sub_models": [
-        {
-            "field_name": "move_line_ids",
-            "related_model": "stock.move.line",
-            "relation_field": "picking_id",
-            "is_one_to_many": true
-        }
-    ],
-    "usage_frequency_total": 57
+    "picking_type_id": {
+      "name": "picking_type_id",
+      "field_type": "many2one",
+      "string": "Operation Type",
+      "required": true,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "stock.picking.type",
+      "selection": [],
+      "depends": [],
+      "usage_frequency": 10,
+      "help_text": "",
+      "auto_generated": false
+    },
+    "scheduled_date": {
+      "name": "scheduled_date",
+      "field_type": "datetime",
+      "string": "Scheduled Date",
+      "required": false,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "",
+      "selection": [],
+      "depends": [],
+      "usage_frequency": 5,
+      "help_text": "",
+      "auto_generated": false
+    },
+    "state": {
+      "name": "state",
+      "field_type": "selection",
+      "string": "Status",
+      "required": false,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "",
+      "selection": [
+        [
+          "draft",
+          "Draft"
+        ],
+        [
+          "done",
+          "Done"
+        ],
+        [
+          "cancel",
+          "Cancelled"
+        ]
+      ],
+      "depends": [],
+      "usage_frequency": 8,
+      "help_text": "",
+      "auto_generated": false
+    },
+    "origin": {
+      "name": "origin",
+      "field_type": "char",
+      "string": "Source Document",
+      "required": false,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "",
+      "selection": [],
+      "depends": [],
+      "usage_frequency": 3,
+      "help_text": "",
+      "auto_generated": false
+    },
+    "move_line_ids": {
+      "name": "move_line_ids",
+      "field_type": "one2many",
+      "string": "Operations",
+      "required": false,
+      "readonly": false,
+      "store": true,
+      "computed": false,
+      "related": "",
+      "relation": "stock.move.line",
+      "selection": [],
+      "depends": [],
+      "usage_frequency": 6,
+      "help_text": "",
+      "auto_generated": false
+    }
+  },
+  "create_fields": [
+    "name",
+    "partner_id",
+    "picking_type_id",
+    "scheduled_date",
+    "origin",
+    "move_line_ids"
+  ],
+  "search_fields": [
+    "name",
+    "partner_id",
+    "state",
+    "origin"
+  ],
+  "required_fields": [
+    "name",
+    "partner_id",
+    "picking_type_id"
+  ],
+  "field_aliases": {
+    "customer": "partner_id",
+    "contact": "partner_id",
+    "date": "scheduled_date",
+    "status": "state",
+    "reference": "name",
+    "source": "origin",
+    "type": "picking_type_id",
+    "operation_type": "picking_type_id"
+  },
+  "match_keywords": [
+    "shipment",
+    "delivery",
+    "transfer",
+    "picking",
+    "stock move",
+    "receipt",
+    "warehouse",
+    "inventory move"
+  ],
+  "sub_models": [
+    {
+      "field_name": "move_line_ids",
+      "related_model": "stock.move.line",
+      "relation_field": "picking_id",
+      "is_one_to_many": true,
+      "target_fields": [],
+      "target_required_fields": []
+    }
+  ],
+  "usage_frequency_total": 57,
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: move_line_ids. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing.\n- partner_id is required \u2014 always confirm the customer/vendor before creating."
 }

@@ -354,7 +354,7 @@
       "name": "name",
       "field_type": "char",
       "string": "Label",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -498,7 +498,7 @@
       "name": "partner_id",
       "field_type": "many2one",
       "string": "Partner",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -1888,9 +1888,11 @@
     "intrastat_product_origin_country_id"
   ],
   "required_fields": [
-    "move_id",
     "currency_id",
-    "display_type"
+    "display_type",
+    "move_id",
+    "name",
+    "partner_id"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -1929,5 +1931,5 @@
     }
   ],
   "usage_frequency_total": 327,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: analytic_line_ids. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing.\n- partner_id is required \u2014 always confirm the customer/vendor before creating."
 }

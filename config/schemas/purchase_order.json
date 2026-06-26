@@ -1404,11 +1404,11 @@
     "project_id"
   ],
   "required_fields": [
-    "name",
-    "date_order",
-    "partner_id",
+    "company_id",
     "currency_id",
-    "company_id"
+    "date_order",
+    "name",
+    "partner_id"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -1463,5 +1463,5 @@
     }
   ],
   "usage_frequency_total": 249,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: order_line. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing.\n- partner_id is required \u2014 always confirm the customer/vendor before creating."
 }

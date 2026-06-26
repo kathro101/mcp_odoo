@@ -558,7 +558,7 @@
       "name": "name",
       "field_type": "char",
       "string": "Number",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -1423,7 +1423,7 @@
       "name": "partner_id",
       "field_type": "many2one",
       "string": "Partner",
-      "required": false,
+      "required": true,
       "readonly": false,
       "store": true,
       "computed": false,
@@ -4367,12 +4367,14 @@
     "timesheet_encode_uom_id"
   ],
   "required_fields": [
-    "date",
-    "state",
-    "move_type",
-    "journal_id",
     "auto_post",
-    "currency_id"
+    "currency_id",
+    "date",
+    "journal_id",
+    "move_type",
+    "name",
+    "partner_id",
+    "state"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -4515,5 +4517,5 @@
     }
   ],
   "usage_frequency_total": 726,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: line_ids, tax_cash_basis_created_move_ids, invoice_line_ids, reversal_move_ids, statement_line_ids, timesheet_ids. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing.\n- partner_id is required \u2014 always confirm the customer/vendor before creating."
 }

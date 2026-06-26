@@ -3289,13 +3289,13 @@
     "timesheet_encode_uom_id"
   ],
   "required_fields": [
-    "name",
     "company_id",
-    "partner_id",
     "date_order",
+    "name",
+    "order_type",
+    "partner_id",
     "partner_invoice_id",
-    "partner_shipping_id",
-    "order_type"
+    "partner_shipping_id"
   ],
   "field_aliases": {},
   "match_keywords": [],
@@ -3406,5 +3406,5 @@
     }
   ],
   "usage_frequency_total": 547,
-  "workflow_hints": ""
+  "workflow_hints": "- - **Sub-records**: After creating the parent record, create sub-records via the sub-model fields: order_line, purchase_line_ids. Always preview the parent first, then create sub-records in a second step.\n- All required fields must be filled. Use preview action to check what's missing.\n- partner_id is required \u2014 always confirm the customer/vendor before creating."
 }
