@@ -60,12 +60,25 @@ def _make_odoo_mock(
 
     mock.search_read.side_effect = search_read_side_effect
 
-    # search for ir.model (to get model_id)
+    # search for ir.model (to get model_id) and list installed modules
     def search_side_effect(model, domain, **kwargs):
         results = []
         if model == "ir.model":
-            for item in domain:
-                if isinstance(item, list | tuple) and len(item) == 3 and item[0] == "model":
+            # _list_installed_modules: search([("state","=","base")])
+            # Always return the installed_modules list
+            mods = installed_modules if installed_modules else _default_modules()
+            if any(
+                isinstance(item, (list, tuple))
+                and len(item) >= 3
+                and item[0] == "state"
+                and item[2] == "base"
+                for item in (domain or [])
+            ):
+                # Return fake IDs for each model
+                return [hash(m) % 10000 for m in mods]
+            # _query_ir_model_fields: search([("model","=", model_name)])
+            for item in domain or []:
+                if isinstance(item, (list, tuple)) and len(item) >= 3 and item[0] == "model":
                     results.append(hash(item[2]) % 10000)
         return results[:1] if results else []
 

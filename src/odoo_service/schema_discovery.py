@@ -189,14 +189,23 @@ class SchemaDiscovery:
     # ── Module listing ──────────────────────────────────────────────────
 
     def _list_installed_modules(self) -> list[dict]:
-        """Fetch all installed model records from ir.model."""
+        """Fetch all installed model records from ir.model.
+
+        Uses search+search_read to avoid an Odoo staging bug where
+        search_read with [("state","=","base")] domain triggers a database error.
+        """
+        # Step 1: Get IDs via search (avoids the staging bug)
+        ids = self.odoo.search("ir.model", [("state", "=", "base")], limit=5000)
+        if isinstance(ids, dict) or not ids:
+            return []
+
+        # Step 2: Read records by ID
         result = self.odoo.search_read(
             "ir.model",
-            [("state", "=", "base")],
-            fields=["model", "name"],
+            [("id", "in", ids)],
+            fields=["model", "name", "state"],
             limit=5000,
         )
-        # Guard against Odoo error dicts
         if isinstance(result, dict):
             return []
         return result
@@ -454,6 +463,7 @@ class SchemaDiscovery:
                 "depends": fi.depends,
                 "usage_frequency": fi.usage_frequency,
                 "help_text": fi.help_text,
+                "auto_generated": fi.auto_generated,
             }
 
         return {
@@ -473,6 +483,8 @@ class SchemaDiscovery:
                     "related_model": s.related_model,
                     "relation_field": s.relation_field,
                     "is_one_to_many": s.is_one_to_many,
+                    "target_fields": s.target_fields,
+                    "target_required_fields": s.target_required_fields,
                 }
                 for s in schema.sub_models
             ],
