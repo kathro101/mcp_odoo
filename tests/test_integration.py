@@ -166,7 +166,9 @@ class TestFullShipmentCreationPipeline:
         assert "picking_type_id" in data["missing"]
         assert "name" in data["missing"]  # Required but not provided
         assert "partner_id" in data["filled"]
-        assert "origin" in data["filled"]
+        assert "origin" in data["optional"]  # Not required, but provided
+        # Should include guidance for missing fields
+        assert "guidance" in data
         # Should include field_aliases for Claude to ask the right questions
         assert "field_aliases" in data
 

@@ -201,7 +201,11 @@ async def chat_odoo_handler(
                 schema = _get_schema_store().get(route.model_key)
                 parts.extend(_format_schema_for_claude(schema))
             except KeyError:
-                parts.append(f"Model: {route.model_key}")
+                parts.extend(
+                    _format_missing_schema_diagnostic(
+                        route.model_key, route.agent_key, agent, agents
+                    )
+                )
 
         if session_id:
             _svc_get_session_store().set_last_agent(session_id, route.agent_key)
@@ -302,14 +306,13 @@ def _format_schema_for_claude(schema) -> list[str]:
         lines.append(schema.workflow_hints)
         lines.append("")
 
-    # Required fields with details
+    # Required fields with details + ask-prompts
     if schema.required_fields:
-        lines.append("### REQUIRED FIELDS")
-        for fname in schema.required_fields:
+        lines.append("### REQUIRED FIELDS — Ask the user for each of these:")
+        for i, fname in enumerate(schema.required_fields, 1):
             fi = schema.all_fields.get(fname)
             if fi:
-                detail = _format_field_detail(fi)
-                lines.append(f"  - {detail}")
+                lines.append(_format_field_ask(fi, i))
         lines.append("")
 
     # Auto-generated fields (WARN Claude not to set these)
@@ -393,6 +396,123 @@ def _format_field_detail(fi) -> str:
         parts.append(f" — {fi.help_text}")
 
     return "".join(parts)
+
+
+def _generate_ask_prompt(fi) -> str:
+    """Generate a natural-language question for a required field.
+
+    Uses field type, string, relation, selection, and help_text to produce
+    a specific question Claude can ask the user. Works for ANY model.
+    """
+    label = fi.string or fi.name
+
+    if fi.selection:
+        options = [f"{s[0]} ({s[1]})" for s in fi.selection]
+        return f"What should the {label} be? Options: {', '.join(options)}"
+
+    if fi.field_type == "many2one":
+        target = fi.relation or "record"
+        return f"Which {label} ({target}) should this be linked to? Search for it first."
+
+    if fi.field_type == "many2many":
+        target = fi.relation or "records"
+        return f"Which {label} ({target}) should be linked?"
+
+    if fi.field_type in ("integer", "float", "monetary"):
+        return f"What value should {label} have? (numeric)"
+
+    if fi.field_type in ("date", "datetime"):
+        return f"When should {label} be? (date)"
+
+    if fi.field_type == "boolean":
+        return f"Should {label} be enabled? (yes/no)"
+
+    if fi.field_type == "text":
+        return f"What {label} should be entered?"
+
+    return f"What should the {label} be?"
+
+
+def _format_field_ask(fi, index: int) -> str:
+    """Format a single required field as a numbered ask-prompt for Claude."""
+    prompt = _generate_ask_prompt(fi)
+    label = fi.string or fi.name
+    line = f"  {index}. **{label}** (`{fi.name}` — {fi.field_type}"
+    if fi.relation:
+        line += f" → {fi.relation}"
+    line += ")"
+
+    if fi.help_text:
+        line += f"  \n     Help: {fi.help_text}"
+    if fi.selection:
+        options = ", ".join(f"{s[0]}" for s in fi.selection)
+        line += f"  \n     Valid choices: {options}"
+
+    line += f'  \n     → ASK: "{prompt}"'
+    return line
+
+
+def _format_missing_schema_diagnostic(
+    model_key: str,
+    agent_key: str | None,
+    agent,
+    agents: dict,
+) -> list[str]:
+    """Return an actionable diagnostic when a model's schema is missing.
+
+    Instead of silently printing just the model key, this gives Claude
+    enough information to help the user recover — regardless of which
+    model is missing.
+    """
+    lines: list[str] = []
+
+    lines.append("### ⚠️ SCHEMA NOT AVAILABLE")
+    lines.append(f"The model `{model_key}` has no schema loaded.")
+    lines.append("")
+    lines.append("**Why this happened:** Schema discovery has not been run for this model. ")
+    lines.append(
+        "Only models that have been discovered (via `python scripts/run_schema_discovery.py`) "
+        "or manually created in `config/schemas/` are available."
+    )
+    lines.append("")
+
+    # List alternative models from the same agent that DO have schemas
+    if agent and agent.models:
+        store = _get_schema_store()
+        available = []
+        for m in agent.models:
+            try:
+                s = store.get(m)
+                available.append(f"  - **{s.label}** (`{s.odoo_model}`) — key: `{m}`")
+            except KeyError:
+                pass
+        if available:
+            lines.append("**Models in this agent that DO have schemas:**")
+            lines.extend(available)
+            lines.append("")
+            lines.append("Consider asking the user if one of these is what they meant.")
+
+    # List ALL available models across all agents
+    store = _get_schema_store()
+    all_schemas = store.list_all()
+    if all_schemas:
+        lines.append("")
+        lines.append(
+            f"**All {len(all_schemas)} available models** (use `list_models` for details):"
+        )
+        for s in sorted(all_schemas, key=lambda x: x.label)[:10]:
+            lines.append(f"  - {s.label} (`{s.odoo_model}`) → key: `{s.key}`")
+        if len(all_schemas) > 10:
+            lines.append(f"  ... and {len(all_schemas) - 10} more")
+
+    lines.append("")
+    lines.append("**To fix:** Run `python scripts/run_schema_discovery.py` to discover all models.")
+    lines.append(
+        "Or, to proceed manually: ask the user what fields their record needs, "
+        "then use `action=preview` with a model key you choose."
+    )
+
+    return lines
 
 
 async def list_models_handler(message: str = "", top_n: int = 10) -> list[dict]:

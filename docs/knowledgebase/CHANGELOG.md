@@ -2,6 +2,14 @@
 
 All notable changes to the mcp_odoo project.
 
+## [Unreleased]
+
+### 🔍 Investigation: Shipment Creation Follow-Up Questions
+
+- **Full codebase investigation** — traced end-to-end "Create a shipment" flow through all 4 layers
+- **Root cause analysis** — 4 root causes identified (see `docs/knowledgebase/bugs/shipment-creation-followup-questions-2026-06-25.md`)
+- **Fix plan** — 3-phase plan with 7 action items, prioritized by impact
+
 ## [2.3.0] — 2026-06-16
 
 ### 🔧 Generic Sub-Model Support — Fix Shipment Field Mapping
