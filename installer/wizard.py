@@ -101,6 +101,26 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.route("/api/list-agents")
+def list_agents():
+    """List available agent personas."""
+    from src.shared.config import load_agents
+
+    agents_path = _find_project_root() / "config" / "agents.json"
+    try:
+        agents = load_agents(str(agents_path))
+        return jsonify(
+            {
+                "status": "ok",
+                "agents": {
+                    k: {"name": a.name, "description": a.description} for k, a in agents.items()
+                },
+            }
+        )
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 @app.route("/api/test-connection", methods=["POST"])
 def test_connection():
     """Test Odoo connection with provided credentials."""
