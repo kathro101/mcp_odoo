@@ -75,3 +75,30 @@ class SessionStore:
             session_id: Unique session identifier.
         """
         self._sessions.pop(session_id, None)
+
+    def accumulate_params(self, session_id: str, params: dict) -> None:
+        """Accumulate preview params into session context.
+
+        Used by chat_odoo_handler to track what fields the user has
+        already provided across multiple turns.  Merges new params
+        into existing context dict.
+
+        Args:
+            session_id: Unique session identifier.
+            params: Dict of field_name → value to accumulate.
+        """
+        state = self.get_state(session_id)
+        state.context.update(params)
+
+    def get_context_summary(self, session_id: str) -> str:
+        """Get a human-readable summary of accumulated session context.
+
+        Returns empty string if no context has been accumulated.
+        """
+        state = self.get_state(session_id)
+        if not state.context:
+            return ""
+        items = []
+        for k, v in state.context.items():
+            items.append(f"  - `{k}` = {v!r}")
+        return "### SESSION CONTEXT (already known)\n" + "\n".join(items) if items else ""

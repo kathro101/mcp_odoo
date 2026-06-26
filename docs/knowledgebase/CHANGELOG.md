@@ -4,10 +4,19 @@ All notable changes to the mcp_odoo project.
 
 ## [Unreleased]
 
+### � Model-Agnostic Schema-Missing Diagnostics + Preview Validation
+
+- **Actionable diagnostic** when any model's schema is missing — tells Claude WHY and HOW to recover (no more bare `"Model: x_y_z"`)
+- **Ask-prompts** in schema formatting — generates natural-language questions from field metadata (type, selection, relation) so Claude knows what to ask the user
+- **Field-type validation** in `preview_record` — flags obviously wrong types (string for integer, text for many2one) instead of silently accepting garbage
+- **Per-field guidance** when required fields are missing — tells Claude what format each field expects
+- **Session context accumulation** — preview params accumulate across multi-turn conversations, shown in routing responses
+- **Model-agnostic** — ALL fixes apply to every Odoo model equally, not just `ops_logistics.shipment`
+
 ### 🔍 Investigation: Shipment Creation Follow-Up Questions
 
 - **Full codebase investigation** — traced end-to-end "Create a shipment" flow through all 4 layers
-- **Root cause analysis** — 4 root causes identified (see `docs/knowledgebase/bugs/shipment-creation-followup-questions-2026-06-25.md`)
+- **Root cause analysis** — 4 root causes identified (see `docs/knowledgebase/bugs/universal-schema-fix-plan-2026-06-25.md`)
 - **Fix plan** — 3-phase plan with 7 action items, prioritized by impact
 
 ## [2.3.0] — 2026-06-16

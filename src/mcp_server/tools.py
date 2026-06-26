@@ -181,7 +181,7 @@ async def chat_odoo_handler(
     """
     # ── ACTION MODE ──────────────────────────────────────────────────
     if action:
-        return await _handle_action(action, model, params or {}, record_id)
+        return await _handle_action(action, model, params or {}, record_id, session_id)
 
     # ── ROUTING MODE ─────────────────────────────────────────────────
     if not message.strip():
@@ -190,6 +190,15 @@ async def chat_odoo_handler(
     agents = _get_agents()
     route = route_message(message, agents)
     parts: list[str] = []
+
+    # Show accumulated session context if available
+    if session_id:
+        session_store = _svc_get_session_store()
+        session_store.set_last_agent(session_id, route.agent_key or "")
+        context_text = session_store.get_context_summary(session_id)
+        if context_text:
+            parts.append(context_text)
+            parts.append("")
 
     if route.agent_key and route.score > 0:
         agent = agents.get(route.agent_key)
@@ -220,7 +229,9 @@ async def chat_odoo_handler(
 # ── Action Dispatcher ──────────────────────────────────────────────────
 
 
-async def _handle_action(action: str, model: str, params: dict, record_id: int) -> list[dict]:
+async def _handle_action(
+    action: str, model: str, params: dict, record_id: int, session_id: str = ""
+) -> list[dict]:
     """Execute an action against an Odoo model."""
     if not model:
         return [{"type": "text", "text": "Error: model is required for actions."}]
@@ -236,6 +247,11 @@ async def _handle_action(action: str, model: str, params: dict, record_id: int) 
         case "preview":
             result = preview_record(schema, params)
             result["field_aliases"] = schema.field_aliases
+            # Accumulate params into session for multi-turn context
+            if session_id:
+                session_store = _svc_get_session_store()
+                session_store.accumulate_params(session_id, params)
+                result["session_context"] = dict(session_store.get_state(session_id).context)
         case "create":
             odoo = _get_odoo_client()
             result = create_record(odoo, schema, params)
