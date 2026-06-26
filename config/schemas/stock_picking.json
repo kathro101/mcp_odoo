@@ -18,7 +18,7 @@
       "depends": [],
       "usage_frequency": 15,
       "help_text": "",
-      "auto_generated": false
+      "auto_generated": true
     },
     "partner_id": {
       "name": "partner_id",
@@ -131,7 +131,6 @@
     }
   },
   "create_fields": [
-    "name",
     "partner_id",
     "picking_type_id",
     "scheduled_date",
@@ -145,7 +144,6 @@
     "origin"
   ],
   "required_fields": [
-    "name",
     "partner_id",
     "picking_type_id"
   ],

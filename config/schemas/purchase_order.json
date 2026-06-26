@@ -472,7 +472,7 @@
       "depends": [],
       "usage_frequency": 22,
       "help_text": "",
-      "auto_generated": false
+      "auto_generated": true
     },
     "priority": {
       "name": "priority",
@@ -1363,7 +1363,6 @@
     "rating_ids",
     "website_message_ids",
     "access_token",
-    "name",
     "priority",
     "origin",
     "partner_ref",
@@ -1407,7 +1406,6 @@
     "company_id",
     "currency_id",
     "date_order",
-    "name",
     "partner_id"
   ],
   "field_aliases": {

@@ -148,6 +148,19 @@ def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
         The same schemas dict (for chaining).
     """
     for _key, schema in schemas.items():
+        # Rule 0: Detect auto-generated fields that might have been missed
+        # during discovery (e.g., name/number fields with sequence defaults)
+        for fname, fi in schema.all_fields.items():
+            if (
+                fi.field_type == "char"
+                and fname in ("name", "number", "reference")
+                and fi.store
+                and not fi.computed
+                and not fi.readonly
+                and not fi.related
+            ):
+                fi.auto_generated = True
+
         # Rule 1: Promote important fields to required
         for field_name in _IMPORTANT_FIELDS:
             if (
@@ -155,12 +168,25 @@ def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
                 and field_name in schema.create_fields
                 and field_name not in schema.required_fields
             ):
+                fi = schema.all_fields[field_name]
+                # Skip auto-generated fields — never ask Claude to fill them
+                if fi.auto_generated:
+                    continue
                 schema.required_fields.append(field_name)
                 # Also mark the FieldInfo
-                schema.all_fields[field_name].required = True
+                fi.required = True
 
         # Sort required_fields for stable ordering
         schema.required_fields.sort()
+
+        # Rule 1.4: Detect auto-generated name/number fields and remove from required
+        for field_name in list(schema.required_fields):
+            fi = schema.all_fields.get(field_name)
+            if fi and fi.auto_generated:
+                schema.required_fields.remove(field_name)
+                # Also remove from create_fields if present
+                if field_name in schema.create_fields:
+                    schema.create_fields.remove(field_name)
 
         # Rule 1.5: Inject deterministic common field aliases
         for field_name, aliases in _COMMON_ALIASES.items():
@@ -202,7 +228,9 @@ def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
                 hints.append(
                     f"- **Sub-records**: After creating the parent record, create sub-records "
                     f"via the sub-model fields: {field_names}. "
-                    "Always preview the parent first, then create sub-records in a second step."
+                    "Always preview the parent first, then create sub-records in a second step. "
+                    "NEVER include sub-record data inline with the parent creation — "
+                    "use separate action=create calls for each sub-model."
                 )
             if milestone_subs and template_subs:
                 hints.append(

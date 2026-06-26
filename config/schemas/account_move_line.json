@@ -1827,7 +1827,6 @@
     "analytic_distribution",
     "sequence",
     "account_id",
-    "name",
     "debit",
     "credit",
     "balance",
@@ -1891,7 +1890,6 @@
     "currency_id",
     "display_type",
     "move_id",
-    "name",
     "partner_id"
   ],
   "field_aliases": {

@@ -568,7 +568,7 @@
       "depends": [],
       "usage_frequency": 13,
       "help_text": "",
-      "auto_generated": false
+      "auto_generated": true
     },
     "code": {
       "name": "code",
@@ -1967,7 +1967,6 @@
     "website_message_ids",
     "alias_id",
     "access_token",
-    "name",
     "code",
     "active",
     "type",
@@ -2060,7 +2059,6 @@
     "invoice_reference_model",
     "invoice_reference_type",
     "nacha_entry_class_code",
-    "name",
     "type"
   ],
   "field_aliases": {

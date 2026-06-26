@@ -520,7 +520,7 @@
       "depends": [],
       "usage_frequency": 30,
       "help_text": "",
-      "auto_generated": false
+      "auto_generated": true
     },
     "company_id": {
       "name": "company_id",
@@ -713,7 +713,7 @@
       "depends": [],
       "usage_frequency": 3,
       "help_text": "The payment communication of this sale order.",
-      "auto_generated": false
+      "auto_generated": true
     },
     "require_signature": {
       "name": "require_signature",
@@ -3172,7 +3172,6 @@
     "rating_ids",
     "website_message_ids",
     "access_token",
-    "name",
     "company_id",
     "partner_id",
     "locked",
@@ -3291,7 +3290,6 @@
   "required_fields": [
     "company_id",
     "date_order",
-    "name",
     "order_type",
     "partner_id",
     "partner_invoice_id",

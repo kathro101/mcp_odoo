@@ -146,7 +146,7 @@
       "depends": [],
       "usage_frequency": 2,
       "help_text": "",
-      "auto_generated": false
+      "auto_generated": true
     },
     "sequence": {
       "name": "sequence",
@@ -282,16 +282,13 @@
     "thumbnail",
     "spreadsheet_snapshot",
     "spreadsheet_revision_ids",
-    "name",
     "sequence"
   ],
   "search_fields": [
     "name",
     "file_name"
   ],
-  "required_fields": [
-    "name"
-  ],
+  "required_fields": [],
   "field_aliases": {
     "reference": "name",
     "number": "name",

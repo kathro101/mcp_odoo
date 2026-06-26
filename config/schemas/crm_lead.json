@@ -632,7 +632,7 @@
       "depends": [],
       "usage_frequency": 13,
       "help_text": "",
-      "auto_generated": false
+      "auto_generated": true
     },
     "user_id": {
       "name": "user_id",
@@ -1983,7 +1983,6 @@
     "website_message_ids",
     "message_bounce",
     "email_cc",
-    "name",
     "user_id",
     "team_id",
     "lead_properties",
@@ -2066,7 +2065,6 @@
     "meeting_display_label"
   ],
   "required_fields": [
-    "name",
     "partner_id",
     "type"
   ],

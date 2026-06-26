@@ -6317,7 +6317,6 @@
     "message_bounce",
     "activity_ids",
     "image_1920",
-    "name",
     "title",
     "parent_id",
     "child_ids",
@@ -6480,8 +6479,7 @@
     "sale_warn"
   ],
   "required_fields": [
-    "autopost_bills",
-    "name"
+    "autopost_bills"
   ],
   "field_aliases": {
     "reference": "name",
