@@ -21,7 +21,7 @@ from pathlib import Path
 from flask import Flask, jsonify, render_template_string, request
 
 from src.odoo_service.odoo_client import OdooClient
-from src.odoo_service.schema_enrichment import apply_heuristics
+from src.odoo_service.schema_enrichment import apply_heuristics, enrich_aliases
 
 logger = logging.getLogger(__name__)
 
@@ -296,6 +296,26 @@ def discover_schemas():
 
             # Apply deterministic heuristics (promote important fields, add hints)
             apply_heuristics(schemas)
+
+            # Try AI enrichment for aliases/keywords (optional — works offline without AI)
+            try:
+                import anthropic
+
+                api_key = os.environ.get("ANTHROPIC_API_KEY")
+                if api_key:
+                    llm = anthropic.Anthropic(api_key=api_key)
+                    enrich_aliases(schemas, llm)
+                    msg = json.dumps({"event": "enrich", "message": "AI enrichment complete"})
+                    yield f"data: {msg}\n\n"
+                else:
+                    msg = json.dumps(
+                        {"event": "info", "message": "Set ANTHROPIC_API_KEY for AI field aliases"}
+                    )
+                    yield f"data: {msg}\n\n"
+            except ImportError:
+                pass  # AI enrichment is optional
+            except Exception as exc:
+                logger.warning("AI enrichment skipped: %s", exc)
 
             # Save
             discovery.cache_dir.mkdir(parents=True, exist_ok=True)

@@ -38,6 +38,7 @@ a = Analysis(
         'src.operations.analytics',
         'flask',
         'xmlrpc.client',
+        'anthropic',
     ],
     hookspath=[],
     hooksconfig={},
