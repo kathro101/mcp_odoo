@@ -1894,8 +1894,25 @@
     "name",
     "partner_id"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "customer": "partner_id",
+    "contact": "partner_id",
+    "vendor": "partner_id",
+    "supplier": "partner_id",
+    "client": "partner_id",
+    "reference": "name",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name",
+    "currency": "currency_id"
+  },
+  "match_keywords": [
+    "journal item",
+    "line",
+    "entry line",
+    "reconciliation"
+  ],
   "sub_models": [
     {
       "field_name": "matched_debit_ids",

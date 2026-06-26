@@ -169,19 +169,25 @@ class TestEnrichAliases:
         from src.odoo_service.schema_enrichment import enrich_aliases
 
         mock_llm = MagicMock()
-        mock_llm.ask_json.return_value = {
-            "field_aliases": {"customer": "partner_id", "date": "scheduled_date"},
-            "match_keywords": ["shipment", "delivery", "transfer"],
-        }
+        mock_response = MagicMock()
+        mock_response.content = [MagicMock()]
+        mock_response.content[0].text = (
+            '{"field_aliases": {"customer": "partner_id", "date": "scheduled_date"},'
+            '"match_keywords": ["shipment", "delivery", "transfer"]}'
+        )
+        mock_llm.messages.create.return_value = mock_response
 
         schema = _make_schema_with_fields("stock.picking")
+        # Clear pre-existing aliases so enrichment runs
+        schema.field_aliases = {}
+        schema.match_keywords = []
         schemas = {"stock_picking": schema}
 
         enrich_aliases(schemas, mock_llm)
 
         assert schema.field_aliases == {"customer": "partner_id", "date": "scheduled_date"}
         assert schema.match_keywords == ["shipment", "delivery", "transfer"]
-        mock_llm.ask_json.assert_called_once()
+        mock_llm.messages.create.assert_called_once()
 
     def test_empty_schemas_does_nothing(self):
         """Should handle empty schema dict without error."""
@@ -190,14 +196,14 @@ class TestEnrichAliases:
         mock_llm = MagicMock()
         enrich_aliases({}, mock_llm)
 
-        mock_llm.ask_json.assert_not_called()
+        mock_llm.messages.create.assert_not_called()
 
     def test_llm_error_does_not_crash(self):
         """Should handle LLM errors gracefully."""
         from src.odoo_service.schema_enrichment import enrich_aliases
 
         mock_llm = MagicMock()
-        mock_llm.ask_json.side_effect = RuntimeError("LLM timeout")
+        mock_llm.messages.create.side_effect = RuntimeError("LLM timeout")
 
         schema = _make_schema_with_fields("stock.picking")
         schemas = {"stock_picking": schema}
@@ -221,7 +227,7 @@ class TestEnrichAliases:
         enrich_aliases(schemas, mock_llm)
 
         # Should NOT call LLM — already enriched
-        mock_llm.ask_json.assert_not_called()
+        mock_llm.messages.create.assert_not_called()
 
 
 class TestApplyHeuristics:

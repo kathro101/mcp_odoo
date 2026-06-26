@@ -2019,8 +2019,19 @@
     "price_unit",
     "product_uom_qty"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "reference": "name",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name"
+  },
+  "match_keywords": [
+    "order line",
+    "sale line",
+    "product",
+    "line item"
+  ],
   "sub_models": [
     {
       "field_name": "product_custom_attribute_value_ids",

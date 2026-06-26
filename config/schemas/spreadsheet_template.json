@@ -292,7 +292,13 @@
   "required_fields": [
     "name"
   ],
-  "field_aliases": {},
+  "field_aliases": {
+    "reference": "name",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name"
+  },
   "match_keywords": [],
   "sub_models": [
     {

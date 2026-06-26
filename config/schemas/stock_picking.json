@@ -157,7 +157,22 @@
     "reference": "name",
     "source": "origin",
     "type": "picking_type_id",
-    "operation_type": "picking_type_id"
+    "operation_type": "picking_type_id",
+    "vendor": "partner_id",
+    "supplier": "partner_id",
+    "client": "partner_id",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name",
+    "booking": "origin",
+    "booking_ref": "origin",
+    "source_doc": "origin",
+    "scheduled_date": "scheduled_date",
+    "planned_date": "scheduled_date",
+    "eta": "scheduled_date",
+    "expected_date": "scheduled_date",
+    "transfer_type": "picking_type_id"
   },
   "match_keywords": [
     "shipment",

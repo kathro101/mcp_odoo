@@ -2070,8 +2070,39 @@
     "partner_id",
     "type"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "customer": "partner_id",
+    "contact": "partner_id",
+    "vendor": "partner_id",
+    "supplier": "partner_id",
+    "client": "partner_id",
+    "reference": "name",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name",
+    "salesperson": "user_id",
+    "responsible": "user_id",
+    "assigned_to": "user_id",
+    "owner": "user_id",
+    "company": "company_id",
+    "organization": "company_id",
+    "team": "team_id",
+    "sales_team": "team_id",
+    "department": "team_id",
+    "campaign": "campaign_id",
+    "medium": "medium_id",
+    "channel": "medium_id",
+    "source": "source_id",
+    "lead_source": "source_id"
+  },
+  "match_keywords": [
+    "lead",
+    "opportunity",
+    "prospect",
+    "pipeline",
+    "CRM"
+  ],
   "sub_models": [
     {
       "field_name": "activity_ids",

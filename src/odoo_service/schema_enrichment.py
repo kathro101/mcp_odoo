@@ -68,6 +68,66 @@ _IMPORTANT_FIELDS: set[str] = {
     "name",  # Display name / reference
 }
 
+# ── Deterministic common field aliases (ZERO AI TOKENS) ────────────────
+# These provide baseline aliases for ALL models without needing AI.
+# Claude's LLM knowledge of standard Odoo models handles the rest.
+
+_COMMON_ALIASES: dict[str, list[str]] = {
+    # Universal Odoo field patterns
+    "partner_id": ["customer", "contact", "vendor", "supplier", "client"],
+    "name": ["reference", "number", "ref", "title", "subject"],
+    "user_id": ["salesperson", "responsible", "assigned_to", "owner"],
+    "state": ["status", "stage", "phase"],
+    "company_id": ["company", "organization"],
+    "date_order": ["order_date", "date", "ordered_on"],
+    "date": ["date", "created_on"],
+    "write_date": ["last_modified", "updated_on"],
+    "create_date": ["created_on", "creation_date"],
+    "create_uid": ["created_by"],
+    "write_uid": ["last_modified_by"],
+    "origin": ["source", "reference", "booking", "booking_ref", "source_doc"],
+    "scheduled_date": ["scheduled_date", "planned_date", "eta", "expected_date"],
+    "commitment_date": ["delivery_date", "promised_date", "due_date"],
+    "picking_type_id": ["operation_type", "type", "transfer_type"],
+    "journal_id": ["journal", "book"],
+    "currency_id": ["currency"],
+    "pricelist_id": ["pricelist", "price_list"],
+    "payment_term_id": ["payment_terms", "terms"],
+    "team_id": ["team", "sales_team", "department"],
+    "campaign_id": ["campaign"],
+    "medium_id": ["medium", "channel"],
+    "source_id": ["source", "lead_source"],
+    # Address fields
+    "partner_invoice_id": ["invoice_address", "billing_address"],
+    "partner_shipping_id": ["shipping_address", "delivery_address"],
+}
+
+# ── Deterministic model keywords (ZERO AI TOKENS) ──────────────────────
+# Claude's LLM already knows standard Odoo models, but these help routing.
+
+_COMMON_KEYWORDS: dict[str, list[str]] = {
+    "res.partner": ["contact", "customer", "vendor", "partner", "company", "client", "supplier"],
+    "sale.order": ["sale", "order", "quotation", "sales order", "quote", "SO"],
+    "sale.order.line": ["order line", "sale line", "product", "line item"],
+    "account.move": ["invoice", "bill", "journal entry", "entry", "accounting", "ledger"],
+    "account.move.line": ["journal item", "line", "entry line", "reconciliation"],
+    "account.payment": ["payment", "pay", "transfer", "receive", "send money"],
+    "account.journal": ["journal", "book", "cash", "bank"],
+    "purchase.order": ["purchase", "PO", "procurement", "buy", "RFQ", "requisition"],
+    "purchase.order.line": ["purchase line", "PO line", "procurement line"],
+    "crm.lead": ["lead", "opportunity", "prospect", "pipeline", "CRM"],
+    "stock.picking": [
+        "shipment",
+        "delivery",
+        "transfer",
+        "picking",
+        "receipt",
+        "warehouse",
+        "stock",
+    ],
+    "product.supplierinfo": ["supplier info", "vendor price", "supplier product"],
+}
+
 
 def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
     """Apply deterministic heuristics to improve schema quality.
@@ -101,6 +161,18 @@ def apply_heuristics(schemas: dict[str, ModelSchema]) -> dict[str, ModelSchema]:
 
         # Sort required_fields for stable ordering
         schema.required_fields.sort()
+
+        # Rule 1.5: Inject deterministic common field aliases
+        for field_name, aliases in _COMMON_ALIASES.items():
+            if field_name in schema.all_fields and field_name in schema.create_fields:
+                for alias in aliases:
+                    if alias not in schema.field_aliases:
+                        schema.field_aliases[alias] = field_name
+
+        # Rule 1.6: Inject deterministic model keywords for routing
+        odoo_model = schema.odoo_model
+        if odoo_model in _COMMON_KEYWORDS and not schema.match_keywords:
+            schema.match_keywords = list(_COMMON_KEYWORDS[odoo_model])
 
         # Rule 2: Default workflow_hints for models that have none
         if not schema.workflow_hints:
@@ -258,7 +330,15 @@ def enrich_aliases(
         )
 
         try:
-            result = llm.ask_json(prompt)
+            response = llm.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=500,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            text = response.content[0].text
+            import json as _json
+
+            result = _json.loads(text)
             schema.field_aliases = result.get("field_aliases", {})
             schema.match_keywords = result.get("match_keywords", [])
         except Exception as exc:

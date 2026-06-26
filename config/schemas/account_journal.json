@@ -2063,8 +2063,20 @@
     "name",
     "type"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "reference": "name",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name",
+    "currency": "currency_id"
+  },
+  "match_keywords": [
+    "journal",
+    "book",
+    "cash",
+    "bank"
+  ],
   "sub_models": [
     {
       "field_name": "activity_ids",

@@ -6483,8 +6483,28 @@
     "autopost_bills",
     "name"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "reference": "name",
+    "number": "name",
+    "ref": "name",
+    "title": "name",
+    "subject": "name",
+    "salesperson": "user_id",
+    "responsible": "user_id",
+    "assigned_to": "user_id",
+    "owner": "user_id",
+    "company": "company_id",
+    "organization": "company_id"
+  },
+  "match_keywords": [
+    "contact",
+    "customer",
+    "vendor",
+    "partner",
+    "company",
+    "client",
+    "supplier"
+  ],
   "sub_models": [
     {
       "field_name": "message_follower_ids",

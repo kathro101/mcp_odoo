@@ -406,8 +406,21 @@
     "partner_id",
     "price"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "customer": "partner_id",
+    "contact": "partner_id",
+    "vendor": "partner_id",
+    "supplier": "partner_id",
+    "client": "partner_id",
+    "company": "company_id",
+    "organization": "company_id",
+    "currency": "currency_id"
+  },
+  "match_keywords": [
+    "supplier info",
+    "vendor price",
+    "supplier product"
+  ],
   "sub_models": [],
   "usage_frequency_total": 70,
   "workflow_hints": "All required fields must be filled. Use preview action to check what's missing.\npartner_id is required \u2014 always confirm the customer/vendor before creating."

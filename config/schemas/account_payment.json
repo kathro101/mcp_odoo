@@ -1581,8 +1581,30 @@
     "payment_type",
     "state"
   ],
-  "field_aliases": {},
-  "match_keywords": [],
+  "field_aliases": {
+    "customer": "partner_id",
+    "contact": "partner_id",
+    "vendor": "partner_id",
+    "supplier": "partner_id",
+    "client": "partner_id",
+    "status": "state",
+    "stage": "state",
+    "phase": "state",
+    "company": "company_id",
+    "organization": "company_id",
+    "date": "date",
+    "created_on": "date",
+    "journal": "journal_id",
+    "book": "journal_id",
+    "currency": "currency_id"
+  },
+  "match_keywords": [
+    "payment",
+    "pay",
+    "transfer",
+    "receive",
+    "send money"
+  ],
   "sub_models": [
     {
       "field_name": "activity_ids",
